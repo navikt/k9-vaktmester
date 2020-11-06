@@ -1,14 +1,14 @@
 package no.nav.k9.vaktmester.db
 
 import com.zaxxer.hikari.HikariConfig
-import com.zaxxer.hikari.HikariDataSource
 import no.nav.k9.config.Environment
 import no.nav.k9.config.hentRequiredEnv
 import org.flywaydb.core.Flyway
 import org.slf4j.LoggerFactory
 import javax.sql.DataSource
+import no.nav.vault.jdbc.hikaricp.HikariCPVaultUtil.createHikariDataSourceWithVaultIntegration as createDataSource
 
-internal class DataSourceBuilder(env: Environment) {
+internal class DataSourceBuilder(private val env: Environment) {
 
     private val hikariConfig = HikariConfig().apply {
         jdbcUrl = String.format(
@@ -25,11 +25,17 @@ internal class DataSourceBuilder(env: Environment) {
         idleTimeout = 10001
         connectionTimeout = 1000
         maxLifetime = 30001
-        driverClassName = "org.postgresql.Driver"
     }
 
+    private fun getDataSource(role: Role = Role.User) =
+        createDataSource(
+            hikariConfig,
+            env.hentRequiredEnv("VAULT_MOUNT_PATH"),
+            role.asRole(env.hentRequiredEnv("DATABASE_DATABASE"))
+        )
+
     internal fun build(): DataSource = kotlin.runCatching {
-        HikariDataSource(hikariConfig)
+        getDataSource()
     }.fold(
         onSuccess = { it },
         onFailure = { cause ->
@@ -39,6 +45,12 @@ internal class DataSourceBuilder(env: Environment) {
             }
         }
     )
+
+    enum class Role {
+        Admin, User, ReadOnly;
+
+        fun asRole(databaseName: String) = "$databaseName-${name.toLowerCase()}"
+    }
 
     private companion object {
         private val secureLogger = LoggerFactory.getLogger("tjenestekall")

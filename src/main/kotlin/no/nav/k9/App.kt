@@ -22,6 +22,7 @@ fun main() {
     env["DATABASE_DATABASE"] = "postgres"
     env["DATABASE_USERNAME"] = "postgres"
     env["DATABASE_PASSWORD"] = "postgres"
+    env["DATABASE_VAULT_MOUNT_PATH"] = "test/postgres"
 
     val applicationContext = ApplicationContext.Builder(
         env = env,
