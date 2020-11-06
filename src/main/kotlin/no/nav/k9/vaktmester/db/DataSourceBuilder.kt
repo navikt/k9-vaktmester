@@ -17,9 +17,6 @@ internal class DataSourceBuilder(private val env: Environment) {
             env.hentRequiredEnv("DATABASE_PORT"),
             env.hentRequiredEnv("DATABASE_DATABASE")
         )
-
-        username = env.hentRequiredEnv("DATABASE_USERNAME")
-        password = env.hentRequiredEnv("DATABASE_PASSWORD")
         maximumPoolSize = 3
         minimumIdle = 1
         idleTimeout = 10001
