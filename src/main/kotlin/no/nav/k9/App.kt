@@ -9,6 +9,7 @@ import no.nav.helse.rapids_rivers.RapidApplication
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.k9.config.Environment
 import no.nav.k9.vaktmester.db.DataSourceBuilder
+import no.nav.k9.vaktmester.db.FerdigeLøsningerRepository
 import no.nav.k9.vaktmester.db.InMemoryDb
 import no.nav.k9.vaktmester.db.migrate
 import javax.sql.DataSource
@@ -55,7 +56,8 @@ internal class ApplicationContext(
     val env: Environment,
     private val inMemoryDb: EmbeddedPostgres,
     val dataSource: DataSource,
-    val healthService: HealthService,
+    val ferdigeLøsningerRepository: FerdigeLøsningerRepository,
+    val healthService: HealthService
 ) {
 
     internal fun start() {
@@ -70,18 +72,21 @@ internal class ApplicationContext(
         var env: Environment? = null,
         val inMemoryDb: EmbeddedPostgres,
         var dataSource: DataSource? = null,
+        var ferdigeLøsningerRepository: FerdigeLøsningerRepository? = null
     ) {
         internal fun build(): ApplicationContext {
             val benyttetEnv = env ?: System.getenv()
 
             val benyttetDataSource = dataSource ?: DataSourceBuilder(benyttetEnv).build()
+            val benyttetFerdigeLøsningerRepository = ferdigeLøsningerRepository ?: FerdigeLøsningerRepository(benyttetDataSource)
 
             return ApplicationContext(
                 env = benyttetEnv,
                 inMemoryDb = inMemoryDb,
                 dataSource = benyttetDataSource,
+                ferdigeLøsningerRepository = benyttetFerdigeLøsningerRepository,
                 healthService = HealthService(
-                    healthChecks = emptySet()
+                    healthChecks = setOf(benyttetFerdigeLøsningerRepository)
                 )
             )
         }
