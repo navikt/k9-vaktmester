@@ -1,7 +1,9 @@
 package no.nav.k9
 
-import com.opentable.db.postgres.embedded.EmbeddedPostgres
 import io.ktor.application.Application
+import io.ktor.application.install
+import io.ktor.features.ContentNegotiation
+import io.ktor.jackson.jackson
 import io.ktor.routing.routing
 import no.nav.helse.dusseldorf.ktor.health.HealthRoute
 import no.nav.helse.dusseldorf.ktor.health.HealthService
@@ -10,24 +12,11 @@ import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.k9.config.Environment
 import no.nav.k9.vaktmester.db.DataSourceBuilder
 import no.nav.k9.vaktmester.db.FerdigeLøsningerRepository
-import no.nav.k9.vaktmester.db.InMemoryDb
 import no.nav.k9.vaktmester.db.migrate
 import javax.sql.DataSource
 
 fun main() {
-    // TODO: Fjern alt in memory stuff
-    val inMemoryDb = InMemoryDb().build()
-    val env = System.getenv().toMutableMap()
-    env["DATABASE_HOST"] = "localhost"
-    env["DATABASE_PORT"] = "${inMemoryDb.port}"
-    env["DATABASE_DATABASE"] = "postgres"
-    env["DATABASE_USERNAME"] = "postgres"
-    env["DATABASE_PASSWORD"] = "postgres"
-
-    val applicationContext = ApplicationContext.Builder(
-        env = env,
-        inMemoryDb = inMemoryDb
-    ).build()
+    val applicationContext = ApplicationContext.Builder().build()
     RapidApplication.Builder(RapidApplication.RapidApplicationConfig.fromEnv(applicationContext.env))
         .withKtorModule { k9Vaktmester(applicationContext) }
         .build()
@@ -47,6 +36,10 @@ internal fun RapidsConnection.registerApplicationContext(applicationContext: App
 }
 
 internal fun Application.k9Vaktmester(applicationContext: ApplicationContext) {
+    install(ContentNegotiation) {
+        jackson()
+    }
+
     routing {
         HealthRoute(healthService = applicationContext.healthService)
     }
@@ -54,7 +47,6 @@ internal fun Application.k9Vaktmester(applicationContext: ApplicationContext) {
 
 internal class ApplicationContext(
     val env: Environment,
-    private val inMemoryDb: EmbeddedPostgres,
     val dataSource: DataSource,
     val ferdigeLøsningerRepository: FerdigeLøsningerRepository,
     val healthService: HealthService
@@ -63,14 +55,10 @@ internal class ApplicationContext(
     internal fun start() {
         dataSource.migrate()
     }
-    internal fun stop() {
-        inMemoryDb.postgresDatabase.connection.close()
-        inMemoryDb.close()
-    }
+    internal fun stop() {}
 
     internal class Builder(
         var env: Environment? = null,
-        val inMemoryDb: EmbeddedPostgres,
         var dataSource: DataSource? = null,
         var ferdigeLøsningerRepository: FerdigeLøsningerRepository? = null
     ) {
@@ -82,7 +70,6 @@ internal class ApplicationContext(
 
             return ApplicationContext(
                 env = benyttetEnv,
-                inMemoryDb = inMemoryDb,
                 dataSource = benyttetDataSource,
                 ferdigeLøsningerRepository = benyttetFerdigeLøsningerRepository,
                 healthService = HealthService(

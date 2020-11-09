@@ -37,10 +37,8 @@ dependencies {
     implementation("com.github.seratch:kotliquery:$kotliqueryVersion")
     runtimeOnly("org.postgresql:postgresql:$postgresVersion")
 
-    // In memory - flytt til testImplementation ved bruk av ordentlig db
-    implementation("com.opentable.components:otj-pg-embedded:$embeddedPostgres")
-
     // Test
+    testImplementation("com.opentable.components:otj-pg-embedded:$embeddedPostgres")
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion") {
         exclude(group = "org.eclipse.jetty")
