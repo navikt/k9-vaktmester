@@ -13,6 +13,7 @@ spec:
   gcp:
     sqlInstances:
       - type: POSTGRES_11
+        diskAutoresize: true
         databases:
           - name: k9-vaktmester
             envVarPrefix: DATABASE
