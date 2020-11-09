@@ -44,19 +44,19 @@ jobs:
           docker push $BASE_IMAGE:latest
           docker push $IMAGE
 
-      - name: Deploy til dev-fss
+      - name: Deploy til dev-gcp
         uses: nais/deploy/actions/deploy@v1
         env:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
-          CLUSTER: dev-fss
+          CLUSTER: dev-gcp
           RESOURCE: nais/naiserator.yaml
-          VARS: nais/dev-fss.json
+          VARS: nais/dev-gcp.json
 
-      - name: Deploy til prod-fss
+      - name: Deploy til prod-gcp
         if: github.ref == 'refs/heads/master'
         uses: nais/deploy/actions/deploy@v1
         env:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
-          CLUSTER: prod-fss
+          CLUSTER: prod-gcp
           RESOURCE: nais/naiserator.yaml
-          VARS: nais/prod-fss.json
+          VARS: nais/prod-gcp.json

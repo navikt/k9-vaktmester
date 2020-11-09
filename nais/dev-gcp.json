@@ -1,12 +1,12 @@
 {
   "app": "k9-vaktmester",
-  "cluster": "dev-fss",
+  "cluster": "dev-gcp",
   "namespace": "omsorgspenger",
   "team": "omsorgspenger",
   "minReplicas": "1",
   "maxReplicas": "1",
   "ingresses": [
-    "https://k9-vaktmester.dev.adeo.no"
+    "https://k9-vaktmester.dev.intern.nav.no"
   ],
   "env": {
     "KAFKA_BOOTSTRAP_SERVERS": "b27apvl00045.preprod.local:8443,b27apvl00046.preprod.local:8443,b27apvl00047.preprod.local:8443",
