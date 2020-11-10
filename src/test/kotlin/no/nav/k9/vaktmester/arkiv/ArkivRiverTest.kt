@@ -12,6 +12,7 @@ import no.nav.k9.rapid.behov.Behovssekvens
 import no.nav.k9.registerApplicationContext
 import no.nav.k9.testutils.ApplicationContextExtension
 import no.nav.k9.testutils.cleanAndMigrate
+import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
@@ -55,6 +56,27 @@ internal class ArkivRiverTest(
             settJsonFeltTomt(arkiv!!, "system_read_count"),
             true
         )
+    }
+
+    @Test
+    internal fun `lagrer ikke dersom behov og løsniger ikke er like`() {
+        val behov1 = "behov1"
+        val behov2 = "behov2"
+        val behov = mapOf(
+            behov1 to "{}",
+            behov2 to "{}"
+        )
+        val id = "01BX5ZZKBKACTAV9WEVGEMMVS0"
+        val behovssekvens = nyBehovssekvens(
+            id = id,
+            behov = behov,
+            løsninger = mapOf(behov1 to "{}")
+        )
+
+        rapid.sendTestMessage(behovssekvens)
+
+        val arkiv = hentArkivMedId(id)
+        assertThat(arkiv).isNull()
     }
 
     private fun settJsonFeltTomt(json: String, feltnavn: String): String {

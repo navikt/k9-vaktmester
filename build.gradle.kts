@@ -10,6 +10,7 @@ val embeddedPostgres = "0.13.3"
 val ktorVersion = "1.4.1"
 val dusseldorfVersion = "1.4.1.4754df6"
 val jsonassertVersion = "1.5.0"
+val assertjVersion = "3.11.1"
 
 val mainClass = "no.nav.k9.AppKt"
 
@@ -46,6 +47,7 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion")
     testImplementation("no.nav.helse:dusseldorf-test-support:$dusseldorfVersion")
     testImplementation ("org.skyscreamer:jsonassert:$jsonassertVersion")
+    testImplementation("org.assertj:assertj-core:$assertjVersion")
 }
 
 repositories {
