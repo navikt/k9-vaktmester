@@ -25,21 +25,20 @@ internal class ApplicationContextExtension : ParameterResolver {
                 "DATABASE_DATABASE" to "postgres",
                 "DATABASE_USERNAME" to "postgres",
                 "DATABASE_PASSWORD" to "postgres"
-            ),
-            inMemoryDb = embeddedPostgres
+            )
         )
 
         private val embeddedPostgres = embeddedPostgress(createTempDir("tmp_postgres"))
         private val applicationContext = testApplicationContextBuilder(embeddedPostgres).build()
 
-//        init {
-//            Runtime.getRuntime().addShutdownHook(
-//                Thread {
-//                    embeddedPostgres.postgresDatabase.connection.close()
-//                    embeddedPostgres.close()
-//                }
-//            )
-//        }
+        init {
+            Runtime.getRuntime().addShutdownHook(
+                Thread {
+                    embeddedPostgres.postgresDatabase.connection.close()
+                    embeddedPostgres.close()
+                }
+            )
+        }
 
         private val støttedeParametre = listOf(
             ApplicationContext::class.java
