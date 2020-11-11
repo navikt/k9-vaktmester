@@ -107,7 +107,7 @@ internal class RiversTest(
     }
 
     @Test
-    internal fun `lagrer ny rad i inflight dersom sistendret er endret`() {
+    internal fun `oppdaterer rad i inflight dersom sistendret er endret`() {
         val behov1 = "behov1"
         val behov2 = "behov2"
         val behov = mapOf(
@@ -135,13 +135,14 @@ internal class RiversTest(
             true
         )
 
+        val nyeBehov = mapOf(
+            behov1 to "{}",
+            behov2 to "{}",
+            "behov3" to "{}"
+        )
         val behovssekvensOppdatertSistEndret = nyBehovssekvens(
             id = id,
-            behov = mapOf(
-                behov1 to "{}",
-                behov2 to "{}",
-                "behov3" to "{}"
-            ),
+            behov = nyeBehov,
             løsninger = løsninger
         )
 
@@ -149,7 +150,13 @@ internal class RiversTest(
 
         val inFlights = hentInFlightMedId(id)
 
-        assertThat(inFlights).hasSize(2)
+        assertThat(inFlights).hasSize(1)
+
+        JSONAssert.assertEquals(
+            settJsonFeltTomt(inFlights[0].behovssekvens, "system_read_count"),
+            settJsonFeltTomt(behovssekvensOppdatertSistEndret.toJson(), "system_read_count"),
+            true
+        )
     }
 
     @Test

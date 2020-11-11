@@ -6,6 +6,7 @@ import kotliquery.using
 import no.nav.helse.dusseldorf.ktor.health.HealthCheck
 import no.nav.helse.dusseldorf.ktor.health.Healthy
 import no.nav.helse.dusseldorf.ktor.health.UnHealthy
+import org.intellij.lang.annotations.Language
 import java.sql.Timestamp
 import java.time.ZonedDateTime
 import javax.sql.DataSource
@@ -15,7 +16,14 @@ internal class InFlightRepository(
 ) : HealthCheck {
 
     internal fun lagreInFlightBehov(behovsid: String, behovssekvens: String, sistEndret: ZonedDateTime): Boolean {
-        val query = queryOf(LAGRE_BEHOV_QUERY, behovsid, behovssekvens, Timestamp.from(sistEndret.toInstant())).asUpdate
+        val query = queryOf(
+            LAGRE_BEHOV_QUERY,
+            mapOf(
+                "BEHOVSSEKVENSID" to behovsid,
+                "BEHOVSSEKVENS" to behovssekvens,
+                "SIST_ENDRET" to Timestamp.from(sistEndret.toInstant()),
+            )
+        ).asUpdate
         return using(sessionOf(dataSource)) { session ->
             session.run(query)
         } != 0
@@ -31,7 +39,12 @@ internal class InFlightRepository(
     )
 
     private companion object {
-        private const val LAGRE_BEHOV_QUERY = "INSERT INTO IN_FLIGHT(BEHOVSSEKVENSID, BEHOVSSEKVENS, SIST_ENDRET) VALUES (?, to_json(?::json), ?) ON CONFLICT DO NOTHING"
+        @Language("PostgreSQL")
+        private const val LAGRE_BEHOV_QUERY = """
+            INSERT INTO IN_FLIGHT(BEHOVSSEKVENSID, BEHOVSSEKVENS, SIST_ENDRET)
+            VALUES (:BEHOVSSEKVENSID, :BEHOVSSEKVENS ::jsonb, :SIST_ENDRET)
+            ON CONFLICT (BEHOVSSEKVENSID) DO UPDATE SET BEHOVSSEKVENS = :BEHOVSSEKVENS ::jsonb, SIST_ENDRET = :SIST_ENDRET
+        """
         private const val HEALTH_QUERY = "SELECT 1"
     }
 }

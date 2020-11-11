@@ -34,7 +34,8 @@ internal fun RapidsConnection.registerApplicationContext(applicationContext: App
     )
     InFlightRiver(
         rapidsConnection = this,
-        inFlightRepository = applicationContext.inFlightRepository
+        inFlightRepository = applicationContext.inFlightRepository,
+        arkivRepository = applicationContext.arkivRepository
     )
     register(object : RapidsConnection.StatusListener {
         override fun onStartup(rapidsConnection: RapidsConnection) {

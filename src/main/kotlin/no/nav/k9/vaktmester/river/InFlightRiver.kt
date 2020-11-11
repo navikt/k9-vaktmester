@@ -3,12 +3,15 @@ package no.nav.k9.vaktmester.river
 import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.helse.rapids_rivers.River
+import no.nav.k9.vaktmester.db.Arkiv
+import no.nav.k9.vaktmester.db.ArkivRepository
 import no.nav.k9.vaktmester.db.InFlightRepository
 import org.slf4j.LoggerFactory
 
 internal class InFlightRiver(
     rapidsConnection: RapidsConnection,
-    private val inFlightRepository: InFlightRepository
+    private val inFlightRepository: InFlightRepository,
+    private val arkivRepository: ArkivRepository
 ) : River.PacketListener {
 
     private val logger = LoggerFactory.getLogger(InFlightRiver::class.java)
@@ -31,12 +34,19 @@ internal class InFlightRiver(
                 CorrelationIdKey to correlationId
             )
         ) {
-            inFlightRepository.lagreInFlightBehov(
-                behovsid = behovssekvensId,
-                behovssekvens = packet.toJson(),
-                sistEndret = packet.sistEndret()
-            )
-            logger.info("Behovssekvens arkivert")
+            arkivRepository.hentArkivMedId(behovssekvensId).doIfEmpty {
+                inFlightRepository.lagreInFlightBehov(
+                    behovsid = behovssekvensId,
+                    behovssekvens = packet.toJson(),
+                    sistEndret = packet.sistEndret()
+                )
+                logger.info("Lagret in flight behovsseksvens med id $behovssekvensId")
+            }
         }
     }
+}
+
+private fun List<Arkiv>.doIfEmpty(task: () -> Unit) = when (isEmpty()) {
+    true -> task()
+    else -> {}
 }

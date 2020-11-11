@@ -1,11 +1,14 @@
 package no.nav.k9.vaktmester.db
 
+import kotliquery.Row
 import kotliquery.queryOf
 import kotliquery.sessionOf
 import kotliquery.using
 import no.nav.helse.dusseldorf.ktor.health.HealthCheck
 import no.nav.helse.dusseldorf.ktor.health.Healthy
 import no.nav.helse.dusseldorf.ktor.health.UnHealthy
+import org.intellij.lang.annotations.Language
+import java.time.ZonedDateTime
 import javax.sql.DataSource
 
 internal class ArkivRepository(
@@ -13,10 +16,19 @@ internal class ArkivRepository(
 ) : HealthCheck {
 
     internal fun arkiverBehovssekvens(behovsid: String, behovssekvens: String): Boolean {
-        val query = queryOf(LAGRE_BEHOVSSEKSVENS_QUERY, behovsid, behovssekvens).asUpdate
+        val query = queryOf(LAGRE_ARKIV_QUERY, behovsid, behovssekvens).asUpdate
         return using(sessionOf(dataSource)) { session ->
             session.run(query)
         } != 0
+    }
+
+    internal fun hentArkivMedId(id: String): List<Arkiv> {
+        return using(sessionOf(dataSource)) { session ->
+            val query = queryOf(HENT_ARKIV_QUERY, id)
+            return@using session.run(
+                query.map { it.somArkiv() }.asList
+            )
+        }
     }
 
     override suspend fun check() = kotlin.runCatching {
@@ -29,8 +41,30 @@ internal class ArkivRepository(
     )
 
     private companion object {
-        private const val LAGRE_BEHOVSSEKSVENS_QUERY =
-            "INSERT INTO ARKIV(BEHOVSSEKVENSID, BEHOVSSEKVENS) VALUES (?, to_json(?::json)) ON CONFLICT DO NOTHING"
+        @Language("PostgreSQL")
+        private const val LAGRE_ARKIV_QUERY = """
+            INSERT INTO ARKIV(BEHOVSSEKVENSID, BEHOVSSEKVENS)
+            VALUES (?, to_json(?::json))
+            ON CONFLICT DO NOTHING
+        """
+        @Language("PostgreSQL")
+        private const val HENT_ARKIV_QUERY = """
+            SELECT BEHOVSSEKVENS, BEHOVSSEKVENSID, ARKIVERINGSTIDSPUNKT
+            FROM ARKIV
+            WHERE BEHOVSSEKVENSID = ?
+        """
         private const val HEALTH_QUERY = "SELECT 1"
     }
+
+    private fun Row.somArkiv() = Arkiv(
+        behovssekvens = string("behovssekvens"),
+        behovssekvensid = string("behovssekvensid"),
+        arkiveringstidspunkt = zonedDateTime("arkiveringstidspunkt")
+    )
 }
+
+internal data class Arkiv(
+    val behovssekvens: String,
+    val behovssekvensid: String,
+    val arkiveringstidspunkt: ZonedDateTime
+)
