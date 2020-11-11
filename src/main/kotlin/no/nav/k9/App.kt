@@ -1,32 +1,25 @@
 package no.nav.k9
 
-import com.opentable.db.postgres.embedded.EmbeddedPostgres
 import io.ktor.application.Application
+import io.ktor.application.install
+import io.ktor.features.ContentNegotiation
+import io.ktor.jackson.jackson
 import io.ktor.routing.routing
 import no.nav.helse.dusseldorf.ktor.health.HealthRoute
 import no.nav.helse.dusseldorf.ktor.health.HealthService
 import no.nav.helse.rapids_rivers.RapidApplication
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.k9.config.Environment
+import no.nav.k9.vaktmester.river.ArkivRiver
+import no.nav.k9.vaktmester.db.ArkivRepository
 import no.nav.k9.vaktmester.db.DataSourceBuilder
-import no.nav.k9.vaktmester.db.InMemoryDb
+import no.nav.k9.vaktmester.db.InFlightRepository
 import no.nav.k9.vaktmester.db.migrate
+import no.nav.k9.vaktmester.river.InFlightRiver
 import javax.sql.DataSource
 
 fun main() {
-    // TODO: Fjern alt in memory stuff
-    val inMemoryDb = InMemoryDb().build()
-    val env = System.getenv().toMutableMap()
-    env["DATABASE_HOST"] = "localhost"
-    env["DATABASE_PORT"] = "${inMemoryDb.port}"
-    env["DATABASE_DATABASE"] = "postgres"
-    env["DATABASE_USERNAME"] = "postgres"
-    env["DATABASE_PASSWORD"] = "postgres"
-
-    val applicationContext = ApplicationContext.Builder(
-        env = env,
-        inMemoryDb = inMemoryDb
-    ).build()
+    val applicationContext = ApplicationContext.Builder().build()
     RapidApplication.Builder(RapidApplication.RapidApplicationConfig.fromEnv(applicationContext.env))
         .withKtorModule { k9Vaktmester(applicationContext) }
         .build()
@@ -35,6 +28,15 @@ fun main() {
 }
 
 internal fun RapidsConnection.registerApplicationContext(applicationContext: ApplicationContext) {
+    ArkivRiver(
+        rapidsConnection = this,
+        arkivRepository = applicationContext.arkivRepository
+    )
+    InFlightRiver(
+        rapidsConnection = this,
+        inFlightRepository = applicationContext.inFlightRepository,
+        arkivRepository = applicationContext.arkivRepository
+    )
     register(object : RapidsConnection.StatusListener {
         override fun onStartup(rapidsConnection: RapidsConnection) {
             applicationContext.start()
@@ -46,6 +48,10 @@ internal fun RapidsConnection.registerApplicationContext(applicationContext: App
 }
 
 internal fun Application.k9Vaktmester(applicationContext: ApplicationContext) {
+    install(ContentNegotiation) {
+        jackson()
+    }
+
     routing {
         HealthRoute(healthService = applicationContext.healthService)
     }
@@ -53,35 +59,40 @@ internal fun Application.k9Vaktmester(applicationContext: ApplicationContext) {
 
 internal class ApplicationContext(
     val env: Environment,
-    private val inMemoryDb: EmbeddedPostgres,
     val dataSource: DataSource,
-    val healthService: HealthService,
+    val arkivRepository: ArkivRepository,
+    val inFlightRepository: InFlightRepository,
+    val healthService: HealthService
 ) {
 
     internal fun start() {
         dataSource.migrate()
     }
-    internal fun stop() {
-        inMemoryDb.postgresDatabase.connection.close()
-        inMemoryDb.close()
-    }
+    internal fun stop() {}
 
     internal class Builder(
         var env: Environment? = null,
-        val inMemoryDb: EmbeddedPostgres,
         var dataSource: DataSource? = null,
+        var arkivRepository: ArkivRepository? = null,
+        var inFlightRepository: InFlightRepository? = null
     ) {
         internal fun build(): ApplicationContext {
             val benyttetEnv = env ?: System.getenv()
 
             val benyttetDataSource = dataSource ?: DataSourceBuilder(benyttetEnv).build()
+            val benyttetArkivRepository = arkivRepository ?: ArkivRepository(benyttetDataSource)
+            val benyttetInFlightRepository = inFlightRepository ?: InFlightRepository(benyttetDataSource)
 
             return ApplicationContext(
                 env = benyttetEnv,
-                inMemoryDb = inMemoryDb,
                 dataSource = benyttetDataSource,
+                arkivRepository = benyttetArkivRepository,
+                inFlightRepository = benyttetInFlightRepository,
                 healthService = HealthService(
-                    healthChecks = emptySet()
+                    healthChecks = setOf(
+                        benyttetArkivRepository,
+                        benyttetInFlightRepository
+                    )
                 )
             )
         }
