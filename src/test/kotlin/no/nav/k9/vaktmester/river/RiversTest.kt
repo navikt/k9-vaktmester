@@ -64,7 +64,7 @@ internal class RiversTest(
         )
 
         val inFlight = hentInFlightMedId(id)
-        assertThat(inFlight).isNull()
+        assertThat(inFlight).isEmpty()
     }
 
     @Test
@@ -88,11 +88,12 @@ internal class RiversTest(
         val arkiv = hentArkivMedId(id)
         assertThat(arkiv).isNull()
 
-        val inFlight = hentInFlightMedId(id)!!
+        val inFlight = hentInFlightMedId(id)
 
+        assertThat(inFlight).hasSize(1)
         JSONAssert.assertEquals(
             settJsonFeltTomt(behovssekvensJson, "system_read_count"),
-            settJsonFeltTomt(inFlight.behovssekvens, "system_read_count"),
+            settJsonFeltTomt(inFlight[0].behovssekvens, "system_read_count"),
             true
         )
 
@@ -102,7 +103,77 @@ internal class RiversTest(
             .toString()
             .replace("\"".toRegex(), "")
 
-        assertThat(inFlight.sistEndret).isEqualTo(ZonedDateTime.parse(sistEndret))
+        assertThat(inFlight[0].sistEndret).isEqualTo(ZonedDateTime.parse(sistEndret))
+    }
+
+    @Test
+    internal fun `lagrer ny rad i inflight dersom sistendret er endret`() {
+        val behov1 = "behov1"
+        val behov2 = "behov2"
+        val behov = mapOf(
+            behov1 to "{}",
+            behov2 to "{}"
+        )
+        val id = "01BX5ZZKBKACTAV9WEVGEMMVS0"
+        val løsninger = mapOf(behov1 to "{}")
+        val behovssekvensGammel = nyBehovssekvens(
+            id = id,
+            behov = behov,
+            løsninger = løsninger
+        )
+
+        val behovssekvensGammelJson = behovssekvensGammel.toJson()
+        rapid.sendTestMessage(behovssekvensGammelJson)
+
+        val inFlight = hentInFlightMedId(id)
+
+        assertThat(inFlight).hasSize(1)
+
+        JSONAssert.assertEquals(
+            settJsonFeltTomt(behovssekvensGammelJson, "system_read_count"),
+            settJsonFeltTomt(inFlight[0].behovssekvens, "system_read_count"),
+            true
+        )
+
+        val behovssekvensOppdatertSistEndret = nyBehovssekvens(
+            id = id,
+            behov = mapOf(
+                behov1 to "{}",
+                behov2 to "{}",
+                "behov3" to "{}"
+            ),
+            løsninger = løsninger
+        )
+
+        rapid.sendTestMessage(behovssekvensOppdatertSistEndret.toJson())
+
+        val inFlights = hentInFlightMedId(id)
+
+        assertThat(inFlights).hasSize(2)
+    }
+
+    @Test
+    internal fun `gjør ingenting dersom id og sistendret ikke er endret`() {
+        val behov1 = "behov1"
+        val behov2 = "behov2"
+        val behov = mapOf(
+            behov1 to "{}",
+            behov2 to "{}"
+        )
+        val id = "01BX5ZZKBKACTAV9WEVGEMMVS0"
+        val behovssekvens = nyBehovssekvens(
+            id = id,
+            behov = behov,
+            løsninger = mapOf(behov1 to "{}")
+        )
+        val behovssekvensJson = behovssekvens.toJson()
+
+        rapid.sendTestMessage(behovssekvensJson)
+        rapid.sendTestMessage(behovssekvensJson)
+
+        val inFlight = hentInFlightMedId(id)
+
+        assertThat(inFlight).hasSize(1)
     }
 
     private fun settJsonFeltTomt(json: String, feltnavn: String): String {
@@ -122,7 +193,7 @@ internal class RiversTest(
         }
     }
 
-    private fun hentInFlightMedId(id: String): InFlight? {
+    private fun hentInFlightMedId(id: String): List<InFlight> {
         return using(sessionOf(applicationContext.dataSource)) { session ->
             val query = queryOf("SELECT BEHOVSSEKVENS, SIST_ENDRET FROM IN_FLIGHT WHERE BEHOVSSEKVENSID = ?", id)
             return@using session.run(
@@ -131,7 +202,7 @@ internal class RiversTest(
                         behovssekvens = row.string("BEHOVSSEKVENS"),
                         sistEndret = row.zonedDateTime("SIST_ENDRET")
                     )
-                }.asSingle
+                }.asList
             )
         }
     }
