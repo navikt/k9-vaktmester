@@ -27,7 +27,7 @@ internal class DataSourceBuilder(private val env: Environment) {
     private fun getDataSource(role: Role = Role.User) =
         createDataSource(
             hikariConfig,
-            env.hentRequiredEnv("VAULT_MOUNT_PATH"),
+            env.hentRequiredEnv("DATABASE_VAULT_MOUNT_PATH"),
             role.asRole(env.hentRequiredEnv("DATABASE_DATABASE"))
         )
 
