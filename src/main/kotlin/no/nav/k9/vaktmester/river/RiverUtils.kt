@@ -7,6 +7,7 @@ import no.nav.k9.rapid.behov.Behovsformat
 import no.nav.k9.rapid.behov.Behovssekvens
 import org.slf4j.MDC
 import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 import java.util.stream.Stream
 import java.util.stream.StreamSupport
 
@@ -72,9 +73,11 @@ internal fun JsonMessage.getString(key: String) = get(key).also {
     if (it !is TextNode) throw IllegalStateException("$key må være String")
 }.let { requireNotNull(it.asText()) }
 
+internal val ISO8601 = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX")
+
 internal fun JsonMessage.behovssekvensId() = getString(Behovsformat.Id)
 internal fun JsonMessage.correlationId() = getString(Behovsformat.CorrelationId)
-internal fun JsonMessage.sistEndret() = ZonedDateTime.parse(getString(Behovsformat.SistEndret))
+internal fun JsonMessage.sistEndret() = ZonedDateTime.parse(getString(Behovsformat.SistEndret), ISO8601)
 
 internal fun withMDC(context: Map<String, String>, block: () -> Unit) {
     val contextMap = MDC.getCopyOfContextMap() ?: emptyMap()

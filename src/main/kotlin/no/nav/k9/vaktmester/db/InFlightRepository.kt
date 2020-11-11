@@ -6,6 +6,7 @@ import kotliquery.using
 import no.nav.helse.dusseldorf.ktor.health.HealthCheck
 import no.nav.helse.dusseldorf.ktor.health.Healthy
 import no.nav.helse.dusseldorf.ktor.health.UnHealthy
+import java.sql.Timestamp
 import java.time.ZonedDateTime
 import javax.sql.DataSource
 
@@ -14,7 +15,7 @@ internal class InFlightRepository(
 ) : HealthCheck {
 
     internal fun lagreInFlightBehov(behovsid: String, behovssekvens: String, sistEndret: ZonedDateTime): Boolean {
-        val query = queryOf(LAGRE_BEHOV_QUERY, behovsid, behovssekvens, sistEndret).asUpdate
+        val query = queryOf(LAGRE_BEHOV_QUERY, behovsid, behovssekvens, Timestamp.from(sistEndret.toInstant())).asUpdate
         return using(sessionOf(dataSource)) { session ->
             session.run(query)
         } != 0

@@ -1,5 +1,9 @@
 package no.nav.k9.vaktmester.river
 
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import kotliquery.queryOf
 import kotliquery.sessionOf
 import kotliquery.using
@@ -8,6 +12,7 @@ import no.nav.helse.rapids_rivers.MessageProblems
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import no.nav.k9.ApplicationContext
 import no.nav.k9.rapid.behov.Behov
+import no.nav.k9.rapid.behov.Behovsformat
 import no.nav.k9.rapid.behov.Behovssekvens
 import no.nav.k9.registerApplicationContext
 import no.nav.k9.testutils.ApplicationContextExtension
@@ -17,6 +22,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 import org.skyscreamer.jsonassert.JSONAssert
+import java.time.ZonedDateTime
 import java.util.UUID
 
 @ExtendWith(ApplicationContextExtension::class)
@@ -46,7 +52,7 @@ internal class RiversTest(
             id = id,
             behov = behov,
             løsninger = behov
-        )
+        ).toJson()
 
         rapid.sendTestMessage(behovssekvens)
 
@@ -75,18 +81,28 @@ internal class RiversTest(
             behov = behov,
             løsninger = mapOf(behov1 to "{}")
         )
+        val behovssekvensJson = behovssekvens.toJson()
 
-        rapid.sendTestMessage(behovssekvens)
+        rapid.sendTestMessage(behovssekvensJson)
 
         val arkiv = hentArkivMedId(id)
         assertThat(arkiv).isNull()
 
-        val inFlight = hentInFlightMedId(id)
+        val inFlight = hentInFlightMedId(id)!!
+
         JSONAssert.assertEquals(
-            settJsonFeltTomt(behovssekvens, "system_read_count"),
-            settJsonFeltTomt(inFlight!!, "system_read_count"),
+            settJsonFeltTomt(behovssekvensJson, "system_read_count"),
+            settJsonFeltTomt(inFlight.behovssekvens, "system_read_count"),
             true
         )
+
+        val sistEndret = objectMapper
+            .readTree(behovssekvensJson)
+            .at("/${Behovsformat.SistEndret}")
+            .toString()
+            .replace("\"".toRegex(), "")
+
+        assertThat(inFlight.sistEndret).isEqualTo(ZonedDateTime.parse(sistEndret))
     }
 
     private fun settJsonFeltTomt(json: String, feltnavn: String): String {
@@ -106,12 +122,15 @@ internal class RiversTest(
         }
     }
 
-    private fun hentInFlightMedId(id: String): String? {
+    private fun hentInFlightMedId(id: String): InFlight? {
         return using(sessionOf(applicationContext.dataSource)) { session ->
-            val query = queryOf("SELECT BEHOVSSEKVENS FROM IN_FLIGHT WHERE BEHOVSSEKVENSID = ?", id)
+            val query = queryOf("SELECT BEHOVSSEKVENS, SIST_ENDRET FROM IN_FLIGHT WHERE BEHOVSSEKVENSID = ?", id)
             return@using session.run(
                 query.map { row ->
-                    row.stringOrNull("BEHOVSSEKVENS")
+                    InFlight(
+                        behovssekvens = row.string("BEHOVSSEKVENS"),
+                        sistEndret = row.zonedDateTime("SIST_ENDRET")
+                    )
                 }.asSingle
             )
         }
@@ -124,7 +143,7 @@ internal class RiversTest(
             id: String,
             behov: Map<String, String?>,
             løsninger: Map<String, String?>
-        ): String {
+        ): JsonMessage {
             val sekvens = Behovssekvens(
                 id = id,
                 correlationId = UUID.randomUUID().toString(),
@@ -141,7 +160,17 @@ internal class RiversTest(
             val jsonMessage = JsonMessage(sekvens, MessageProblems(""))
 
             jsonMessage[Løsninger] = løsninger
-            return jsonMessage.toJson()
+            return jsonMessage
         }
     }
 }
+
+internal val objectMapper = jacksonObjectMapper()
+    .registerModule(JavaTimeModule())
+    .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+    .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
+
+data class InFlight(
+    val behovssekvens: String,
+    val sistEndret: ZonedDateTime
+)
