@@ -10,10 +10,12 @@ import no.nav.helse.dusseldorf.ktor.health.HealthService
 import no.nav.helse.rapids_rivers.RapidApplication
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.k9.config.Environment
-import no.nav.k9.vaktmester.arkiv.ArkivRiver
+import no.nav.k9.vaktmester.river.ArkivRiver
 import no.nav.k9.vaktmester.db.ArkivRepository
 import no.nav.k9.vaktmester.db.DataSourceBuilder
+import no.nav.k9.vaktmester.db.InFlightRepository
 import no.nav.k9.vaktmester.db.migrate
+import no.nav.k9.vaktmester.river.InFlightRiver
 import javax.sql.DataSource
 
 fun main() {
@@ -29,6 +31,10 @@ internal fun RapidsConnection.registerApplicationContext(applicationContext: App
     ArkivRiver(
         rapidsConnection = this,
         arkivRepository = applicationContext.arkivRepository
+    )
+    InFlightRiver(
+        rapidsConnection = this,
+        inFlightRepository = applicationContext.inFlightRepository
     )
     register(object : RapidsConnection.StatusListener {
         override fun onStartup(rapidsConnection: RapidsConnection) {
@@ -54,6 +60,7 @@ internal class ApplicationContext(
     val env: Environment,
     val dataSource: DataSource,
     val arkivRepository: ArkivRepository,
+    val inFlightRepository: InFlightRepository,
     val healthService: HealthService
 ) {
 
@@ -65,20 +72,26 @@ internal class ApplicationContext(
     internal class Builder(
         var env: Environment? = null,
         var dataSource: DataSource? = null,
-        var arkivRepository: ArkivRepository? = null
+        var arkivRepository: ArkivRepository? = null,
+        var inFlightRepository: InFlightRepository? = null
     ) {
         internal fun build(): ApplicationContext {
             val benyttetEnv = env ?: System.getenv()
 
             val benyttetDataSource = dataSource ?: DataSourceBuilder(benyttetEnv).build()
-            val benyttetFerdigeLøsningerRepository = arkivRepository ?: ArkivRepository(benyttetDataSource)
+            val benyttetArkivRepository = arkivRepository ?: ArkivRepository(benyttetDataSource)
+            val benyttetInFlightRepository = inFlightRepository ?: InFlightRepository(benyttetDataSource)
 
             return ApplicationContext(
                 env = benyttetEnv,
                 dataSource = benyttetDataSource,
-                arkivRepository = benyttetFerdigeLøsningerRepository,
+                arkivRepository = benyttetArkivRepository,
+                inFlightRepository = benyttetInFlightRepository,
                 healthService = HealthService(
-                    healthChecks = setOf(benyttetFerdigeLøsningerRepository)
+                    healthChecks = setOf(
+                        benyttetArkivRepository,
+                        benyttetInFlightRepository
+                    )
                 )
             )
         }

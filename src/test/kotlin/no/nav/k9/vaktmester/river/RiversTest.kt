@@ -1,4 +1,4 @@
-package no.nav.k9.vaktmester.arkiv
+package no.nav.k9.vaktmester.river
 
 import kotliquery.queryOf
 import kotliquery.sessionOf
@@ -20,7 +20,7 @@ import org.skyscreamer.jsonassert.JSONAssert
 import java.util.UUID
 
 @ExtendWith(ApplicationContextExtension::class)
-internal class ArkivRiverTest(
+internal class RiversTest(
     private val applicationContext: ApplicationContext
 ) {
     private var rapid = TestRapid().also {
@@ -34,7 +34,7 @@ internal class ArkivRiverTest(
     }
 
     @Test
-    internal fun `behandler behov med like løsninger som behov`() {
+    internal fun `like løsninger som behov lagres i arkiv, men ikke in_flight`() {
         val behov1 = "behov1"
         val behov2 = "behov2"
         val behov = mapOf(
@@ -56,10 +56,13 @@ internal class ArkivRiverTest(
             settJsonFeltTomt(arkiv!!, "system_read_count"),
             true
         )
+
+        val inFlight = hentInFlightMedId(id)
+        assertThat(inFlight).isNull()
     }
 
     @Test
-    internal fun `lagrer ikke dersom behov og løsniger ikke er like`() {
+    internal fun `ulike løsninger som behov lagres i in_flight, men ikke arkiv`() {
         val behov1 = "behov1"
         val behov2 = "behov2"
         val behov = mapOf(
@@ -77,6 +80,13 @@ internal class ArkivRiverTest(
 
         val arkiv = hentArkivMedId(id)
         assertThat(arkiv).isNull()
+
+        val inFlight = hentInFlightMedId(id)
+        JSONAssert.assertEquals(
+            settJsonFeltTomt(behovssekvens, "system_read_count"),
+            settJsonFeltTomt(inFlight!!, "system_read_count"),
+            true
+        )
     }
 
     private fun settJsonFeltTomt(json: String, feltnavn: String): String {
@@ -88,6 +98,17 @@ internal class ArkivRiverTest(
     private fun hentArkivMedId(id: String): String? {
         return using(sessionOf(applicationContext.dataSource)) { session ->
             val query = queryOf("SELECT BEHOVSSEKVENS FROM ARKIV WHERE BEHOVSSEKVENSID = ?", id)
+            return@using session.run(
+                query.map { row ->
+                    row.stringOrNull("BEHOVSSEKVENS")
+                }.asSingle
+            )
+        }
+    }
+
+    private fun hentInFlightMedId(id: String): String? {
+        return using(sessionOf(applicationContext.dataSource)) { session ->
+            val query = queryOf("SELECT BEHOVSSEKVENS FROM IN_FLIGHT WHERE BEHOVSSEKVENSID = ?", id)
             return@using session.run(
                 query.map { row ->
                     row.stringOrNull("BEHOVSSEKVENS")

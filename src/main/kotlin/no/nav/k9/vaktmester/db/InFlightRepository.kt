@@ -6,14 +6,15 @@ import kotliquery.using
 import no.nav.helse.dusseldorf.ktor.health.HealthCheck
 import no.nav.helse.dusseldorf.ktor.health.Healthy
 import no.nav.helse.dusseldorf.ktor.health.UnHealthy
+import java.time.ZonedDateTime
 import javax.sql.DataSource
 
-internal class ArkivRepository(
+internal class InFlightRepository(
     private val dataSource: DataSource
 ) : HealthCheck {
 
-    internal fun arkiverBehovssekvens(behovsid: String, behovssekvens: String): Boolean {
-        val query = queryOf(LAGRE_BEHOVSSEKSVENS_QUERY, behovsid, behovssekvens).asUpdate
+    internal fun lagreInFlightBehov(behovsid: String, behovssekvens: String, sistEndret: ZonedDateTime): Boolean {
+        val query = queryOf(LAGRE_BEHOV_QUERY, behovsid, behovssekvens, sistEndret).asUpdate
         return using(sessionOf(dataSource)) { session ->
             session.run(query)
         } != 0
@@ -29,8 +30,7 @@ internal class ArkivRepository(
     )
 
     private companion object {
-        private const val LAGRE_BEHOVSSEKSVENS_QUERY =
-            "INSERT INTO ARKIV(BEHOVSSEKVENSID, BEHOVSSEKVENS) VALUES (?, to_json(?::json)) ON CONFLICT DO NOTHING"
+        private const val LAGRE_BEHOV_QUERY = "INSERT INTO IN_FLIGHT(BEHOVSSEKVENSID, BEHOVSSEKVENS, SIST_ENDRET) VALUES (?, to_json(?::json), ?) ON CONFLICT DO NOTHING"
         private const val HEALTH_QUERY = "SELECT 1"
     }
 }
