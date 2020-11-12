@@ -9,7 +9,6 @@ import no.nav.helse.dusseldorf.ktor.health.Healthy
 import no.nav.helse.dusseldorf.ktor.health.UnHealthy
 import org.intellij.lang.annotations.Language
 import java.time.ZonedDateTime
-import java.util.UUID
 import javax.sql.DataSource
 
 internal class ArkivRepository(
@@ -61,7 +60,7 @@ internal class ArkivRepository(
         behovssekvens = string("behovssekvens"),
         behovssekvensid = string("behovssekvensid"),
         arkiveringstidspunkt = zonedDateTime("arkiveringstidspunkt"),
-        correlationId = UUID.fromString(string("correlation_id"))
+        correlationId = string("correlation_id")
     )
 }
 
@@ -69,5 +68,5 @@ internal data class Arkiv(
     val behovssekvens: String,
     val behovssekvensid: String,
     val arkiveringstidspunkt: ZonedDateTime,
-    val correlationId: UUID
+    val correlationId: String
 )

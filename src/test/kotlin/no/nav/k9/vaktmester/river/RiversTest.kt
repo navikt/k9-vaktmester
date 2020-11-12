@@ -207,6 +207,9 @@ internal class RiversTest(
     }
 
     internal companion object {
+        private fun correlationId() = "${UUID.randomUUID()}-${UUID.randomUUID()}-${UUID.randomUUID()}".substring(0,100).also {
+            require(it.length == 100)
+        }
         fun løsningsJsonPointer(behov: String) = "/@løsninger/$behov"
 
         private fun nyBehovssekvens(
@@ -216,7 +219,7 @@ internal class RiversTest(
         ): JsonMessage {
             val sekvens = Behovssekvens(
                 id = id,
-                correlationId = UUID.randomUUID().toString(),
+                correlationId = correlationId(),
                 behov = behov.entries.map {
                     Behov(
                         navn = it.key,
