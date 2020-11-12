@@ -37,8 +37,10 @@ spec:
     cpuThresholdPercentage: 90
   secureLogs:
     enabled: true
+  vault:
+    enabled: true
   filesFrom:
-    - secret: omsorgspenger-sak-srvusercredentials
+    - secret: oms-vaktmester-srvusercredentials
       mountPath: /var/run/secrets/nais.io/service_user # Behov fra rapids-and-rivers.
   env:
   {{#each env}}
