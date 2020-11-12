@@ -40,7 +40,7 @@ spec:
   vault:
     enabled: true
   filesFrom:
-    - secret: oms-vaktmester-srvusercredentials
+    - secret: k9-vaktmester-srvusercredentials
       mountPath: /var/run/secrets/nais.io/service_user # Behov fra rapids-and-rivers.
   env:
   {{#each env}}
