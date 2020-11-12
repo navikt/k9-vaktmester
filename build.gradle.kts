@@ -10,6 +10,7 @@ val embeddedPostgres = "0.13.3"
 val ktorVersion = "1.4.1"
 val dusseldorfVersion = "1.4.1.4754df6"
 val jsonassertVersion = "1.5.0"
+val vaultJdbcVersion = "1.3.7"
 val assertjVersion = "3.11.1"
 
 val mainClass = "no.nav.k9.AppKt"
@@ -36,6 +37,7 @@ dependencies {
     implementation("com.zaxxer:HikariCP:$hikariVersion")
     implementation("org.flywaydb:flyway-core:$flywayVersion")
     implementation("com.github.seratch:kotliquery:$kotliqueryVersion")
+    implementation("no.nav:vault-jdbc:$vaultJdbcVersion")
     runtimeOnly("org.postgresql:postgresql:$postgresVersion")
 
     // Test

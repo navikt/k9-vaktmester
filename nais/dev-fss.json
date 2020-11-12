@@ -1,17 +1,21 @@
 {
   "app": "k9-vaktmester",
-  "cluster": "dev-gcp",
+  "cluster": "dev-fss",
   "namespace": "omsorgspenger",
   "team": "omsorgspenger",
   "minReplicas": "1",
   "maxReplicas": "1",
   "ingresses": [
-    "https://k9-vaktmester.dev.intern.nav.no"
+    "https://k9-vaktmester.dev.adeo.no"
   ],
   "env": {
     "KAFKA_BOOTSTRAP_SERVERS": "b27apvl00045.preprod.local:8443,b27apvl00046.preprod.local:8443,b27apvl00047.preprod.local:8443",
     "KAFKA_PROPERTIES_SECURITY_PROTOCOL": "SASL_SSL",
     "KAFKA_RAPID_TOPIC": "k9-rapid-v2",
-    "KAFKA_CONSUMER_GROUP_ID": "k9-vaktmester"
+    "KAFKA_CONSUMER_GROUP_ID": "k9-vaktmester",
+    "DATABASE_HOST": "b27dbvl023.preprod.local",
+    "DATABASE_PORT": "5432",
+    "DATABASE_NAME": "k9-vaktmester-preprod",
+    "DATABASE_VAULT_MOUNT_PATH": "postgresql/preprod-fss"
   }
 }

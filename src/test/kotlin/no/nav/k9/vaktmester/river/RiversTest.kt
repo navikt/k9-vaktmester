@@ -56,12 +56,15 @@ internal class RiversTest(
 
         rapid.sendTestMessage(behovssekvens)
 
-        val arkiv = hentArkivMedId(id)
+        val arkiv = applicationContext.arkivRepository.hentArkivMedId(id)[0]
+
         JSONAssert.assertEquals(
             settJsonFeltTomt(behovssekvens, "system_read_count"),
-            settJsonFeltTomt(arkiv!!, "system_read_count"),
+            settJsonFeltTomt(arkiv.behovssekvens, "system_read_count"),
             true
         )
+        assertThat(arkiv.arkiveringstidspunkt).isNotNull()
+        assertThat(arkiv.correlationId).isNotNull()
 
         val inFlight = hentInFlightMedId(id)
         assertThat(inFlight).isEmpty()
@@ -85,8 +88,8 @@ internal class RiversTest(
 
         rapid.sendTestMessage(behovssekvensJson)
 
-        val arkiv = hentArkivMedId(id)
-        assertThat(arkiv).isNull()
+        val arkiv = applicationContext.arkivRepository.hentArkivMedId(id)
+        assertThat(arkiv).hasSize(0)
 
         val inFlight = hentInFlightMedId(id)
 
@@ -187,17 +190,6 @@ internal class RiversTest(
         val jsonMessage = JsonMessage(json, MessageProblems(""))
         jsonMessage[feltnavn] = ""
         return jsonMessage.toJson()
-    }
-
-    private fun hentArkivMedId(id: String): String? {
-        return using(sessionOf(applicationContext.dataSource)) { session ->
-            val query = queryOf("SELECT BEHOVSSEKVENS FROM ARKIV WHERE BEHOVSSEKVENSID = ?", id)
-            return@using session.run(
-                query.map { row ->
-                    row.stringOrNull("BEHOVSSEKVENS")
-                }.asSingle
-            )
-        }
     }
 
     private fun hentInFlightMedId(id: String): List<InFlight> {

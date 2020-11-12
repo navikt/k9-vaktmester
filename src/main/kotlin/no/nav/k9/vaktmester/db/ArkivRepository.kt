@@ -9,14 +9,15 @@ import no.nav.helse.dusseldorf.ktor.health.Healthy
 import no.nav.helse.dusseldorf.ktor.health.UnHealthy
 import org.intellij.lang.annotations.Language
 import java.time.ZonedDateTime
+import java.util.UUID
 import javax.sql.DataSource
 
 internal class ArkivRepository(
     private val dataSource: DataSource
 ) : HealthCheck {
 
-    internal fun arkiverBehovssekvens(behovsid: String, behovssekvens: String): Boolean {
-        val query = queryOf(LAGRE_ARKIV_QUERY, behovsid, behovssekvens).asUpdate
+    internal fun arkiverBehovssekvens(behovsid: String, behovssekvens: String, correlationId: String): Boolean {
+        val query = queryOf(LAGRE_ARKIV_QUERY, behovsid, behovssekvens, correlationId).asUpdate
         return using(sessionOf(dataSource)) { session ->
             session.run(query)
         } != 0
@@ -43,13 +44,13 @@ internal class ArkivRepository(
     private companion object {
         @Language("PostgreSQL")
         private const val LAGRE_ARKIV_QUERY = """
-            INSERT INTO ARKIV(BEHOVSSEKVENSID, BEHOVSSEKVENS)
-            VALUES (?, to_json(?::json))
+            INSERT INTO ARKIV(BEHOVSSEKVENSID, BEHOVSSEKVENS, CORRELATION_ID)
+            VALUES (?, to_json(?::json), ?)
             ON CONFLICT DO NOTHING
         """
         @Language("PostgreSQL")
         private const val HENT_ARKIV_QUERY = """
-            SELECT BEHOVSSEKVENS, BEHOVSSEKVENSID, ARKIVERINGSTIDSPUNKT
+            SELECT BEHOVSSEKVENS, BEHOVSSEKVENSID, ARKIVERINGSTIDSPUNKT, CORRELATION_ID
             FROM ARKIV
             WHERE BEHOVSSEKVENSID = ?
         """
@@ -59,12 +60,14 @@ internal class ArkivRepository(
     private fun Row.somArkiv() = Arkiv(
         behovssekvens = string("behovssekvens"),
         behovssekvensid = string("behovssekvensid"),
-        arkiveringstidspunkt = zonedDateTime("arkiveringstidspunkt")
+        arkiveringstidspunkt = zonedDateTime("arkiveringstidspunkt"),
+        correlationId = UUID.fromString(string("correlation_id"))
     )
 }
 
 internal data class Arkiv(
     val behovssekvens: String,
     val behovssekvensid: String,
-    val arkiveringstidspunkt: ZonedDateTime
+    val arkiveringstidspunkt: ZonedDateTime,
+    val correlationId: UUID
 )

@@ -1,35 +1,38 @@
 package no.nav.k9.vaktmester.db
 
 import com.zaxxer.hikari.HikariConfig
-import com.zaxxer.hikari.HikariDataSource
 import no.nav.k9.config.Environment
 import no.nav.k9.config.hentRequiredEnv
 import org.flywaydb.core.Flyway
 import org.slf4j.LoggerFactory
 import javax.sql.DataSource
+import no.nav.vault.jdbc.hikaricp.HikariCPVaultUtil.createHikariDataSourceWithVaultIntegration as createDataSource
 
-internal class DataSourceBuilder(env: Environment) {
+internal class DataSourceBuilder(private val env: Environment) {
 
     private val hikariConfig = HikariConfig().apply {
         jdbcUrl = String.format(
             "jdbc:postgresql://%s:%s/%s",
             env.hentRequiredEnv("DATABASE_HOST"),
             env.hentRequiredEnv("DATABASE_PORT"),
-            env.hentRequiredEnv("DATABASE_DATABASE")
+            env.hentRequiredEnv("DATABASE_NAME")
         )
-
-        username = env.hentRequiredEnv("DATABASE_USERNAME")
-        password = env.hentRequiredEnv("DATABASE_PASSWORD")
         maximumPoolSize = 3
         minimumIdle = 1
         idleTimeout = 10001
         connectionTimeout = 1000
         maxLifetime = 30001
-        driverClassName = "org.postgresql.Driver"
     }
 
+    private fun getDataSource(role: Role = Role.User) =
+        createDataSource(
+            hikariConfig,
+            env.hentRequiredEnv("DATABASE_VAULT_MOUNT_PATH"),
+            role.asRole(env.hentRequiredEnv("DATABASE_NAME"))
+        )
+
     internal fun build(): DataSource = kotlin.runCatching {
-        HikariDataSource(hikariConfig)
+        getDataSource()
     }.fold(
         onSuccess = { it },
         onFailure = { cause ->
@@ -40,14 +43,21 @@ internal class DataSourceBuilder(env: Environment) {
         }
     )
 
+    enum class Role {
+        Admin, User, ReadOnly;
+
+        fun asRole(databaseName: String) = "$databaseName-${name.toLowerCase()}"
+    }
+
     private companion object {
         private val secureLogger = LoggerFactory.getLogger("tjenestekall")
     }
 }
 
-internal fun DataSource.migrate() {
+internal fun DataSource.migrate(env: Environment) {
     Flyway.configure()
         .dataSource(this)
+        .initSql("SET ROLE \"${DataSourceBuilder.Role.Admin.asRole(env.hentRequiredEnv("DATABASE_NAME"))}\"")
         .load()
         .migrate()
 }

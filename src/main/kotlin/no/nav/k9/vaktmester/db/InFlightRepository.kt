@@ -15,13 +15,14 @@ internal class InFlightRepository(
     private val dataSource: DataSource
 ) : HealthCheck {
 
-    internal fun lagreInFlightBehov(behovsid: String, behovssekvens: String, sistEndret: ZonedDateTime): Boolean {
+    internal fun lagreInFlightBehov(behovsid: String, behovssekvens: String, sistEndret: ZonedDateTime, correlationId: String): Boolean {
         val query = queryOf(
             LAGRE_BEHOV_QUERY,
             mapOf(
                 "BEHOVSSEKVENSID" to behovsid,
                 "BEHOVSSEKVENS" to behovssekvens,
                 "SIST_ENDRET" to Timestamp.from(sistEndret.toInstant()),
+                "CORRELATION_ID" to correlationId
             )
         ).asUpdate
         return using(sessionOf(dataSource)) { session ->
@@ -41,8 +42,8 @@ internal class InFlightRepository(
     private companion object {
         @Language("PostgreSQL")
         private const val LAGRE_BEHOV_QUERY = """
-            INSERT INTO IN_FLIGHT(BEHOVSSEKVENSID, BEHOVSSEKVENS, SIST_ENDRET)
-            VALUES (:BEHOVSSEKVENSID, :BEHOVSSEKVENS ::jsonb, :SIST_ENDRET)
+            INSERT INTO IN_FLIGHT(BEHOVSSEKVENSID, BEHOVSSEKVENS, SIST_ENDRET, CORRELATION_ID)
+            VALUES (:BEHOVSSEKVENSID, :BEHOVSSEKVENS ::jsonb, :SIST_ENDRET, :CORRELATION_ID)
             ON CONFLICT (BEHOVSSEKVENSID) DO UPDATE SET BEHOVSSEKVENS = :BEHOVSSEKVENS ::jsonb, SIST_ENDRET = :SIST_ENDRET
         """
         private const val HEALTH_QUERY = "SELECT 1"

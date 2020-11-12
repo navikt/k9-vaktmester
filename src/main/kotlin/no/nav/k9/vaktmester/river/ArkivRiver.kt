@@ -31,7 +31,7 @@ internal class ArkivRiver(
                 CorrelationIdKey to correlationId
             )
         ) {
-            arkivRepository.arkiverBehovssekvens(behovssekvensId, packet.toJson())
+            arkivRepository.arkiverBehovssekvens(behovssekvensId, packet.toJson(), correlationId)
             logger.info("Behovssekvens arkivert")
         }
     }

@@ -38,7 +38,8 @@ internal class InFlightRiver(
                 inFlightRepository.lagreInFlightBehov(
                     behovsid = behovssekvensId,
                     behovssekvens = packet.toJson(),
-                    sistEndret = packet.sistEndret()
+                    sistEndret = packet.sistEndret(),
+                    correlationId = correlationId
                 )
                 logger.info("Lagret in flight behovsseksvens med id $behovssekvensId")
             }
