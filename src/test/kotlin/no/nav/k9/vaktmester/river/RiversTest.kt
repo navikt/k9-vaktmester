@@ -40,7 +40,7 @@ internal class RiversTest(
     }
 
     @Test
-    internal fun `like løsninger som behov lagres i arkiv, men ikke in_flight`() {
+    fun `like løsninger som behov lagres i arkiv, men ikke in_flight`() {
         val behov1 = "behov1"
         val behov2 = "behov2"
         val behov = mapOf(
@@ -71,7 +71,7 @@ internal class RiversTest(
     }
 
     @Test
-    internal fun `ulike løsninger som behov lagres i in_flight, men ikke arkiv`() {
+    fun `ulike løsninger som behov lagres i in_flight, men ikke arkiv`() {
         val behov1 = "behov1"
         val behov2 = "behov2"
         val behov = mapOf(
@@ -110,7 +110,7 @@ internal class RiversTest(
     }
 
     @Test
-    internal fun `oppdaterer rad i inflight dersom sistendret er endret`() {
+    fun `oppdaterer rad i inflight dersom sistendret er endret`() {
         val behov1 = "behov1"
         val behov2 = "behov2"
         val behov = mapOf(
@@ -163,7 +163,7 @@ internal class RiversTest(
     }
 
     @Test
-    internal fun `gjør ingenting dersom id og sistendret ikke er endret`() {
+    fun `gjør ingenting dersom id og sistendret ikke er endret`() {
         val behov1 = "behov1"
         val behov2 = "behov2"
         val behov = mapOf(
