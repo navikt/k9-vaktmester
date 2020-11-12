@@ -19,29 +19,24 @@ internal class InFlightRiver(
     init {
         River(rapidsConnection).apply {
             validate { packet ->
-                packet.requireUløsteBehov()
+                packet.vaktmesterOppgave()
             }
         }.register(this)
     }
 
     override fun onPacket(packet: JsonMessage, context: RapidsConnection.MessageContext) {
-        val behovssekvensId = packet.behovssekvensId()
-        val correlationId = packet.correlationId()
+        val meldingsinformasjon = packet.meldingsinformasjon()
+        if (meldingsinformasjon.skalArkivers) return
 
-        withMDC(
-            mapOf(
-                BehovssekvensIdKey to behovssekvensId,
-                CorrelationIdKey to correlationId
-            )
-        ) {
-            arkivRepository.hentArkivMedId(behovssekvensId).doIfEmpty {
+        meldingsinformasjon.håndter {
+            arkivRepository.hentArkivMedId(meldingsinformasjon.behovssekvensId).doIfEmpty {
                 inFlightRepository.lagreInFlightBehov(
-                    behovsid = behovssekvensId,
+                    behovsid = meldingsinformasjon.behovssekvensId,
                     behovssekvens = packet.toJson(),
-                    sistEndret = packet.sistEndret(),
-                    correlationId = correlationId
+                    sistEndret = meldingsinformasjon.sistEndret,
+                    correlationId = meldingsinformasjon.correlationId
                 )
-                logger.info("Lagret in flight behovsseksvens med id $behovssekvensId")
+                logger.info("Lagret in flight behovsseksvens med id ${meldingsinformasjon.behovssekvensId}")
             }
         }
     }

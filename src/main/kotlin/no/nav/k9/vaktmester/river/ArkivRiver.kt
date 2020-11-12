@@ -16,22 +16,21 @@ internal class ArkivRiver(
     init {
         River(rapidsConnection).apply {
             validate { packet ->
-                packet.requireLikeLøsningerSomBehov()
+                packet.vaktmesterOppgave()
             }
         }.register(this)
     }
 
     override fun onPacket(packet: JsonMessage, context: RapidsConnection.MessageContext) {
-        val behovssekvensId = packet.behovssekvensId()
-        val correlationId = packet.correlationId()
+        val meldingsinformasjon = packet.meldingsinformasjon()
+        if (meldingsinformasjon.inFlight) return
 
-        withMDC(
-            mapOf(
-                BehovssekvensIdKey to behovssekvensId,
-                CorrelationIdKey to correlationId
+        meldingsinformasjon.håndter {
+            arkivRepository.arkiverBehovssekvens(
+                behovsid = meldingsinformasjon.behovssekvensId,
+                behovssekvens = packet.toJson(),
+                correlationId = meldingsinformasjon.correlationId
             )
-        ) {
-            arkivRepository.arkiverBehovssekvens(behovssekvensId, packet.toJson(), correlationId)
             logger.info("Behovssekvens arkivert")
         }
     }
