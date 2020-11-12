@@ -1,10 +1,10 @@
 package no.nav.k9.vaktmester.db
 
 import com.zaxxer.hikari.HikariConfig
+import com.zaxxer.hikari.HikariDataSource
 import no.nav.k9.config.Environment
 import no.nav.k9.config.hentRequiredEnv
 import org.flywaydb.core.Flyway
-import org.slf4j.LoggerFactory
 import javax.sql.DataSource
 import no.nav.vault.jdbc.hikaricp.HikariCPVaultUtil.createHikariDataSourceWithVaultIntegration as createDataSource
 
@@ -24,40 +24,27 @@ internal class DataSourceBuilder(private val env: Environment) {
         maxLifetime = 30001
     }
 
-    private fun getDataSource(role: Role = Role.User) =
+    fun getDataSource(role: Role = Role.User): HikariDataSource =
         createDataSource(
             hikariConfig,
             env.hentRequiredEnv("DATABASE_VAULT_MOUNT_PATH"),
             role.asRole(env.hentRequiredEnv("DATABASE_NAME"))
         )
 
-    internal fun build(): DataSource = kotlin.runCatching {
-        getDataSource()
-    }.fold(
-        onSuccess = { it },
-        onFailure = { cause ->
-            "Feil ved opprettelse av DataSource".let { error ->
-                secureLogger.error(error, cause)
-                throw IllegalStateException("$error. Se secure logs for detaljer")
-            }
-        }
-    )
+    fun migrateAsAdmin() {
+        runMigration(getDataSource(Role.Admin), "SET ROLE \"${Role.Admin.asRole(env.hentRequiredEnv("DATABASE_NAME"))}\"")
+    }
+
+    private fun runMigration(dataSource: DataSource, initSql: String? = null) =
+        Flyway.configure()
+            .dataSource(dataSource)
+            .initSql(initSql)
+            .load()
+            .migrate()
 
     enum class Role {
         Admin, User, ReadOnly;
 
         fun asRole(databaseName: String) = "$databaseName-${name.toLowerCase()}"
     }
-
-    private companion object {
-        private val secureLogger = LoggerFactory.getLogger("tjenestekall")
-    }
-}
-
-internal fun DataSource.migrate(env: Environment) {
-    Flyway.configure()
-        .dataSource(this)
-        .initSql("SET ROLE \"${DataSourceBuilder.Role.Admin.asRole(env.hentRequiredEnv("DATABASE_NAME"))}\"")
-        .load()
-        .migrate()
 }

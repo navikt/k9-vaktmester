@@ -13,7 +13,6 @@ import no.nav.k9.config.Environment
 import no.nav.k9.vaktmester.db.ArkivRepository
 import no.nav.k9.vaktmester.db.DataSourceBuilder
 import no.nav.k9.vaktmester.db.InFlightRepository
-import no.nav.k9.vaktmester.db.migrate
 import no.nav.k9.vaktmester.river.ArkivRiver
 import no.nav.k9.vaktmester.river.InFlightRiver
 import javax.sql.DataSource
@@ -66,7 +65,7 @@ internal class ApplicationContext(
 ) {
 
     internal fun start() {
-        dataSource.migrate(env)
+        DataSourceBuilder(env).migrateAsAdmin()
     }
     internal fun stop() {}
 
@@ -79,7 +78,7 @@ internal class ApplicationContext(
         internal fun build(): ApplicationContext {
             val benyttetEnv = env ?: System.getenv()
 
-            val benyttetDataSource = dataSource ?: DataSourceBuilder(benyttetEnv).build()
+            val benyttetDataSource = dataSource ?: DataSourceBuilder(benyttetEnv).getDataSource()
             val benyttetArkivRepository = arkivRepository ?: ArkivRepository(benyttetDataSource)
             val benyttetInFlightRepository = inFlightRepository ?: InFlightRepository(benyttetDataSource)
 
