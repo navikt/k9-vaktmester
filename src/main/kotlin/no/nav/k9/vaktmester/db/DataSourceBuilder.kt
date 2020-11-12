@@ -15,7 +15,7 @@ internal class DataSourceBuilder(private val env: Environment) {
             "jdbc:postgresql://%s:%s/%s",
             env.hentRequiredEnv("DATABASE_HOST"),
             env.hentRequiredEnv("DATABASE_PORT"),
-            env.hentRequiredEnv("DATABASE_DATABASE")
+            env.hentRequiredEnv("DATABASE_NAME")
         )
         maximumPoolSize = 3
         minimumIdle = 1
@@ -28,7 +28,7 @@ internal class DataSourceBuilder(private val env: Environment) {
         createDataSource(
             hikariConfig,
             env.hentRequiredEnv("DATABASE_VAULT_MOUNT_PATH"),
-            role.asRole(env.hentRequiredEnv("DATABASE_DATABASE"))
+            role.asRole(env.hentRequiredEnv("DATABASE_NAME"))
         )
 
     internal fun build(): DataSource = kotlin.runCatching {
@@ -54,9 +54,10 @@ internal class DataSourceBuilder(private val env: Environment) {
     }
 }
 
-internal fun DataSource.migrate() {
+internal fun DataSource.migrate(env: Environment) {
     Flyway.configure()
         .dataSource(this)
+        .initSql("SET ROLE \"${DataSourceBuilder.Role.Admin.asRole(env.hentRequiredEnv("DATABASE_NAME"))}\"")
         .load()
         .migrate()
 }

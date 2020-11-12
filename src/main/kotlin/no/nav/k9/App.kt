@@ -66,7 +66,7 @@ internal class ApplicationContext(
 ) {
 
     internal fun start() {
-        dataSource.migrate()
+        dataSource.migrate(env)
     }
     internal fun stop() {}
 
