@@ -14,7 +14,7 @@
     "KAFKA_RAPID_TOPIC": "k9-rapid-v2",
     "KAFKA_CONSUMER_GROUP_ID": "k9-vaktmester",
     "DATABASE_HOST": "b27dbvl023.preprod.local",
-    "DATABASE_PORT": 5432,
+    "DATABASE_PORT": "_5432",
     "DATABASE_NAME": "k9-vaktmester-preprod",
     "DATABASE_VAULT_MOUNT_PATH": "postgresql/preprod-fss"
   }

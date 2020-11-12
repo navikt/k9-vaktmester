@@ -14,7 +14,7 @@ internal class DataSourceBuilder(private val env: Environment) {
         jdbcUrl = String.format(
             "jdbc:postgresql://%s:%s/%s",
             env.hentRequiredEnv("DATABASE_HOST"),
-            env.hentRequiredEnv("DATABASE_PORT"),
+            env.hentRequiredEnv("DATABASE_PORT").removePrefix("_"),
             env.hentRequiredEnv("DATABASE_NAME")
         )
         maximumPoolSize = 3
