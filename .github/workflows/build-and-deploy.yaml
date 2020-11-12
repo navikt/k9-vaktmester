@@ -53,7 +53,7 @@ jobs:
           VARS: nais/dev-fss.json
 
       - name: Deploy til prod-fss
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/skip'
         uses: nais/deploy/actions/deploy@v1
         env:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
