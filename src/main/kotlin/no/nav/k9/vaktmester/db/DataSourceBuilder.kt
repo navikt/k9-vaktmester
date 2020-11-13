@@ -2,8 +2,8 @@ package no.nav.k9.vaktmester.db
 
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
-import no.nav.k9.config.Environment
-import no.nav.k9.config.hentRequiredEnv
+import no.nav.k9.rapid.river.Environment
+import no.nav.k9.rapid.river.hentRequiredEnv
 import org.flywaydb.core.Flyway
 import javax.sql.DataSource
 import no.nav.vault.jdbc.hikaricp.HikariCPVaultUtil.createHikariDataSourceWithVaultIntegration as createDataSource

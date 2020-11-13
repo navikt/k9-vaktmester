@@ -7,6 +7,7 @@ import no.nav.k9.rapid.river.requireObject
 import no.nav.k9.rapid.river.requireText
 import org.slf4j.MDC
 import java.time.ZonedDateTime
+import no.nav.k9.vaktmester.db.Arkiv
 
 internal const val Løsninger = "@løsninger"
 private const val BehovssekvensIdKey = "behovssekvens_id"
@@ -41,6 +42,11 @@ internal fun JsonMessage.meldingsinformasjon() = Meldingsinformasjon(
     behovssekvensId = get(Behovsformat.Id).asText(),
     correlationId = get(Behovsformat.CorrelationId).asText()
 )
+
+internal fun List<Arkiv>.doIfEmpty(task: () -> Unit) = when (isEmpty()) {
+    true -> task()
+    else -> {}
+}
 
 private fun withMDC(context: Map<String, String>, block: () -> Unit) {
     val contextMap = MDC.getCopyOfContextMap() ?: emptyMap()
