@@ -58,11 +58,7 @@ internal class RiversTest(
 
         val arkiv = applicationContext.arkivRepository.hentArkivMedId(id)[0]
 
-        JSONAssert.assertEquals(
-            settJsonFeltTomt(behovssekvens, "system_read_count"),
-            settJsonFeltTomt(arkiv.behovssekvens, "system_read_count"),
-            true
-        )
+        assertBehovssekvenserLike(behovssekvens, arkiv.behovssekvens)
         assertThat(arkiv.arkiveringstidspunkt).isNotNull()
         assertThat(arkiv.correlationId).isNotNull()
 
@@ -94,49 +90,46 @@ internal class RiversTest(
         val inFlight = hentInFlightMedId(id)
 
         assertThat(inFlight).hasSize(1)
-        JSONAssert.assertEquals(
-            settJsonFeltTomt(behovssekvensJson, "system_read_count"),
-            settJsonFeltTomt(inFlight[0].behovssekvens, "system_read_count"),
-            true
-        )
+        assertBehovssekvenserLike(behovssekvensJson, inFlight[0].behovssekvens)
 
-        val sistEndret = objectMapper
-            .readTree(behovssekvensJson)
-            .at("/${Behovsformat.SistEndret}")
-            .toString()
-            .replace("\"".toRegex(), "")
-
-        assertThat(inFlight[0].sistEndret).isEqualTo(ZonedDateTime.parse(sistEndret))
+        assertThat(inFlight[0].sistEndret).isEqualTo(behovssekvensJson.sistEndret())
     }
 
     @Test
-    fun `oppdaterer rad i inflight dersom sistendret er endret`() {
+    fun `oppdaterer rad i inflight dersom sistendret er nyere`() {
         val behov1 = "behov1"
         val behov2 = "behov2"
         val behov = mapOf(
             behov1 to "{}",
             behov2 to "{}"
         )
-        val id = "01BX5ZZKBKACTAV9WEVGEMMVS0"
+        val idGammel = "01BX5ZZKBKACTAV9WEVGEMMVS0"
         val løsninger = mapOf(behov1 to "{}")
         val behovssekvensGammel = nyBehovssekvens(
-            id = id,
+            id = idGammel,
             behov = behov,
+            løsninger = løsninger
+        )
+        val idEksist = "01EPZ073912ZX2566ESEGPATG1"
+        val eksisterendeSekvens = nyBehovssekvens(
+            id = idEksist,
+            behov = mapOf(
+                "eksisterende" to "{}"
+            ),
             løsninger = løsninger
         )
 
         val behovssekvensGammelJson = behovssekvensGammel.toJson()
+        rapid.sendTestMessage(eksisterendeSekvens.toJson())
         rapid.sendTestMessage(behovssekvensGammelJson)
 
-        val inFlight = hentInFlightMedId(id)
+        val inFlightGammel = hentInFlightMedId(idGammel)
+        val inFlightEksisterende = hentInFlightMedId(idEksist)
 
-        assertThat(inFlight).hasSize(1)
-
-        JSONAssert.assertEquals(
-            settJsonFeltTomt(behovssekvensGammelJson, "system_read_count"),
-            settJsonFeltTomt(inFlight[0].behovssekvens, "system_read_count"),
-            true
-        )
+        assertThat(inFlightGammel).hasSize(1)
+        assertThat(inFlightEksisterende).hasSize(1)
+        assertBehovssekvenserLike(eksisterendeSekvens.toJson(), inFlightEksisterende[0].behovssekvens)
+        assertBehovssekvenserLike(behovssekvensGammelJson, inFlightGammel[0].behovssekvens)
 
         val nyeBehov = mapOf(
             behov1 to "{}",
@@ -144,26 +137,24 @@ internal class RiversTest(
             "behov3" to "{}"
         )
         val behovssekvensOppdatertSistEndret = nyBehovssekvens(
-            id = id,
+            id = idGammel,
             behov = nyeBehov,
             løsninger = løsninger
         )
 
         rapid.sendTestMessage(behovssekvensOppdatertSistEndret.toJson())
 
-        val inFlights = hentInFlightMedId(id)
+        val inFlightOppdatertGammel = hentInFlightMedId(idGammel)
+        val inFlightEksisterendeEtterOppdatering = hentInFlightMedId(idEksist)
 
-        assertThat(inFlights).hasSize(1)
-
-        JSONAssert.assertEquals(
-            settJsonFeltTomt(inFlights[0].behovssekvens, "system_read_count"),
-            settJsonFeltTomt(behovssekvensOppdatertSistEndret.toJson(), "system_read_count"),
-            true
-        )
+        assertThat(inFlightOppdatertGammel).hasSize(1)
+        assertBehovssekvenserLike(behovssekvensOppdatertSistEndret.toJson(), inFlightOppdatertGammel[0].behovssekvens)
+        // Skal være lik som før
+        assertBehovssekvenserLike(eksisterendeSekvens.toJson(), inFlightEksisterendeEtterOppdatering[0].behovssekvens)
     }
 
     @Test
-    fun `gjør ingenting dersom id og sistendret ikke er endret`() {
+    fun `lagrer ingenting i inflight dersom id og sistendret er eldre enn lagret`() {
         val behov1 = "behov1"
         val behov2 = "behov2"
         val behov = mapOf(
@@ -171,19 +162,34 @@ internal class RiversTest(
             behov2 to "{}"
         )
         val id = "01BX5ZZKBKACTAV9WEVGEMMVS0"
-        val behovssekvens = nyBehovssekvens(
+        val eldsteBehovssekvens = nyBehovssekvens(
+            id = id,
+            behov = mapOf(
+                behov2 to "{}"
+            ),
+            løsninger = mapOf()
+        )
+        val nyesteBehovssekvens = nyBehovssekvens(
             id = id,
             behov = behov,
             løsninger = mapOf(behov1 to "{}")
         )
-        val behovssekvensJson = behovssekvens.toJson()
 
-        rapid.sendTestMessage(behovssekvensJson)
-        rapid.sendTestMessage(behovssekvensJson)
+        rapid.sendTestMessage(nyesteBehovssekvens.toJson())
+        rapid.sendTestMessage(eldsteBehovssekvens.toJson())
 
         val inFlight = hentInFlightMedId(id)
 
-        assertThat(inFlight).hasSize(1)
+        assertBehovssekvenserLike(inFlight[0].behovssekvens, nyesteBehovssekvens.toJson())
+        assertThat(inFlight[0].sistEndret).isEqualTo(nyesteBehovssekvens.toJson().sistEndret())
+    }
+
+    private fun assertBehovssekvenserLike(b1: String, b2: String) {
+        JSONAssert.assertEquals(
+            settJsonFeltTomt(b1, "system_read_count"),
+            settJsonFeltTomt(b2, "system_read_count"),
+            true
+        )
     }
 
     private fun settJsonFeltTomt(json: String, feltnavn: String): String {
@@ -206,8 +212,17 @@ internal class RiversTest(
         }
     }
 
-    internal companion object {
-        private fun correlationId() = "${UUID.randomUUID()}-${UUID.randomUUID()}-${UUID.randomUUID()}".substring(0,100).also {
+    private fun String.sistEndret() =
+        ZonedDateTime.parse(
+            objectMapper
+                .readTree(this)
+                .at("/${Behovsformat.SistEndret}")
+                .toString()
+                .replace("\"".toRegex(), "")
+        )
+
+    private companion object {
+        private fun correlationId() = "${UUID.randomUUID()}-${UUID.randomUUID()}-${UUID.randomUUID()}".substring(0, 100).also {
             require(it.length == 100)
         }
         fun løsningsJsonPointer(behov: String) = "/@løsninger/$behov"
