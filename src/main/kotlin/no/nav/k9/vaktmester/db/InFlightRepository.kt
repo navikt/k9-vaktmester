@@ -33,7 +33,7 @@ internal class InFlightRepository(
     }
 
     internal fun hentAlleInFlights(minimumAge: Duration, maxAntall: Int): List<InFlight> {
-        val query = queryOf(HENT_ALT_FØR, ZonedDateTime.now().minusMinutes(minimumAge.toMinutes()), maxAntall)
+        val query = queryOf(HENT_ALT_FØR, ZonedDateTime.now().minus(minimumAge), maxAntall)
 
         return using(sessionOf(dataSource)) { session ->
             session.run(
