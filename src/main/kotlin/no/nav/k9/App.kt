@@ -33,8 +33,7 @@ fun main() {
 internal fun RapidsConnection.registerApplicationContext(applicationContext: ApplicationContext) {
     ArkivRiver(
         rapidsConnection = this,
-        arkivRepository = applicationContext.arkivRepository,
-        inflightRepository = applicationContext.inFlightRepository
+        arkivRepository = applicationContext.arkivRepository
     )
     InFlightRiver(
         rapidsConnection = this,

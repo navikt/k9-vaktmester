@@ -59,16 +59,16 @@ internal class InFlightRepository(
         onFailure = { UnHealthy(ArkivRepository::class.java.simpleName, "Feil: ${it.message}") }
     )
 
-    private companion object {
+    internal companion object {
         @Language("PostgreSQL")
-        private const val HENT_ALT_FØR = """
+        internal const val HENT_ALT_FØR = """
             SELECT BEHOVSSEKVENSID, BEHOVSSEKVENS, SIST_ENDRET, CORRELATION_ID, OPPRETTETTIDSPUNKT
             FROM IN_FLIGHT WHERE SIST_ENDRET < ?
             ORDER BY SIST_ENDRET
             LIMIT ?
         """
         @Language("PostgreSQL")
-        private const val LAGRE_BEHOV_QUERY = """
+        internal const val LAGRE_BEHOV_QUERY = """
             INSERT INTO IN_FLIGHT(BEHOVSSEKVENSID, BEHOVSSEKVENS, SIST_ENDRET, CORRELATION_ID)
                 VALUES (:BEHOVSSEKVENSID, :BEHOVSSEKVENS ::jsonb, :SIST_ENDRET, :CORRELATION_ID)
             ON CONFLICT (BEHOVSSEKVENSID)
@@ -76,7 +76,7 @@ internal class InFlightRepository(
                 WHERE IN_FLIGHT.SIST_ENDRET < :SIST_ENDRET
         """
         @Language("PostgreSQL")
-        private const val SLETT_QUERY = """
+        internal const val SLETT_QUERY = """
             DELETE FROM IN_FLIGHT WHERE BEHOVSSEKVENSID = ?
         """
         private const val HEALTH_QUERY = "SELECT 1"

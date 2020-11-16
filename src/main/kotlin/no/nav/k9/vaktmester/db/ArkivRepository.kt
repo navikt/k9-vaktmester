@@ -15,11 +15,16 @@ internal class ArkivRepository(
     private val dataSource: DataSource
 ) : HealthCheck {
 
-    internal fun arkiverBehovssekvens(behovsid: String, behovssekvens: String, correlationId: String): Boolean {
-        val query = queryOf(LAGRE_ARKIV_QUERY, behovsid, behovssekvens, correlationId).asUpdate
-        return using(sessionOf(dataSource)) { session ->
-            session.run(query)
-        } != 0
+    internal fun arkiverBehovssekvens(behovsid: String, behovssekvens: String, correlationId: String) {
+        val lagreArkivQuery = queryOf(LAGRE_ARKIV_QUERY, behovsid, behovssekvens, correlationId).asUpdate
+        val slettInFlightQuery = queryOf(InFlightRepository.SLETT_QUERY, behovsid).asUpdate
+
+        using(sessionOf(dataSource)) { session ->
+            session.transaction { transaction ->
+                transaction.run(lagreArkivQuery)
+                transaction.run(slettInFlightQuery)
+            }
+        }
     }
 
     internal fun hentArkivMedId(id: String): List<Arkiv> {
