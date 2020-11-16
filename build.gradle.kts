@@ -1,7 +1,7 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 val junitJupiterVersion = "5.7.0"
-val k9rapidVersion = "1.fe10445"
+val k9rapidVersion = "1.31aa518"
 val flywayVersion = "7.0.3"
 val hikariVersion = "3.4.5"
 val kotliqueryVersion = "1.3.1"
@@ -12,6 +12,7 @@ val dusseldorfVersion = "1.4.1.4754df6"
 val jsonassertVersion = "1.5.0"
 val vaultJdbcVersion = "1.3.7"
 val assertjVersion = "3.11.1"
+val mockkVersion = "1.10.0"
 
 val mainClass = "no.nav.k9.AppKt"
 
@@ -50,6 +51,7 @@ dependencies {
     testImplementation("no.nav.helse:dusseldorf-test-support:$dusseldorfVersion")
     testImplementation ("org.skyscreamer:jsonassert:$jsonassertVersion")
     testImplementation("org.assertj:assertj-core:$assertjVersion")
+    testImplementation("io.mockk:mockk:$mockkVersion")
 }
 
 repositories {

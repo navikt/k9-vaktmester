@@ -1,19 +1,7 @@
 package no.nav.k9.vaktmester.river
 
-import com.fasterxml.jackson.databind.DeserializationFeature
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import kotliquery.queryOf
-import kotliquery.sessionOf
-import kotliquery.using
-import no.nav.helse.rapids_rivers.JsonMessage
-import no.nav.helse.rapids_rivers.MessageProblems
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import no.nav.k9.ApplicationContext
-import no.nav.k9.rapid.behov.Behov
-import no.nav.k9.rapid.behov.Behovsformat
-import no.nav.k9.rapid.behov.Behovssekvens
 import no.nav.k9.registerApplicationContext
 import no.nav.k9.testutils.ApplicationContextExtension
 import no.nav.k9.testutils.cleanAndMigrate
@@ -21,9 +9,6 @@ import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
-import org.skyscreamer.jsonassert.JSONAssert
-import java.time.ZonedDateTime
-import java.util.UUID
 
 @ExtendWith(ApplicationContextExtension::class)
 internal class RiversTest(
@@ -62,7 +47,7 @@ internal class RiversTest(
         assertThat(arkiv.arkiveringstidspunkt).isNotNull()
         assertThat(arkiv.correlationId).isNotNull()
 
-        val inFlight = hentInFlightMedId(id)
+        val inFlight = applicationContext.dataSource.hentInFlightMedId(id)
         assertThat(inFlight).isEmpty()
     }
 
@@ -87,7 +72,7 @@ internal class RiversTest(
         val arkiv = applicationContext.arkivRepository.hentArkivMedId(id)
         assertThat(arkiv).hasSize(0)
 
-        val inFlight = hentInFlightMedId(id)
+        val inFlight = applicationContext.dataSource.hentInFlightMedId(id)
 
         assertThat(inFlight).hasSize(1)
         assertBehovssekvenserLike(behovssekvensJson, inFlight[0].behovssekvens)
@@ -123,8 +108,9 @@ internal class RiversTest(
         rapid.sendTestMessage(eksisterendeSekvens.toJson())
         rapid.sendTestMessage(behovssekvensGammelJson)
 
-        val inFlightGammel = hentInFlightMedId(idGammel)
-        val inFlightEksisterende = hentInFlightMedId(idEksist)
+        val ds = applicationContext.dataSource
+        val inFlightGammel = ds.hentInFlightMedId(idGammel)
+        val inFlightEksisterende = ds.hentInFlightMedId(idEksist)
 
         assertThat(inFlightGammel).hasSize(1)
         assertThat(inFlightEksisterende).hasSize(1)
@@ -144,8 +130,8 @@ internal class RiversTest(
 
         rapid.sendTestMessage(behovssekvensOppdatertSistEndret.toJson())
 
-        val inFlightOppdatertGammel = hentInFlightMedId(idGammel)
-        val inFlightEksisterendeEtterOppdatering = hentInFlightMedId(idEksist)
+        val inFlightOppdatertGammel = ds.hentInFlightMedId(idGammel)
+        val inFlightEksisterendeEtterOppdatering = ds.hentInFlightMedId(idEksist)
 
         assertThat(inFlightOppdatertGammel).hasSize(1)
         assertBehovssekvenserLike(behovssekvensOppdatertSistEndret.toJson(), inFlightOppdatertGammel[0].behovssekvens)
@@ -178,87 +164,43 @@ internal class RiversTest(
         rapid.sendTestMessage(nyesteBehovssekvens.toJson())
         rapid.sendTestMessage(eldsteBehovssekvens.toJson())
 
-        val inFlight = hentInFlightMedId(id)
+        val inFlight = applicationContext.dataSource.hentInFlightMedId(id)
 
         assertBehovssekvenserLike(inFlight[0].behovssekvens, nyesteBehovssekvens.toJson())
         assertThat(inFlight[0].sistEndret).isEqualTo(nyesteBehovssekvens.toJson().sistEndret())
     }
 
-    private fun assertBehovssekvenserLike(b1: String, b2: String) {
-        JSONAssert.assertEquals(
-            settJsonFeltTomt(b1, "system_read_count"),
-            settJsonFeltTomt(b2, "system_read_count"),
-            true
+    @Test
+    internal fun `sletter inflights som blir arkivert`() {
+        val behov1 = "behov1"
+        val behov2 = "behov2"
+        val behov = mapOf(
+            behov1 to "{}",
+            behov2 to "{}"
         )
-    }
+        val id = "01EKW89QKK5YZ0XW2QQYS0TB8D"
+        val uløstBehovssekvens = nyBehovssekvens(
+            id = id,
+            behov = behov,
+            løsninger = mapOf(behov1 to "{}")
+        ).toJson()
 
-    private fun settJsonFeltTomt(json: String, feltnavn: String): String {
-        val jsonMessage = JsonMessage(json, MessageProblems(""))
-        jsonMessage[feltnavn] = ""
-        return jsonMessage.toJson()
-    }
+        rapid.sendTestMessage(uløstBehovssekvens)
+        val uløstInFlight = applicationContext.dataSource.hentInFlightMedId(id)
 
-    private fun hentInFlightMedId(id: String): List<InFlight> {
-        return using(sessionOf(applicationContext.dataSource)) { session ->
-            val query = queryOf("SELECT BEHOVSSEKVENS, SIST_ENDRET FROM IN_FLIGHT WHERE BEHOVSSEKVENSID = ?", id)
-            return@using session.run(
-                query.map { row ->
-                    InFlight(
-                        behovssekvens = row.string("BEHOVSSEKVENS"),
-                        sistEndret = row.zonedDateTime("SIST_ENDRET")
-                    )
-                }.asList
-            )
-        }
-    }
+        assertThat(uløstInFlight).hasSize(1)
 
-    private fun String.sistEndret() =
-        ZonedDateTime.parse(
-            objectMapper
-                .readTree(this)
-                .at("/${Behovsformat.SistEndret}")
-                .toString()
-                .replace("\"".toRegex(), "")
-        )
+        val løstBehovssekvens = nyBehovssekvens(
+            id = id,
+            behov = behov,
+            løsninger = behov
+        ).toJson()
 
-    private companion object {
-        private fun correlationId() = "${UUID.randomUUID()}-${UUID.randomUUID()}-${UUID.randomUUID()}".substring(0, 100).also {
-            require(it.length == 100)
-        }
-        fun løsningsJsonPointer(behov: String) = "/@løsninger/$behov"
+        rapid.sendTestMessage(løstBehovssekvens)
+        val løstInFlight = applicationContext.dataSource.hentInFlightMedId(id)
 
-        private fun nyBehovssekvens(
-            id: String,
-            behov: Map<String, String?>,
-            løsninger: Map<String, String?>
-        ): JsonMessage {
-            val sekvens = Behovssekvens(
-                id = id,
-                correlationId = correlationId(),
-                behov = behov.entries.map {
-                    Behov(
-                        navn = it.key,
-                        input = mapOf(
-                            "hvasomhelst" to it.value
-                        )
-                    )
-                }.toTypedArray()
-            ).keyValue.second
-
-            val jsonMessage = JsonMessage(sekvens, MessageProblems(""))
-
-            jsonMessage[Løsninger] = løsninger
-            return jsonMessage
-        }
+        assertThat(løstInFlight).isEmpty()
+        val arkiv = applicationContext.arkivRepository.hentArkivMedId(id)
+        assertThat(arkiv).hasSize(1)
     }
 }
-
-internal val objectMapper = jacksonObjectMapper()
-    .registerModule(JavaTimeModule())
-    .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-    .disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
-
-data class InFlight(
-    val behovssekvens: String,
-    val sistEndret: ZonedDateTime
-)

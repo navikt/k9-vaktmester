@@ -6,15 +6,12 @@ import no.nav.helse.rapids_rivers.River
 import no.nav.k9.vaktmester.db.Arkiv
 import no.nav.k9.vaktmester.db.ArkivRepository
 import no.nav.k9.vaktmester.db.InFlightRepository
-import org.slf4j.LoggerFactory
 
 internal class InFlightRiver(
     rapidsConnection: RapidsConnection,
     private val inFlightRepository: InFlightRepository,
     private val arkivRepository: ArkivRepository
 ) : River.PacketListener {
-
-    private val logger = LoggerFactory.getLogger(InFlightRiver::class.java)
 
     init {
         River(rapidsConnection).apply {
@@ -36,13 +33,8 @@ internal class InFlightRiver(
                     sistEndret = meldingsinformasjon.sistEndret,
                     correlationId = meldingsinformasjon.correlationId
                 )
-                logger.info("Lagret in flight behovsseksvens med id ${meldingsinformasjon.behovssekvensId}")
             }
         }
     }
 }
 
-private fun List<Arkiv>.doIfEmpty(task: () -> Unit) = when (isEmpty()) {
-    true -> task()
-    else -> {}
-}
