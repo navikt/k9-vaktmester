@@ -4,7 +4,7 @@
   "namespace": "omsorgspenger",
   "team": "omsorgspenger",
   "minReplicas": "1",
-  "maxReplicas": "2",
+  "maxReplicas": "1",
   "ingresses": [
     "https://k9-vaktmester.adeo.no"
   ],
@@ -16,6 +16,7 @@
     "DATABASE_HOST": "A01DBVL024.adeo.no",
     "DATABASE_PORT": "_5432",
     "DATABASE_NAME": "k9-vaktmester-prod",
-    "DATABASE_VAULT_MOUNT_PATH": "postgresql/prod-fss"
+    "DATABASE_VAULT_MOUNT_PATH": "postgresql/prod-fss",
+    "IGNORER_RESOURCE_PATH": "ignorer/prod.json"
   }
 }

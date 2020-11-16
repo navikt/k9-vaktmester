@@ -14,7 +14,7 @@ internal object Ignorer {
 
     @JvmStatic
     internal val ignorerteMeldinger : Map<String, String> = ignorerJson.toMap()
-        .mapValues { it.toString() }.also {
+        .mapValues { it.value.toString() }.also {
             logger.info("Ignorerer ${it.size} meldinger")
         }
 

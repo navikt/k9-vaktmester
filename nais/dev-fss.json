@@ -16,6 +16,7 @@
     "DATABASE_HOST": "b27dbvl023.preprod.local",
     "DATABASE_PORT": "_5432",
     "DATABASE_NAME": "k9-vaktmester-preprod",
-    "DATABASE_VAULT_MOUNT_PATH": "postgresql/preprod-fss"
+    "DATABASE_VAULT_MOUNT_PATH": "postgresql/preprod-fss",
+    "IGNORER_RESOURCE_PATH": "ignorer/preprod.json"
   }
 }
