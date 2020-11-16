@@ -28,8 +28,7 @@ internal class ApplicationContextExtension : ParameterResolver {
             env = System.getenv()
                 .plus(
                     mapOf(
-                        "SCHEDULE_INIT_DELAY" to "_10",
-                        "SCHEDULE_INTERVAL" to "_100"
+                        "KAFKA_RAPID_TOPIC" to "TEST"
                     )
                 ),
             kafkaProducer = mockk<KafkaProducer<String, String>>().also {

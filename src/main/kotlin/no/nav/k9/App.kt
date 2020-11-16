@@ -97,7 +97,8 @@ internal class ApplicationContext(
             val benyttetRyddInFlightService = ryddInFlightService ?: RyddInFlightService(
                 inFlightRepository = benyttetInFlightRepository,
                 arkivRepository = benyttetArkivRepository,
-                kafkaProducer = benyttetKafkaProducer
+                kafkaProducer = benyttetKafkaProducer,
+                env = benyttetEnv
             )
             val benyttetInFlightScheduler = ryddInFlightScheduler ?: RyddInFlightScheduler(
                 ryddeService = benyttetRyddInFlightService
