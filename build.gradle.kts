@@ -13,6 +13,7 @@ val jsonassertVersion = "1.5.0"
 val vaultJdbcVersion = "1.3.7"
 val assertjVersion = "3.11.1"
 val mockkVersion = "1.10.0"
+val orgJsonVersion = "20201115"
 
 val mainClass = "no.nav.k9.AppKt"
 
@@ -33,6 +34,7 @@ dependencies {
     implementation("io.ktor:ktor-jackson:$ktorVersion")
     implementation("no.nav.helse:dusseldorf-ktor-health:$dusseldorfVersion")
     implementation("no.nav.helse:dusseldorf-ktor-auth:$dusseldorfVersion")
+    implementation("org.json:json:$orgJsonVersion")
 
     // Database
     implementation("com.zaxxer:HikariCP:$hikariVersion")

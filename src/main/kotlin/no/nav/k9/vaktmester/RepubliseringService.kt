@@ -18,18 +18,24 @@ internal class RepubliseringService(
 
     private val logger = LoggerFactory.getLogger(RepubliseringService::class.java)
     private val topic = env.hentRequiredEnv("KAFKA_RAPID_TOPIC")
+    private val ignorerteMeldinger = Ignorer.ignorerteMeldinger
 
     internal fun republiserGamleUarkiverteMeldinger() {
         inFlightRepository.hentAlleInFlights(Duration.ofMinutes(RYDD_MELDINGER_ELDRE_ENN_MINUTTER), MAX_ANTALL_Å_HENTE).forEach { inFlight ->
             withMDC(behovssekvensId = inFlight.behovssekvensId, correlationId = inFlight.correlationId) {
-                val arkiv = arkivRepository.hentArkivMedId(inFlight.behovssekvensId)
-
-                if (arkiv.isEmpty()) {
-                    logger.info("Republiserer behovssekvens")
-                    kafkaProducer.send(ProducerRecord(topic, inFlight.behovssekvensId, inFlight.behovssekvens))
-                } else {
-                    logger.warn("Sletter behov som er blitt arkivert, men ikke slettet")
-                    inFlightRepository.slett(inFlight.behovssekvensId)
+                when {
+                    ignorerteMeldinger.containsKey(inFlight.behovssekvensId) -> {
+                        logger.warn("Sletter behov: ${ignorerteMeldinger[inFlight.behovssekvensId]}")
+                        inFlightRepository.slett(inFlight.behovssekvensId)
+                    }
+                    arkivRepository.hentArkivMedId(inFlight.behovssekvensId).isEmpty() -> {
+                        logger.info("Republiserer behovssekvens")
+                        kafkaProducer.send(ProducerRecord(topic, inFlight.behovssekvensId, inFlight.behovssekvens))
+                    }
+                    else -> {
+                        logger.warn("Sletter behov som er blitt arkivert, men ikke slettet")
+                        inFlightRepository.slett(inFlight.behovssekvensId)
+                    }
                 }
             }
         }
