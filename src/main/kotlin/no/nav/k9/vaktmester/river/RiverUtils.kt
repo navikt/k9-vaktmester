@@ -8,7 +8,6 @@ import no.nav.k9.rapid.river.requireArray
 import no.nav.k9.rapid.river.requireObject
 import no.nav.k9.rapid.river.requireText
 import no.nav.k9.vaktmester.db.Arkiv
-import no.nav.k9.vaktmester.withMDC
 import java.time.ZonedDateTime
 
 internal const val Løsninger = "@løsninger"
@@ -23,10 +22,6 @@ internal data class Meldingsinformasjon(
 ) {
     internal val skalArkivers = løsninger.fieldNames().asSequence().toList().containsAll(behov.fieldNames().asSequence().toList())
     internal val inFlight = !skalArkivers
-    internal fun håndter(block: () -> Unit) = withMDC(
-        behovssekvensId = behovssekvensId,
-        correlationId = correlationId
-    ) { block() }
 }
 
 internal fun JsonMessage.vaktmesterOppgave() {

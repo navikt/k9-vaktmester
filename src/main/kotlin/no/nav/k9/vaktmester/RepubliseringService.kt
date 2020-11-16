@@ -22,7 +22,10 @@ internal class RepubliseringService(
 
     internal fun republiserGamleUarkiverteMeldinger() {
         inFlightRepository.hentAlleInFlights(Duration.ofMinutes(RYDD_MELDINGER_ELDRE_ENN_MINUTTER), MAX_ANTALL_Å_HENTE).forEach { inFlight ->
-            withMDC(behovssekvensId = inFlight.behovssekvensId, correlationId = inFlight.correlationId) {
+            håndter(
+                behovssekvensId = inFlight.behovssekvensId,
+                correlationId = inFlight.correlationId,
+                behovssekvens = inFlight.behovssekvens) {
                 when {
                     ignorerteMeldinger.containsKey(inFlight.behovssekvensId) -> {
                         logger.warn("Sletter behov: ${ignorerteMeldinger[inFlight.behovssekvensId]}")

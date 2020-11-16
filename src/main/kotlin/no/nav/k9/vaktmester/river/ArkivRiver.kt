@@ -5,6 +5,7 @@ import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.helse.rapids_rivers.River
 import no.nav.k9.vaktmester.db.ArkivRepository
 import no.nav.k9.vaktmester.db.InFlightRepository
+import no.nav.k9.vaktmester.håndter
 import org.slf4j.LoggerFactory
 
 internal class ArkivRiver(
@@ -27,14 +28,23 @@ internal class ArkivRiver(
         val meldingsinformasjon = packet.meldingsinformasjon()
         if (meldingsinformasjon.inFlight) return
 
-        // TODO transaction
-        meldingsinformasjon.håndter {
+        håndter(
+            behovssekvensId = meldingsinformasjon.behovssekvensId,
+            correlationId = meldingsinformasjon.correlationId,
+            behovssekvens = packet.toJson()) {
             arkivRepository.arkiverBehovssekvens(
                 behovsid = meldingsinformasjon.behovssekvensId,
                 behovssekvens = packet.toJson(),
                 correlationId = meldingsinformasjon.correlationId
             )
             logger.info("Behovssekvens arkivert")
+        }
+
+        håndter(
+            behovssekvensId = meldingsinformasjon.behovssekvensId,
+            correlationId = meldingsinformasjon.correlationId,
+            behovssekvens = packet.toJson(),
+            håndterFeil = { logger.warn(it) }) {
             inflightRepository.slett(meldingsinformasjon.behovssekvensId)
         }
     }
