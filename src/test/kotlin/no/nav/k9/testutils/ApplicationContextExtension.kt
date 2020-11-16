@@ -32,19 +32,7 @@ internal class ApplicationContextExtension : ParameterResolver {
                     )
                 ),
             kafkaProducer = mockk<KafkaProducer<String, String>>().also {
-                every { it.send(any()) }.returns(
-                    CompletableFuture.completedFuture(
-                        RecordMetadata(
-                            TopicPartition("foo", 1),
-                            1L,
-                            1L,
-                            System.currentTimeMillis(),
-                            1L,
-                            1,
-                            1
-                        )
-                    )
-                )
+                it.mockSend()
             }
         ).build()
 
@@ -60,6 +48,22 @@ internal class ApplicationContextExtension : ParameterResolver {
         private val støttedeParametre = listOf(
             ApplicationContext::class.java
         )
+
+        internal fun KafkaProducer<String, String>.mockSend() {
+            every { send(any()) }.returns(
+                CompletableFuture.completedFuture(
+                    RecordMetadata(
+                        TopicPartition("foo", 1),
+                        1L,
+                        1L,
+                        System.currentTimeMillis(),
+                        1L,
+                        1,
+                        1
+                    )
+                )
+            )
+        }
     }
 
     override fun supportsParameter(parameterContext: ParameterContext, extensionContext: ExtensionContext): Boolean {

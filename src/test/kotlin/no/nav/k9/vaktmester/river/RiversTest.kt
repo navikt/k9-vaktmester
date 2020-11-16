@@ -169,4 +169,38 @@ internal class RiversTest(
         assertBehovssekvenserLike(inFlight[0].behovssekvens, nyesteBehovssekvens.toJson())
         assertThat(inFlight[0].sistEndret).isEqualTo(nyesteBehovssekvens.toJson().sistEndret())
     }
+
+    @Test
+    internal fun `sletter inflights som blir arkivert`() {
+        val behov1 = "behov1"
+        val behov2 = "behov2"
+        val behov = mapOf(
+            behov1 to "{}",
+            behov2 to "{}"
+        )
+        val id = "01EKW89QKK5YZ0XW2QQYS0TB8D"
+        val uløstBehovssekvens = nyBehovssekvens(
+            id = id,
+            behov = behov,
+            løsninger = mapOf(behov1 to "{}")
+        ).toJson()
+
+        rapid.sendTestMessage(uløstBehovssekvens)
+        val uløstInFlight = applicationContext.dataSource.hentInFlightMedId(id)
+
+        assertThat(uløstInFlight).hasSize(1)
+
+        val løstBehovssekvens = nyBehovssekvens(
+            id = id,
+            behov = behov,
+            løsninger = behov
+        ).toJson()
+
+        rapid.sendTestMessage(løstBehovssekvens)
+        val løstInFlight = applicationContext.dataSource.hentInFlightMedId(id)
+
+        assertThat(løstInFlight).isEmpty()
+        val arkiv = applicationContext.arkivRepository.hentArkivMedId(id)
+        assertThat(arkiv).hasSize(1)
+    }
 }

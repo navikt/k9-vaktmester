@@ -9,16 +9,16 @@ import org.apache.kafka.clients.producer.ProducerRecord
 import org.slf4j.LoggerFactory
 import java.time.Duration
 
-internal class RyddInFlightService(
+internal class RepubliseringService(
     private val inFlightRepository: InFlightRepository,
     private val arkivRepository: ArkivRepository,
     private val kafkaProducer: KafkaProducer<String, String>,
     private val env: Environment
 ) {
 
-    private val logger = LoggerFactory.getLogger(RyddInFlightService::class.java)
+    private val logger = LoggerFactory.getLogger(RepubliseringService::class.java)
 
-    internal fun rydd() {
+    internal fun republiserGamleUarkiverteMeldinger() {
         inFlightRepository.hentAlleInFlights(Duration.ofMinutes(RYDD_MELDINGER_ELDRE_ENN_MINUTTER), MAX_ANTALL_Å_HENTE).forEach {
             val arkiv = arkivRepository.hentArkivMedId(it.behovssekvensId)
 
@@ -26,8 +26,10 @@ internal class RyddInFlightService(
                 logger.info("Republiserer behovssekvens med id: ${it.behovssekvensId}")
                 val topic = env.hentRequiredEnv("KAFKA_RAPID_TOPIC")
                 kafkaProducer.send(ProducerRecord(topic, it.behovssekvens))
+            } else {
+                logger.warn("Sletter behov med id ${it.behovssekvensId} som er blitt arkivert, men ikke slettet")
+                inFlightRepository.slett(it.behovssekvensId)
             }
-            inFlightRepository.slett(it.behovssekvensId)
         }
     }
 

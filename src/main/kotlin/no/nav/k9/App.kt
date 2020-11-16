@@ -11,8 +11,8 @@ import no.nav.helse.rapids_rivers.RapidApplication
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.k9.rapid.river.Environment
 import no.nav.k9.rapid.river.KafkaBuilder.kafkaProducer
+import no.nav.k9.vaktmester.RepubliseringService
 import no.nav.k9.vaktmester.RyddInFlightScheduler
-import no.nav.k9.vaktmester.RyddInFlightService
 import no.nav.k9.vaktmester.db.ArkivRepository
 import no.nav.k9.vaktmester.db.DataSourceBuilder
 import no.nav.k9.vaktmester.db.InFlightRepository
@@ -33,7 +33,8 @@ fun main() {
 internal fun RapidsConnection.registerApplicationContext(applicationContext: ApplicationContext) {
     ArkivRiver(
         rapidsConnection = this,
-        arkivRepository = applicationContext.arkivRepository
+        arkivRepository = applicationContext.arkivRepository,
+        inflightRepository = applicationContext.inFlightRepository
     )
     InFlightRiver(
         rapidsConnection = this,
@@ -66,7 +67,7 @@ internal class ApplicationContext(
     val arkivRepository: ArkivRepository,
     val inFlightRepository: InFlightRepository,
     val healthService: HealthService,
-    val ryddInFlightService: RyddInFlightService,
+    val republiseringService: RepubliseringService,
     val ryddInFlightScheduler: RyddInFlightScheduler,
     val kafkaProducer: KafkaProducer<String, String>
 ) {
@@ -83,7 +84,7 @@ internal class ApplicationContext(
         var dataSource: DataSource? = null,
         var arkivRepository: ArkivRepository? = null,
         var inFlightRepository: InFlightRepository? = null,
-        val ryddInFlightService: RyddInFlightService? = null,
+        val republiseringService: RepubliseringService? = null,
         var ryddInFlightScheduler: RyddInFlightScheduler? = null,
         var kafkaProducer: KafkaProducer<String, String>? = null
     ) {
@@ -94,14 +95,14 @@ internal class ApplicationContext(
             val benyttetArkivRepository = arkivRepository ?: ArkivRepository(benyttetDataSource)
             val benyttetInFlightRepository = inFlightRepository ?: InFlightRepository(benyttetDataSource)
             val benyttetKafkaProducer = kafkaProducer ?: benyttetEnv.kafkaProducer()
-            val benyttetRyddInFlightService = ryddInFlightService ?: RyddInFlightService(
+            val benyttetRepubliseringService = republiseringService ?: RepubliseringService(
                 inFlightRepository = benyttetInFlightRepository,
                 arkivRepository = benyttetArkivRepository,
                 kafkaProducer = benyttetKafkaProducer,
                 env = benyttetEnv
             )
             val benyttetInFlightScheduler = ryddInFlightScheduler ?: RyddInFlightScheduler(
-                ryddeService = benyttetRyddInFlightService
+                ryddeService = benyttetRepubliseringService
             )
 
             return ApplicationContext(
@@ -109,7 +110,7 @@ internal class ApplicationContext(
                 dataSource = benyttetDataSource,
                 arkivRepository = benyttetArkivRepository,
                 inFlightRepository = benyttetInFlightRepository,
-                ryddInFlightService = benyttetRyddInFlightService,
+                republiseringService = benyttetRepubliseringService,
                 ryddInFlightScheduler = benyttetInFlightScheduler,
                 kafkaProducer = benyttetKafkaProducer,
                 healthService = HealthService(
