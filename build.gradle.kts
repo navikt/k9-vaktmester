@@ -1,14 +1,14 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 val junitJupiterVersion = "5.7.0"
-val k9rapidVersion = "1.31aa518"
-val flywayVersion = "7.0.3"
+val k9rapidVersion = "1.f3af2d5"
+val flywayVersion = "7.2.0"
 val hikariVersion = "3.4.5"
 val kotliqueryVersion = "1.3.1"
 val postgresVersion = "42.2.18"
 val embeddedPostgres = "0.13.3"
 val ktorVersion = "1.4.1"
-val dusseldorfVersion = "1.4.1.4754df6"
+val dusseldorfVersion = "1.4.1.82ec597"
 val jsonassertVersion = "1.5.0"
 val vaultJdbcVersion = "1.3.7"
 val assertjVersion = "3.11.1"
@@ -84,9 +84,9 @@ tasks {
         archiveClassifier.set("")
         manifest {
             attributes(
-                    mapOf(
-                            "Main-Class" to mainClass
-                    )
+                mapOf(
+                    "Main-Class" to mainClass
+                )
             )
         }
     }

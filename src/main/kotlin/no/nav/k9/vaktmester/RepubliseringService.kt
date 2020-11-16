@@ -28,7 +28,7 @@ internal class RepubliseringService(
                 behovssekvens = inFlight.behovssekvens) {
                 when {
                     ignorerteMeldinger.containsKey(inFlight.behovssekvensId) -> {
-                        logger.warn("Sletter behov: ${ignorerteMeldinger[inFlight.behovssekvensId]}")
+                        logger.warn("Sletter behovssekvens: ${ignorerteMeldinger[inFlight.behovssekvensId]}")
                         inFlightRepository.slett(inFlight.behovssekvensId)
                     }
                     arkivRepository.hentArkivMedId(inFlight.behovssekvensId).isEmpty() -> {
@@ -36,7 +36,7 @@ internal class RepubliseringService(
                         kafkaProducer.send(ProducerRecord(topic, inFlight.behovssekvensId, inFlight.behovssekvens))
                     }
                     else -> {
-                        logger.warn("Sletter behov som er blitt arkivert, men ikke slettet")
+                        logger.warn("Sletter behovssekvens som allerede er arkivert")
                         inFlightRepository.slett(inFlight.behovssekvensId)
                     }
                 }
