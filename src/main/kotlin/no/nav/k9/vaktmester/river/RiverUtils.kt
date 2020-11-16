@@ -8,12 +8,10 @@ import no.nav.k9.rapid.river.requireArray
 import no.nav.k9.rapid.river.requireObject
 import no.nav.k9.rapid.river.requireText
 import no.nav.k9.vaktmester.db.Arkiv
-import org.slf4j.MDC
+import no.nav.k9.vaktmester.withMDC
 import java.time.ZonedDateTime
 
 internal const val Løsninger = "@løsninger"
-private const val BehovssekvensIdKey = "behovssekvens_id"
-private const val CorrelationIdKey = "correlation_id"
 
 internal data class Meldingsinformasjon(
     internal val sistEndret: ZonedDateTime,
@@ -26,10 +24,8 @@ internal data class Meldingsinformasjon(
     internal val skalArkivers = løsninger.fieldNames().asSequence().toList().containsAll(behov.fieldNames().asSequence().toList())
     internal val inFlight = !skalArkivers
     internal fun håndter(block: () -> Unit) = withMDC(
-        mapOf(
-            BehovssekvensIdKey to behovssekvensId,
-            CorrelationIdKey to correlationId
-        )
+        behovssekvensId = behovssekvensId,
+        correlationId = correlationId
     ) { block() }
 }
 
@@ -56,12 +52,3 @@ internal fun List<Arkiv>.doIfEmpty(task: () -> Unit) = when (isEmpty()) {
     else -> {}
 }
 
-private fun withMDC(context: Map<String, String>, block: () -> Unit) {
-    val contextMap = MDC.getCopyOfContextMap() ?: emptyMap()
-    try {
-        MDC.setContextMap(contextMap + context)
-        block()
-    } finally {
-        MDC.setContextMap(contextMap)
-    }
-}
