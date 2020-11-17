@@ -14,13 +14,13 @@ internal const val Løsninger = "@løsninger"
 
 internal data class Meldingsinformasjon(
     internal val sistEndret: ZonedDateTime,
-    private val behov: ObjectNode,
-    private val løsninger: ObjectNode,
+    internal val behov: ObjectNode,
+    internal val løsninger: ObjectNode,
     internal val behovssekvensId: String,
     internal val correlationId: String,
     internal val behovsrekkefølge: List<String>
 ) {
-    internal val skalArkivers = løsninger.fieldNames().asSequence().toList().containsAll(behov.fieldNames().asSequence().toList())
+    internal val skalArkivers = løsninger.fieldNamesList().containsAll(behov.fieldNamesList())
     internal val inFlight = !skalArkivers
 }
 
@@ -47,3 +47,4 @@ internal fun List<Arkiv>.doIfEmpty(task: () -> Unit) = when (isEmpty()) {
     else -> {}
 }
 
+internal fun ObjectNode.fieldNamesList(): List<String> = this.fieldNames().asSequence().toList()
