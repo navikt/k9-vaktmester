@@ -14,6 +14,7 @@ import org.apache.kafka.clients.producer.ProducerRecord
 import org.slf4j.LoggerFactory
 import java.time.Duration
 import no.nav.k9.vaktmester.river.fieldNamesList
+import no.nav.k9.vaktmester.river.vaktmesterOppgave
 
 internal class RepubliseringService(
     private val inFlightRepository: InFlightRepository,
@@ -27,9 +28,8 @@ internal class RepubliseringService(
     private val ignorerteMeldinger = Ignorer.ignorerteMeldinger
 
     internal fun republiserGamleUarkiverteMeldinger() {
+        uløsteBehovGauge.clear()
         inFlightRepository.hentAlleInFlights(Duration.ofMinutes(RYDD_MELDINGER_ELDRE_ENN_MINUTTER), MAX_ANTALL_Å_HENTE).forEach { inFlight ->
-            // TODO: Er clear() riktig?
-            uløsteBehovGauge.clear()
             håndter(
                 behovssekvensId = inFlight.behovssekvensId,
                 correlationId = inFlight.correlationId,
@@ -55,7 +55,9 @@ internal class RepubliseringService(
     }
 
     private fun InFlight.uløstBehov(): String? {
-        val meldingsinformasjon = JsonMessage(behovssekvens, MessageProblems(behovssekvens)).meldingsinformasjon()
+        val meldingsinformasjon = JsonMessage(behovssekvens, MessageProblems(behovssekvens))
+            .vaktmesterOppgave()
+            .meldingsinformasjon()
         val løsninger = meldingsinformasjon.løsninger.fieldNamesList()
 
         return meldingsinformasjon.behovsrekkefølge.find { behov ->

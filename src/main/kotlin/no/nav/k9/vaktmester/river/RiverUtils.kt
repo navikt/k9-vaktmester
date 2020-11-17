@@ -24,13 +24,14 @@ internal data class Meldingsinformasjon(
     internal val inFlight = !skalArkivers
 }
 
-internal fun JsonMessage.vaktmesterOppgave() {
+internal fun JsonMessage.vaktmesterOppgave(): JsonMessage {
     require(Behovsformat.Id) { it.requireText() }
     require(Behovsformat.CorrelationId) { it.requireText() }
     require(Behovsformat.SistEndret) { ZonedDateTime.parse(it.asText()) }
     require(Behovsformat.Behov) { it.requireObject() }
     require(Løsninger) { it.requireObject() }
     require(Behovsformat.Behovsrekkefølge) { it.requireArray() }
+    return this
 }
 
 internal fun JsonMessage.meldingsinformasjon() = Meldingsinformasjon(
