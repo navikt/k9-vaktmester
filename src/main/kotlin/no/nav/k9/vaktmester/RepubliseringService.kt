@@ -1,16 +1,11 @@
 package no.nav.k9.vaktmester
 
 import io.prometheus.client.Gauge
-import no.nav.helse.rapids_rivers.JsonMessage
-import no.nav.helse.rapids_rivers.MessageProblems
 import no.nav.k9.rapid.river.Environment
 import no.nav.k9.rapid.river.hentRequiredEnv
 import no.nav.k9.vaktmester.db.ArkivRepository
-import no.nav.k9.vaktmester.db.InFlight
 import no.nav.k9.vaktmester.db.InFlightRepository
-import no.nav.k9.vaktmester.river.fieldNamesList
-import no.nav.k9.vaktmester.river.meldingsinformasjon
-import no.nav.k9.vaktmester.river.vaktmesterOppgave
+import no.nav.k9.vaktmester.river.uløstBehov
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.slf4j.LoggerFactory
@@ -51,19 +46,6 @@ internal class RepubliseringService(
                         inFlightRepository.slett(inFlight.behovssekvensId)
                     }
                 }
-            }
-        }
-    }
-
-    private fun InFlight.uløstBehov(): String? {
-        val meldingsinformasjon = JsonMessage(behovssekvens, MessageProblems(behovssekvens))
-            .vaktmesterOppgave()
-            .meldingsinformasjon()
-        val løsninger = meldingsinformasjon.løsninger.fieldNamesList()
-
-        return meldingsinformasjon.behovsrekkefølge.find { behov ->
-            løsninger.none { løsning ->
-                løsning == behov
             }
         }
     }

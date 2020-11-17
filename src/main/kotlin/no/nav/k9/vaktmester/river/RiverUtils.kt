@@ -9,6 +9,8 @@ import no.nav.k9.rapid.river.requireObject
 import no.nav.k9.rapid.river.requireText
 import no.nav.k9.vaktmester.db.Arkiv
 import java.time.ZonedDateTime
+import no.nav.helse.rapids_rivers.MessageProblems
+import no.nav.k9.vaktmester.db.InFlight
 
 internal const val Løsninger = "@løsninger"
 
@@ -49,3 +51,16 @@ internal fun List<Arkiv>.doIfEmpty(task: () -> Unit) = when (isEmpty()) {
 }
 
 internal fun ObjectNode.fieldNamesList(): List<String> = this.fieldNames().asSequence().toList()
+
+internal fun InFlight.uløstBehov(): String? {
+    val meldingsinformasjon = JsonMessage(behovssekvens, MessageProblems(behovssekvens))
+        .vaktmesterOppgave()
+        .meldingsinformasjon()
+    val løsninger = meldingsinformasjon.løsninger.fieldNamesList()
+
+    return meldingsinformasjon.behovsrekkefølge.find { behov ->
+        løsninger.none { løsning ->
+            løsning == behov
+        }
+    }
+}
