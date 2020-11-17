@@ -8,13 +8,13 @@ import no.nav.k9.rapid.river.hentRequiredEnv
 import no.nav.k9.vaktmester.db.ArkivRepository
 import no.nav.k9.vaktmester.db.InFlight
 import no.nav.k9.vaktmester.db.InFlightRepository
+import no.nav.k9.vaktmester.river.fieldNamesList
 import no.nav.k9.vaktmester.river.meldingsinformasjon
+import no.nav.k9.vaktmester.river.vaktmesterOppgave
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.slf4j.LoggerFactory
 import java.time.Duration
-import no.nav.k9.vaktmester.river.fieldNamesList
-import no.nav.k9.vaktmester.river.vaktmesterOppgave
 
 internal class RepubliseringService(
     private val inFlightRepository: InFlightRepository,
@@ -41,8 +41,9 @@ internal class RepubliseringService(
                         inFlightRepository.slett(inFlight.behovssekvensId)
                     }
                     arkivRepository.hentArkivMedId(inFlight.behovssekvensId).isEmpty() -> {
-                        logger.info("Republiserer behovssekvens")
-                        uløsteBehovGauge.labels(inFlight.uløstBehov()).inc()
+                        val uløstBehov = inFlight.uløstBehov()
+                        logger.info("Republiserer behovssekvens. Uløst behov: $uløstBehov")
+                        uløsteBehovGauge.labels(uløstBehov).inc()
                         kafkaProducer.send(ProducerRecord(topic, inFlight.behovssekvensId, inFlight.behovssekvens))
                     }
                     else -> {
