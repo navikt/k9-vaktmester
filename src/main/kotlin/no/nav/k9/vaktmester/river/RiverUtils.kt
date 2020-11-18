@@ -58,9 +58,7 @@ internal fun InFlight.uløstBehov(): String? {
         .meldingsinformasjon()
     val løsninger = meldingsinformasjon.løsninger.fieldNamesList()
 
-    return meldingsinformasjon.behovsrekkefølge.find { behov ->
-        løsninger.none { løsning ->
-            løsning == behov
-        }
+    return meldingsinformasjon.behovsrekkefølge.firstOrNull {
+        it !in løsninger
     }
 }
