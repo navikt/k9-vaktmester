@@ -23,6 +23,7 @@ internal class RepubliseringService(
     private val ignorerteMeldinger = Ignorer.ignorerteMeldinger
 
     internal fun republiserGamleUarkiverteMeldinger() {
+        logger.info("Starter republiseringsjobb")
         uløsteBehovGauge.clear()
         inFlightRepository.hentAlleInFlights(Duration.ofMinutes(RYDD_MELDINGER_ELDRE_ENN_MINUTTER), MAX_ANTALL_Å_HENTE).forEach { inFlight ->
             håndter(
