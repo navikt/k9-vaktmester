@@ -9,28 +9,31 @@ import no.nav.k9.rapid.river.requireObject
 import no.nav.k9.rapid.river.requireText
 import no.nav.k9.vaktmester.db.Arkiv
 import java.time.ZonedDateTime
+import no.nav.helse.rapids_rivers.MessageProblems
+import no.nav.k9.vaktmester.db.InFlight
 
 internal const val Løsninger = "@løsninger"
 
 internal data class Meldingsinformasjon(
     internal val sistEndret: ZonedDateTime,
-    private val behov: ObjectNode,
-    private val løsninger: ObjectNode,
+    internal val behov: ObjectNode,
+    internal val løsninger: ObjectNode,
     internal val behovssekvensId: String,
     internal val correlationId: String,
     internal val behovsrekkefølge: List<String>
 ) {
-    internal val skalArkivers = løsninger.fieldNames().asSequence().toList().containsAll(behov.fieldNames().asSequence().toList())
+    internal val skalArkivers = løsninger.fieldNamesList().containsAll(behov.fieldNamesList())
     internal val inFlight = !skalArkivers
 }
 
-internal fun JsonMessage.vaktmesterOppgave() {
+internal fun JsonMessage.vaktmesterOppgave(): JsonMessage {
     require(Behovsformat.Id) { it.requireText() }
     require(Behovsformat.CorrelationId) { it.requireText() }
     require(Behovsformat.SistEndret) { ZonedDateTime.parse(it.asText()) }
     require(Behovsformat.Behov) { it.requireObject() }
     require(Løsninger) { it.requireObject() }
     require(Behovsformat.Behovsrekkefølge) { it.requireArray() }
+    return this
 }
 
 internal fun JsonMessage.meldingsinformasjon() = Meldingsinformasjon(
@@ -47,3 +50,15 @@ internal fun List<Arkiv>.doIfEmpty(task: () -> Unit) = when (isEmpty()) {
     else -> {}
 }
 
+internal fun ObjectNode.fieldNamesList(): List<String> = this.fieldNames().asSequence().toList()
+
+internal fun InFlight.uløstBehov(): String? {
+    val meldingsinformasjon = JsonMessage(behovssekvens, MessageProblems(behovssekvens))
+        .vaktmesterOppgave()
+        .meldingsinformasjon()
+    val løsninger = meldingsinformasjon.løsninger.fieldNamesList()
+
+    return meldingsinformasjon.behovsrekkefølge.firstOrNull {
+        it !in løsninger
+    }
+}
