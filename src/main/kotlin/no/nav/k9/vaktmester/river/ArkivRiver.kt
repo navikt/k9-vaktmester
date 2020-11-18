@@ -1,12 +1,13 @@
 package no.nav.k9.vaktmester.river
 
+import io.prometheus.client.Counter
 import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.helse.rapids_rivers.River
 import no.nav.k9.vaktmester.db.ArkivRepository
 import no.nav.k9.vaktmester.db.InFlightRepository
 import no.nav.k9.vaktmester.håndter
-import no.nav.k9.vaktmester.incArkivertBehovssekvens
+import no.nav.k9.vaktmester.safeInc
 import org.slf4j.LoggerFactory
 
 internal class ArkivRiver(
@@ -39,7 +40,7 @@ internal class ArkivRiver(
                 behovssekvens = packet.toJson(),
                 correlationId = meldingsinformasjon.correlationId
             )
-            logger.info("Behovssekvens arkivert").also { incArkivertBehovssekvens() }
+            logger.info("Behovssekvens arkivert").also { arkivertCounter.safeInc() }
         }
 
         håndter(
@@ -50,5 +51,11 @@ internal class ArkivRiver(
         ) {
             inflightRepository.slett(meldingsinformasjon.behovssekvensId)
         }
+    }
+
+    private companion object {
+        val arkivertCounter: Counter = Counter
+            .build("arkivert_behovssekvens", "Arkiverte behovssekvens")
+            .register()
     }
 }
