@@ -57,6 +57,6 @@ internal class RepubliseringService(
             .labelNames("uloesteBehov")
             .register()
         internal const val RYDD_MELDINGER_ELDRE_ENN_MINUTTER = 30L
-        internal const val MAX_ANTALL_Å_HENTE = 20
+        internal const val MAX_ANTALL_Å_HENTE = 50
     }
 }
