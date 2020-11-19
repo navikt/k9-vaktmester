@@ -39,7 +39,7 @@ internal class RepubliseringService(
                     arkivRepository.hentArkivMedId(inFlight.behovssekvensId).isEmpty() -> {
                         val uløstBehov = inFlight.uløstBehov()
                         logger.info("Republiserer behovssekvens. Uløst behov: $uløstBehov")
-                        uløsteBehovGauge.labels(uløstBehov).inc()
+                        uløsteBehovGauge.labels(uløstBehov).safeInc()
                         kafkaProducer.send(ProducerRecord(topic, inFlight.behovssekvensId, inFlight.behovssekvens))
                     }
                     else -> {
