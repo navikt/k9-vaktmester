@@ -40,7 +40,7 @@ internal class RepubliseringServiceTest(
     }
 
     @Test
-    internal fun `republiserer gamle inflights som ikke er lagret i arkivet`() {
+    fun `republiserer gamle inflights som ikke er lagret i arkivet`() {
         val id = "01BX5ZZKBKACTAV9WEVGEMMVS0"
         val behovssekvens = lagOgSendBehov(id, ZonedDateTime.now().minusMinutes(31))
 
@@ -61,7 +61,7 @@ internal class RepubliseringServiceTest(
     }
 
     @Test
-    internal fun `sletter meldinger i inflight som er lagret i arkivet`() {
+    fun `sletter meldinger i inflight som er lagret i arkivet`() {
         val id = "01EKW89QKK5YZ0XW2QQYS0TB8D"
         val behovssekvens = lagOgSendBehov(id, ZonedDateTime.now().minusMinutes(32))
 
@@ -85,7 +85,7 @@ internal class RepubliseringServiceTest(
     }
 
     @Test
-    internal fun `rører ikke inflights yngre enn 30 min`() {
+    fun `rører ikke inflights yngre enn 30 min`() {
         val id = "01BX5ZZKBKACTAV9WEVGEMMVS0"
         lagOgSendBehov(id, ZonedDateTime.now().minusMinutes(10))
 

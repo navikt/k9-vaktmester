@@ -9,7 +9,7 @@ import java.time.ZonedDateTime
 internal class RiverUtilsTest {
 
     @Test
-    internal fun `finner første uløste behov`() {
+    fun `finner første uløste behov`() {
         val behov1 = "behov1"
         val behov2 = "behov2"
         val behov3 = "behov3"
@@ -23,7 +23,7 @@ internal class RiverUtilsTest {
     }
 
     @Test
-    internal fun `ingen løste behov gir første i rekkefølgen`() {
+    fun `ingen løste behov gir første i rekkefølgen`() {
         val behov1 = "behov1"
         val behov2 = "behov2"
         val behov3 = "behov3"
@@ -37,7 +37,7 @@ internal class RiverUtilsTest {
     }
 
     @Test
-    internal fun `alle behov er løst gir null`() {
+    fun `alle behov er løst gir null`() {
         val behov1 = "behov1"
         val behov2 = "behov2"
         val behov3 = "behov3"
@@ -54,7 +54,20 @@ internal class RiverUtilsTest {
         assertThat(inFlight.uløstBehov()).isNull()
     }
 
-    private fun lagInFlight(løsninger: Map<String, String?>, vararg behov: String): InFlight {
+    @Test
+    fun `ingen løsninger gir første behovet`() {
+        assertThat(lagInFlight(
+            løsninger = null,
+            "behov1"
+        ).uløstBehov()).isEqualTo("behov1")
+
+        assertThat(lagInFlight(
+            løsninger = null,
+            "behov1", "behov2"
+        ).uløstBehov()).isEqualTo("behov1")
+    }
+
+    private fun lagInFlight(løsninger: Map<String, String?>?, vararg behov: String): InFlight {
         val id = "01EKW89QKK5YZ0XW2QQYS0TB8D"
         val behovssekvens = nyBehovssekvens(
             id = id,
