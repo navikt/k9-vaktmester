@@ -26,7 +26,7 @@ internal fun correlationId() = "${UUID.randomUUID()}-${UUID.randomUUID()}-${UUID
 internal fun nyBehovssekvens(
     id: String,
     behov: Map<String, String?>,
-    løsninger: Map<String, String?>,
+    løsninger: Map<String, String?>?,
     sistEndret: ZonedDateTime? = null
 ): JsonMessage {
     val sekvens = Behovssekvens(
@@ -44,7 +44,8 @@ internal fun nyBehovssekvens(
 
     val jsonMessage = JsonMessage(sekvens, MessageProblems(""))
 
-    jsonMessage[Løsninger] = løsninger
+    løsninger?.also { jsonMessage[Løsninger] = it }
+
     if (sistEndret != null) {
         jsonMessage[Behovsformat.SistEndret] = sistEndret
     }

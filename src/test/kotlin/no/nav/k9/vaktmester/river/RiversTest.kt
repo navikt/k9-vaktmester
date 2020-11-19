@@ -81,6 +81,33 @@ internal class RiversTest(
     }
 
     @Test
+    fun `mangler løsninger håndteres som at det ikke er noen løsninger`() {
+        val behov1 = "behov1"
+        val behov = mapOf(
+            behov1 to "{}",
+        )
+        val id = "01EQGPJTTARPE2P3V9MFHGV5G4"
+        val behovssekvens = nyBehovssekvens(
+            id = id,
+            behov = behov,
+            løsninger = null
+        )
+        val behovssekvensJson = behovssekvens.toJson()
+
+        rapid.sendTestMessage(behovssekvensJson)
+
+        val arkiv = applicationContext.arkivRepository.hentArkivMedId(id)
+        assertThat(arkiv).hasSize(0)
+
+        val inFlight = applicationContext.dataSource.hentInFlightMedId(id)
+
+        assertThat(inFlight).hasSize(1)
+        assertBehovssekvenserLike(behovssekvensJson, inFlight[0].behovssekvens)
+
+        assertThat(inFlight[0].sistEndret).isEqualTo(behovssekvensJson.sistEndret())
+    }
+
+    @Test
     fun `oppdaterer rad i inflight dersom sistendret er nyere`() {
         val behov1 = "behov1"
         val behov2 = "behov2"
@@ -171,7 +198,7 @@ internal class RiversTest(
     }
 
     @Test
-    internal fun `sletter inflights som blir arkivert`() {
+    fun `sletter inflights som blir arkivert`() {
         val behov1 = "behov1"
         val behov2 = "behov2"
         val behov = mapOf(
