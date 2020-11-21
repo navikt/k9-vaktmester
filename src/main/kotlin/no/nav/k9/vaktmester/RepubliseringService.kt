@@ -40,7 +40,15 @@ internal class RepubliseringService(
                         val uløstBehov = inFlight.uløstBehov()
                         logger.info("Republiserer behovssekvens. Uløst behov: $uløstBehov")
                         uløsteBehovGauge.labels(uløstBehov).safeInc()
-                        kafkaProducer.send(ProducerRecord(topic, inFlight.behovssekvensId, inFlight.behovssekvens))
+
+                        val republiser = when (inFlight.behovssekvens.skalFjerneLøsningPåHentPersonopplysninger()) {
+                            true -> inFlight.behovssekvens.fjernLøsningPå("HentPersonopplysninger").also {
+                                logger.info("Fjerner løsning på 'HentPersonopplysninger'")
+                            }
+                            false -> inFlight.behovssekvens
+                        }
+
+                        kafkaProducer.send(ProducerRecord(topic, inFlight.behovssekvensId, republiser))
                     }
                     else -> {
                         logger.warn("Sletter behovssekvens som allerede er arkivert")
