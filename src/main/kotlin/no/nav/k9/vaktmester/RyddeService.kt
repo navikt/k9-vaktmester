@@ -11,7 +11,7 @@ import org.apache.kafka.clients.producer.ProducerRecord
 import org.slf4j.LoggerFactory
 import java.time.Duration
 
-internal class RepubliseringService(
+internal class RyddeService(
     private val inFlightRepository: InFlightRepository,
     private val arkivRepository: ArkivRepository,
     private val kafkaProducer: KafkaProducer<String, String>,
@@ -19,12 +19,11 @@ internal class RepubliseringService(
     env: Environment
 ) {
 
-    private val logger = LoggerFactory.getLogger(RepubliseringService::class.java)
+    private val logger = LoggerFactory.getLogger(RyddeService::class.java)
     private val topic = env.hentRequiredEnv("KAFKA_RAPID_TOPIC")
     private val ignorerteMeldinger = Ignorer.ignorerteMeldinger
 
-    internal fun republiserGamleUarkiverteMeldinger() {
-        logger.info("Starter republiseringsjobb")
+    internal fun rydd() {
         uløsteBehovGauge.clear()
         inFlightRepository.hentAlleInFlights(Duration.ofMinutes(RYDD_MELDINGER_ELDRE_ENN_MINUTTER), MAX_ANTALL_Å_HENTE).forEach { inFlight ->
             håndter(
@@ -62,15 +61,21 @@ internal class RepubliseringService(
         if (arbeidstider.skalRepublisereNå()) {
             logger.info("Republiserer behovssekvens. Uløst behov: $uløstBehov")
             kafkaProducer.send(ProducerRecord(topic, behovssekvensId, behovssekvens))
+            sistRepublisering.setToCurrentTime()
         }
     }
 
-    internal companion object {
-        val uløsteBehovGauge: Gauge = Gauge
+    private companion object {
+        private val sistRepublisering: Gauge = Gauge
+            .build("sistRepublisering", "Sist tidspunkt en melding ble republisert")
+            .register()
+
+        private val uløsteBehovGauge: Gauge = Gauge
             .build("uloesteBehov", "Hvilke behov er uløst akkurat nå?")
             .labelNames("uloesteBehov")
             .register()
-        internal const val RYDD_MELDINGER_ELDRE_ENN_MINUTTER = 30L
-        internal const val MAX_ANTALL_Å_HENTE = 50
+
+        private const val RYDD_MELDINGER_ELDRE_ENN_MINUTTER = 30L
+        private const val MAX_ANTALL_Å_HENTE = 50
     }
 }
