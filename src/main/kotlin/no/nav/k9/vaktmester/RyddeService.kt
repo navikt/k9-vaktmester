@@ -21,7 +21,7 @@ internal class RyddeService(
 
     private val logger = LoggerFactory.getLogger(RyddeService::class.java)
     private val topic = env.hentRequiredEnv("KAFKA_RAPID_TOPIC")
-    private val ignorerteMeldinger = Ignorer.ignorerteMeldinger
+    private val ignorerteMeldinger = Meldinger.ignorerteMeldinger
 
     internal fun rydd() {
         uløsteBehovGauge.clear()
