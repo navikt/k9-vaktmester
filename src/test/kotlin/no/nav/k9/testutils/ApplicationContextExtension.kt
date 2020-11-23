@@ -4,6 +4,7 @@ import com.opentable.db.postgres.embedded.EmbeddedPostgres
 import io.mockk.every
 import io.mockk.mockk
 import no.nav.k9.ApplicationContext
+import no.nav.k9.vaktmester.Arbeidstider
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.RecordMetadata
 import org.apache.kafka.common.TopicPartition
@@ -11,6 +12,7 @@ import org.junit.jupiter.api.extension.ExtensionContext
 import org.junit.jupiter.api.extension.ParameterContext
 import org.junit.jupiter.api.extension.ParameterResolver
 import java.io.File
+import java.time.LocalDateTime
 import java.util.concurrent.CompletableFuture
 
 internal class ApplicationContextExtension : ParameterResolver {
@@ -33,6 +35,9 @@ internal class ApplicationContextExtension : ParameterResolver {
                 ),
             kafkaProducer = mockk<KafkaProducer<String, String>>().also {
                 it.mockSend()
+            },
+            arbeidstider = Arbeidstider {
+                LocalDateTime.parse("2020-11-23T10:45:00")
             }
         ).build()
 
