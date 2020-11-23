@@ -19,7 +19,7 @@ internal class RiverUtilsTest {
             behov1, behov2, behov3
         )
 
-        assertThat(inFlight.uløstBehov()).isEqualTo(behov2)
+        assertThat(inFlight.somMeldingsinformasjon().uløstBehov()).isEqualTo(behov2)
     }
 
     @Test
@@ -33,11 +33,11 @@ internal class RiverUtilsTest {
             behov1, behov2, behov3
         )
 
-        assertThat(inFlight.uløstBehov()).isEqualTo(behov1)
+        assertThat(inFlight.somMeldingsinformasjon().uløstBehov()).isEqualTo(behov1)
     }
 
     @Test
-    fun `alle behov er løst gir null`() {
+    fun `alle behov er løst gir na`() {
         val behov1 = "behov1"
         val behov2 = "behov2"
         val behov3 = "behov3"
@@ -51,7 +51,7 @@ internal class RiverUtilsTest {
             behov1, behov2, behov3
         )
 
-        assertThat(inFlight.uløstBehov()).isNull()
+        assertThat(inFlight.somMeldingsinformasjon().uløstBehov()).isEqualTo("n/a")
     }
 
     @Test
@@ -59,12 +59,12 @@ internal class RiverUtilsTest {
         assertThat(lagInFlight(
             løsninger = null,
             "behov1"
-        ).uløstBehov()).isEqualTo("behov1")
+        ).somMeldingsinformasjon().uløstBehov()).isEqualTo("behov1")
 
         assertThat(lagInFlight(
             løsninger = null,
             "behov1", "behov2"
-        ).uløstBehov()).isEqualTo("behov1")
+        ).somMeldingsinformasjon().uløstBehov()).isEqualTo("behov1")
     }
 
     private fun lagInFlight(løsninger: Map<String, String?>?, vararg behov: String): InFlight {

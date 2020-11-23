@@ -5,11 +5,12 @@ import no.nav.k9.rapid.river.Environment
 import no.nav.k9.rapid.river.hentRequiredEnv
 import no.nav.k9.vaktmester.db.ArkivRepository
 import no.nav.k9.vaktmester.db.InFlightRepository
-import no.nav.k9.vaktmester.river.uløstBehov
+import no.nav.k9.vaktmester.river.*
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.slf4j.LoggerFactory
 import java.time.Duration
+import java.time.ZonedDateTime
 
 internal class RyddeService(
     private val inFlightRepository: InFlightRepository,
@@ -21,7 +22,10 @@ internal class RyddeService(
 
     private val logger = LoggerFactory.getLogger(RyddeService::class.java)
     private val topic = env.hentRequiredEnv("KAFKA_RAPID_TOPIC")
+
     private val ignorerteMeldinger = Meldinger.ignorerteMeldinger
+    private val behovPåVent = Meldinger.behovPåVent
+    private val fjernLøsning = Meldinger.fjernLøsning
 
     internal fun rydd() {
         uløsteBehovGauge.clear()
@@ -37,13 +41,20 @@ internal class RyddeService(
                         inFlightRepository.slett(inFlight.behovssekvensId)
                     }
                     arkivRepository.hentArkivMedId(inFlight.behovssekvensId).isEmpty() -> {
-                        val uløstBehov = inFlight.uløstBehov()
+                        val meldingsinformasjon = inFlight.somMeldingsinformasjon()
+                        val uløstBehov = meldingsinformasjon.uløstBehov()
+
                         uløsteBehovGauge.labels(uløstBehov).safeInc()
-                        republiser(
-                            behovssekvensId = inFlight.behovssekvensId,
-                            behovssekvens = inFlight.behovssekvens,
-                            uløstBehov = uløstBehov!!
-                        )
+
+                        when (behovPåVent.contains(uløstBehov)) {
+                            true -> logger.info("Behovet $uløstBehov er satt på vent")
+                            false -> republiser(
+                                behovssekvensId = inFlight.behovssekvensId,
+                                behovssekvens = inFlight.behovssekvens,
+                                sistEndret = meldingsinformasjon.sistEndret,
+                                uløstBehov = uløstBehov
+                            )
+                        }
                     }
                     else -> {
                         logger.warn("Sletter behovssekvens som allerede er arkivert")
@@ -57,11 +68,35 @@ internal class RyddeService(
     private fun republiser(
         behovssekvensId: String,
         behovssekvens: String,
+        sistEndret: ZonedDateTime,
         uløstBehov: String) {
+
         if (arbeidstider.skalRepublisereNå()) {
+            val behovssekvensSomSkalRepubliseres = utledBehovssekvensSomSkalRepubliseres(
+                behovssekvensId = behovssekvensId,
+                behovssekvens = behovssekvens,
+                sistEndret = sistEndret
+            )
             logger.info("Republiserer behovssekvens. Uløst behov: $uløstBehov")
-            kafkaProducer.send(ProducerRecord(topic, behovssekvensId, behovssekvens))
+            kafkaProducer.send(ProducerRecord(topic, behovssekvensId, behovssekvensSomSkalRepubliseres))
             sistRepublisering.setToCurrentTime()
+        }
+    }
+
+    private fun utledBehovssekvensSomSkalRepubliseres(
+        behovssekvensId: String,
+        behovssekvens: String,
+        sistEndret: ZonedDateTime
+    ) : String {
+        val skalFjerneLøsning = fjernLøsning.firstOrNull {
+            it.id == behovssekvensId && it.sistEndret.isEqual(sistEndret)
+        }
+
+        return when (skalFjerneLøsning) {
+            null -> behovssekvens
+            else -> behovssekvens.fjernLøsningPå(skalFjerneLøsning.løsning).also {
+                logger.info("Fjerner løsningen på ${skalFjerneLøsning.løsning}")
+            }
         }
     }
 

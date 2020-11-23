@@ -4,6 +4,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 import org.slf4j.LoggerFactory
 import java.lang.Thread.currentThread
+import java.time.ZonedDateTime
 
 internal object Meldinger {
     private val logger = LoggerFactory.getLogger(Meldinger::class.java)
@@ -35,7 +36,7 @@ internal object Meldinger {
             .map { it as JSONObject }
             .map { FjernLøsning(
                 id = it.getString("@id")!!,
-                sistEndret = it.getString("@sistEndret")!!,
+                sistEndret = ZonedDateTime.parse(it.getString("@sistEndret")),
                 løsning = it.getString("løsning")!!
             )}
             .toSet().also {
@@ -51,11 +52,11 @@ internal object Meldinger {
 
     internal interface MeldingId {
         val id: String
-        val sistEndret: String
+        val sistEndret: ZonedDateTime
     }
 
     internal data class FjernLøsning(
         override val id: String,
-        override val sistEndret: String,
+        override val sistEndret: ZonedDateTime,
         internal val løsning: String) : MeldingId
 }
