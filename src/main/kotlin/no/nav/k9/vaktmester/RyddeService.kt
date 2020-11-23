@@ -28,7 +28,9 @@ internal class RyddeService(
     private val fjernLøsning = Meldinger.fjernLøsning
 
     internal fun rydd() {
+        val skalRepublisereNå = arbeidstider.skalRepublisereNå()
         uløsteBehovGauge.clear()
+
         inFlightRepository.hentAlleInFlights(Duration.ofMinutes(RYDD_MELDINGER_ELDRE_ENN_MINUTTER), MAX_ANTALL_Å_HENTE).forEach { inFlight ->
             håndter(
                 behovssekvensId = inFlight.behovssekvensId,
@@ -45,15 +47,15 @@ internal class RyddeService(
                         val uløstBehov = meldingsinformasjon.uløstBehov()
 
                         uløsteBehovGauge.labels(uløstBehov).safeInc()
+                        logger.info("Uløst behov $uløstBehov")
 
                         when (behovPåVent.contains(uløstBehov)) {
                             true -> logger.info("Behovet $uløstBehov er satt på vent")
-                            false -> republiser(
+                            false -> if (skalRepublisereNå) { republiser(
                                 behovssekvensId = inFlight.behovssekvensId,
                                 behovssekvens = inFlight.behovssekvens,
-                                sistEndret = meldingsinformasjon.sistEndret,
-                                uløstBehov = uløstBehov
-                            )
+                                sistEndret = meldingsinformasjon.sistEndret
+                            )}
                         }
                     }
                     else -> {
@@ -68,19 +70,15 @@ internal class RyddeService(
     private fun republiser(
         behovssekvensId: String,
         behovssekvens: String,
-        sistEndret: ZonedDateTime,
-        uløstBehov: String) {
-
-        if (arbeidstider.skalRepublisereNå()) {
-            val behovssekvensSomSkalRepubliseres = utledBehovssekvensSomSkalRepubliseres(
-                behovssekvensId = behovssekvensId,
-                behovssekvens = behovssekvens,
-                sistEndret = sistEndret
-            )
-            logger.info("Republiserer behovssekvens. Uløst behov: $uløstBehov")
-            kafkaProducer.send(ProducerRecord(topic, behovssekvensId, behovssekvensSomSkalRepubliseres))
-            sistRepublisering.setToCurrentTime()
-        }
+        sistEndret: ZonedDateTime) {
+        val behovssekvensSomSkalRepubliseres = utledBehovssekvensSomSkalRepubliseres(
+            behovssekvensId = behovssekvensId,
+            behovssekvens = behovssekvens,
+            sistEndret = sistEndret
+        )
+        logger.info("Republiserer behovssekvens")
+        kafkaProducer.send(ProducerRecord(topic, behovssekvensId, behovssekvensSomSkalRepubliseres))
+        sistRepublisering.setToCurrentTime()
     }
 
     private fun utledBehovssekvensSomSkalRepubliseres(

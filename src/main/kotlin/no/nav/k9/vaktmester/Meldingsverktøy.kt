@@ -8,10 +8,3 @@ internal fun String.fjernLøsningPå(løsning: String) : String {
     json.getJSONObject(Løsninger).remove(løsning)
     return json.toString()
 }
-
-internal fun String.skalFjerneLøsningPåHentPersonopplysninger() : Boolean {
-    val json = JSONObject(this)
-    return json.getString("@id") == "01EQNZ85BXJ5GBA5AGCDG3MSWY" &&
-           json.getString("@sistEndret") == "2020-11-21T18:00:15.293Z"
-
-}
