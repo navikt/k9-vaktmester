@@ -17,6 +17,6 @@
     "DATABASE_PORT": "_5432",
     "DATABASE_NAME": "k9-vaktmester-prod",
     "DATABASE_VAULT_MOUNT_PATH": "postgresql/prod-fss",
-    "IGNORER_RESOURCE_PATH": "ignorer/prod.json"
+    "MELDINGER_FILNAVN": "prod.json"
   }
 }

@@ -23,7 +23,7 @@ import java.time.ZonedDateTime
 import no.nav.k9.testutils.ApplicationContextExtension.Companion.mockSend
 
 @ExtendWith(ApplicationContextExtension::class)
-internal class RepubliseringServiceTest(
+internal class RyddeServiceTest(
     private val applicationContext: ApplicationContext
 ) {
 
@@ -44,7 +44,7 @@ internal class RepubliseringServiceTest(
         val id = "01BX5ZZKBKACTAV9WEVGEMMVS0"
         val behovssekvens = lagOgSendBehov(id, ZonedDateTime.now().minusMinutes(31))
 
-        applicationContext.republiseringService.republiserGamleUarkiverteMeldinger()
+        applicationContext.ryddeService.rydd()
 
         verify(exactly = 1) {
             applicationContext.kafkaProducer.send(
@@ -72,7 +72,7 @@ internal class RepubliseringServiceTest(
 
         applicationContext.arkivRepository.arkiverBehovssekvens(id, behovssekvens, "123")
 
-        applicationContext.republiseringService.republiserGamleUarkiverteMeldinger()
+        applicationContext.ryddeService.rydd()
 
         val oppdatertInFlight = ds.hentInFlightMedId(id)
         assertThat(oppdatertInFlight).isEmpty()
@@ -94,7 +94,7 @@ internal class RepubliseringServiceTest(
 
         assertThat(inFlights).hasSize(1)
 
-        applicationContext.republiseringService.republiserGamleUarkiverteMeldinger()
+        applicationContext.ryddeService.rydd()
 
         val inFlightEtterRydding = ds.hentInFlightMedId(id)
 

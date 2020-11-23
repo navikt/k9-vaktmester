@@ -2,7 +2,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 val junitJupiterVersion = "5.7.0"
 val k9rapidVersion = "1.f3af2d5"
-val flywayVersion = "7.2.0"
+val flywayVersion = "7.2.1"
 val hikariVersion = "3.4.5"
 val kotliqueryVersion = "1.3.1"
 val postgresVersion = "42.2.18"

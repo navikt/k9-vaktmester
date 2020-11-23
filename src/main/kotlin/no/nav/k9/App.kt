@@ -11,8 +11,9 @@ import no.nav.helse.rapids_rivers.RapidApplication
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.k9.rapid.river.Environment
 import no.nav.k9.rapid.river.KafkaBuilder.kafkaProducer
-import no.nav.k9.vaktmester.RepubliseringService
-import no.nav.k9.vaktmester.RyddInFlightScheduler
+import no.nav.k9.vaktmester.Arbeidstider
+import no.nav.k9.vaktmester.RyddeService
+import no.nav.k9.vaktmester.RyddeScheduler
 import no.nav.k9.vaktmester.db.ArkivRepository
 import no.nav.k9.vaktmester.db.DataSourceBuilder
 import no.nav.k9.vaktmester.db.InFlightRepository
@@ -67,8 +68,8 @@ internal class ApplicationContext(
     val arkivRepository: ArkivRepository,
     val inFlightRepository: InFlightRepository,
     val healthService: HealthService,
-    val republiseringService: RepubliseringService,
-    val ryddInFlightScheduler: RyddInFlightScheduler,
+    val ryddeService: RyddeService,
+    val ryddeScheduler: RyddeScheduler,
     val kafkaProducer: KafkaProducer<String, String>
 ) {
 
@@ -76,7 +77,7 @@ internal class ApplicationContext(
         DataSourceBuilder(env).migrateAsAdmin()
     }
     internal fun stop() {
-        ryddInFlightScheduler.stop()
+        ryddeScheduler.stop()
     }
 
     internal class Builder(
@@ -84,9 +85,10 @@ internal class ApplicationContext(
         var dataSource: DataSource? = null,
         var arkivRepository: ArkivRepository? = null,
         var inFlightRepository: InFlightRepository? = null,
-        val republiseringService: RepubliseringService? = null,
-        var ryddInFlightScheduler: RyddInFlightScheduler? = null,
-        var kafkaProducer: KafkaProducer<String, String>? = null
+        var ryddeService: RyddeService? = null,
+        var ryddeScheduler: RyddeScheduler? = null,
+        var kafkaProducer: KafkaProducer<String, String>? = null,
+        var arbeidstider: Arbeidstider? = null
     ) {
         internal fun build(): ApplicationContext {
             val benyttetEnv = env ?: System.getenv()
@@ -95,13 +97,14 @@ internal class ApplicationContext(
             val benyttetArkivRepository = arkivRepository ?: ArkivRepository(benyttetDataSource)
             val benyttetInFlightRepository = inFlightRepository ?: InFlightRepository(benyttetDataSource)
             val benyttetKafkaProducer = kafkaProducer ?: benyttetEnv.kafkaProducer()
-            val benyttetRepubliseringService = republiseringService ?: RepubliseringService(
+            val benyttetRepubliseringService = ryddeService ?: RyddeService(
                 inFlightRepository = benyttetInFlightRepository,
                 arkivRepository = benyttetArkivRepository,
                 kafkaProducer = benyttetKafkaProducer,
-                env = benyttetEnv
+                env = benyttetEnv,
+                arbeidstider = arbeidstider ?: Arbeidstider()
             )
-            val benyttetInFlightScheduler = ryddInFlightScheduler ?: RyddInFlightScheduler(
+            val benyttetInFlightScheduler = ryddeScheduler ?: RyddeScheduler(
                 ryddeService = benyttetRepubliseringService
             )
 
@@ -110,8 +113,8 @@ internal class ApplicationContext(
                 dataSource = benyttetDataSource,
                 arkivRepository = benyttetArkivRepository,
                 inFlightRepository = benyttetInFlightRepository,
-                republiseringService = benyttetRepubliseringService,
-                ryddInFlightScheduler = benyttetInFlightScheduler,
+                ryddeService = benyttetRepubliseringService,
+                ryddeScheduler = benyttetInFlightScheduler,
                 kafkaProducer = benyttetKafkaProducer,
                 healthService = HealthService(
                     healthChecks = setOf(
