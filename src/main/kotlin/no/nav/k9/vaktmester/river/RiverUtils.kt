@@ -59,7 +59,10 @@ internal fun List<Arkiv>.doIfEmpty(task: () -> Unit) = when (isEmpty()) {
 internal fun ObjectNode.fieldNamesList(): List<String> = this.fieldNames().asSequence().toList()
 
 internal fun InFlight.somMeldingsinformasjon() =
-    JsonMessage(behovssekvens, MessageProblems(behovssekvens))
+    behovssekvens.behovssekvensSomMeldingsinformasjon()
+
+internal fun String.behovssekvensSomMeldingsinformasjon() =
+    JsonMessage(this, MessageProblems(this))
         .vaktmesterOppgave()
         .meldingsinformasjon()
 

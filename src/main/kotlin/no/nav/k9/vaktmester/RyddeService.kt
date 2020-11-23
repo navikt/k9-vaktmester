@@ -45,17 +45,18 @@ internal class RyddeService(
                     arkivRepository.hentArkivMedId(inFlight.behovssekvensId).isEmpty() -> {
                         val meldingsinformasjon = inFlight.somMeldingsinformasjon()
                         val uløstBehov = meldingsinformasjon.uløstBehov()
-
                         uløsteBehovGauge.labels(uløstBehov).safeInc()
-                        logger.info("Uløst behov $uløstBehov")
 
                         when (behovPåVent.contains(uløstBehov)) {
                             true -> logger.info("Behovet $uløstBehov er satt på vent")
-                            false -> if (skalRepublisereNå) { republiser(
-                                behovssekvensId = inFlight.behovssekvensId,
-                                behovssekvens = inFlight.behovssekvens,
-                                sistEndret = meldingsinformasjon.sistEndret
-                            )}
+                            false -> if (skalRepublisereNå) {
+                                logger.info("Republiserer behovssekvens. Uløst behov $uløstBehov")
+                                republiser(
+                                    behovssekvensId = inFlight.behovssekvensId,
+                                    behovssekvens = inFlight.behovssekvens,
+                                    sistEndret = meldingsinformasjon.sistEndret
+                                )
+                            }
                         }
                     }
                     else -> {
@@ -76,7 +77,6 @@ internal class RyddeService(
             behovssekvens = behovssekvens,
             sistEndret = sistEndret
         )
-        logger.info("Republiserer behovssekvens")
         kafkaProducer.send(ProducerRecord(topic, behovssekvensId, behovssekvensSomSkalRepubliseres))
         sistRepublisering.setToCurrentTime()
     }
@@ -93,7 +93,7 @@ internal class RyddeService(
         return when (skalFjerneLøsning) {
             null -> behovssekvens
             else -> behovssekvens.fjernLøsningPå(skalFjerneLøsning.løsning).also {
-                logger.info("Fjerner løsningen på ${skalFjerneLøsning.løsning}")
+                logger.warn("Fjerner løsningen på ${skalFjerneLøsning.løsning}")
             }
         }
     }
