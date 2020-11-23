@@ -15,6 +15,7 @@ internal class RepubliseringService(
     private val inFlightRepository: InFlightRepository,
     private val arkivRepository: ArkivRepository,
     private val kafkaProducer: KafkaProducer<String, String>,
+    private val arbeidstider: Arbeidstider,
     env: Environment
 ) {
 
@@ -38,17 +39,12 @@ internal class RepubliseringService(
                     }
                     arkivRepository.hentArkivMedId(inFlight.behovssekvensId).isEmpty() -> {
                         val uløstBehov = inFlight.uløstBehov()
-                        logger.info("Republiserer behovssekvens. Uløst behov: $uløstBehov")
                         uløsteBehovGauge.labels(uløstBehov).safeInc()
-
-                        val republiser = when (inFlight.behovssekvens.skalFjerneLøsningPåHentPersonopplysninger()) {
-                            true -> inFlight.behovssekvens.fjernLøsningPå("HentPersonopplysninger").also {
-                                logger.info("Fjerner løsning på 'HentPersonopplysninger'")
-                            }
-                            false -> inFlight.behovssekvens
-                        }
-
-                        kafkaProducer.send(ProducerRecord(topic, inFlight.behovssekvensId, republiser))
+                        republiser(
+                            behovssekvensId = inFlight.behovssekvensId,
+                            behovssekvens = inFlight.behovssekvens,
+                            uløstBehov = uløstBehov!!
+                        )
                     }
                     else -> {
                         logger.warn("Sletter behovssekvens som allerede er arkivert")
@@ -56,6 +52,16 @@ internal class RepubliseringService(
                     }
                 }
             }
+        }
+    }
+
+    private fun republiser(
+        behovssekvensId: String,
+        behovssekvens: String,
+        uløstBehov: String) {
+        if (arbeidstider.skalRepublisereNå()) {
+            logger.info("Republiserer behovssekvens. Uløst behov: $uløstBehov")
+            kafkaProducer.send(ProducerRecord(topic, behovssekvensId, behovssekvens))
         }
     }
 

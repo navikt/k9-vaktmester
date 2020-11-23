@@ -11,6 +11,7 @@ import no.nav.helse.rapids_rivers.RapidApplication
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.k9.rapid.river.Environment
 import no.nav.k9.rapid.river.KafkaBuilder.kafkaProducer
+import no.nav.k9.vaktmester.Arbeidstider
 import no.nav.k9.vaktmester.RepubliseringService
 import no.nav.k9.vaktmester.RyddInFlightScheduler
 import no.nav.k9.vaktmester.db.ArkivRepository
@@ -84,9 +85,10 @@ internal class ApplicationContext(
         var dataSource: DataSource? = null,
         var arkivRepository: ArkivRepository? = null,
         var inFlightRepository: InFlightRepository? = null,
-        val republiseringService: RepubliseringService? = null,
+        var republiseringService: RepubliseringService? = null,
         var ryddInFlightScheduler: RyddInFlightScheduler? = null,
-        var kafkaProducer: KafkaProducer<String, String>? = null
+        var kafkaProducer: KafkaProducer<String, String>? = null,
+        var arbeidstider: Arbeidstider? = null
     ) {
         internal fun build(): ApplicationContext {
             val benyttetEnv = env ?: System.getenv()
@@ -99,7 +101,8 @@ internal class ApplicationContext(
                 inFlightRepository = benyttetInFlightRepository,
                 arkivRepository = benyttetArkivRepository,
                 kafkaProducer = benyttetKafkaProducer,
-                env = benyttetEnv
+                env = benyttetEnv,
+                arbeidstider = arbeidstider ?: Arbeidstider()
             )
             val benyttetInFlightScheduler = ryddInFlightScheduler ?: RyddInFlightScheduler(
                 ryddeService = benyttetRepubliseringService
