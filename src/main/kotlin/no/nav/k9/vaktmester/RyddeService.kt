@@ -26,6 +26,7 @@ internal class RyddeService(
     private val ignorerteMeldinger = Meldinger.ignorerteMeldinger
     private val behovPåVent = Meldinger.behovPåVent
     private val fjernLøsning = Meldinger.fjernLøsning
+    private val fjernBehov = Meldinger.fjernBehov
 
     internal fun rydd() {
         val skalRepublisereNå = arbeidstider.skalRepublisereNå()
@@ -90,12 +91,24 @@ internal class RyddeService(
             it.id == behovssekvensId && it.sistEndret.isEqual(sistEndret)
         }
 
-        return when (skalFjerneLøsning) {
-            null -> behovssekvens
-            else -> behovssekvens.fjernLøsningPå(skalFjerneLøsning.løsning).also {
+        val skalFjerneBehov = fjernBehov.firstOrNull {
+            it.id == behovssekvensId && it.sistEndret.isEqual(sistEndret)
+        }
+
+        if(skalFjerneLøsning != null) {
+            behovssekvens.fjernLøsningPå(skalFjerneLøsning.løsning).also {
                 logger.warn("Fjerner løsningen på ${skalFjerneLøsning.løsning}")
             }
         }
+
+        if(skalFjerneBehov != null) {
+            behovssekvens.fjernBehovPå(skalFjerneBehov.behov).also {
+                logger.warn("Fjerner behov på ${skalFjerneBehov.behov}")
+            }
+        }
+
+        return behovssekvens
+
     }
 
     private companion object {

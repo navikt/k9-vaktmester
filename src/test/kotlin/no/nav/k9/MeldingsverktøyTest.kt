@@ -8,6 +8,7 @@ import org.skyscreamer.jsonassert.JSONAssert
 import java.time.ZonedDateTime
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import no.nav.k9.vaktmester.fjernBehovPå
 
 internal class MeldingsverktøyTest {
 
@@ -62,5 +63,35 @@ internal class MeldingsverktøyTest {
         assertTrue(meldingsinformasjon.behovssekvensId == "1" && meldingsinformasjon.sistEndret == ZonedDateTime.parse(sistEndret))
         assertFalse(meldingsinformasjon.behovssekvensId == "1" && meldingsinformasjon.sistEndret == ZonedDateTime.parse(sistEndret).plusSeconds(1))
         assertFalse(meldingsinformasjon.behovssekvensId == "2" && meldingsinformasjon.sistEndret == ZonedDateTime.parse(sistEndret))
+    }
+
+    @Test
+    fun `Fjern behov i @behov och @behovsrekkefølge`() {
+        val før = """
+            {
+                "@id": "1",
+                "@correlationId": "2",
+                "@behovsrekkefølge": ["Test", "Test2"],
+                "@behov": {
+                    "Test": {},
+                    "Test2": {}
+                }
+            }
+        """.trimIndent()
+
+        val forventetEtter = """
+            {
+                "@id": "1",
+                "@correlationId": "2",
+                "@behovsrekkefølge": ["Test2"],
+                "@behov": {
+                    "Test2": {}
+                }
+            }
+        """.trimIndent()
+
+        val etter = før.fjernBehovPå("Test")
+
+        JSONAssert.assertEquals(forventetEtter, etter, true)
     }
 }
