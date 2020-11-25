@@ -51,7 +51,7 @@ internal class RyddeService(
                         when (behovPåVent.contains(uløstBehov)) {
                             true -> logger.info("Behovet $uløstBehov er satt på vent")
                             false -> if (skalRepublisereNå) {
-                                logger.info("Republiserer behovssekvens. Uløst behov $uløstBehov")
+                                logger.info("Republiserer behovssekvens. Uløst behov $uløstBehov sist endret ${meldingsinformasjon.sistEndret}")
                                 republiser(
                                     behovssekvensId = inFlight.behovssekvensId,
                                     behovssekvens = inFlight.behovssekvens,
@@ -87,6 +87,7 @@ internal class RyddeService(
         behovssekvens: String,
         sistEndret: ZonedDateTime
     ) : String {
+
         val skalFjerneLøsning = fjernLøsning.firstOrNull {
             it.id == behovssekvensId && it.sistEndret.isEqual(sistEndret)
         }
@@ -95,23 +96,22 @@ internal class RyddeService(
             it.id == behovssekvensId && it.sistEndret.isEqual(sistEndret)
         }
 
-        if(skalFjerneLøsning != null) {
-            behovssekvens.fjernLøsningPå(skalFjerneLøsning.løsning).also {
+        return when {
+            skalFjerneLøsning != null -> behovssekvens.fjernLøsningPå(skalFjerneLøsning.løsning).also {
                 logger.warn("Fjerner løsningen på ${skalFjerneLøsning.løsning}")
+                secureLogger.warn("FjernetLøsningPacket=${it}")
             }
-        }
-
-        if(skalFjerneBehov != null) {
-            behovssekvens.fjernBehovPå(skalFjerneBehov.behov).also {
+            skalFjerneBehov != null -> behovssekvens.fjernBehov(skalFjerneBehov.behov).also {
                 logger.warn("Fjerner behov på ${skalFjerneBehov.behov}")
+                secureLogger.warn("FjernetBehovPacket=${it}")
             }
+            else -> behovssekvens
         }
-
-        return behovssekvens
-
     }
 
     private companion object {
+        private val secureLogger = LoggerFactory.getLogger("tjenestekall")
+
         private val sistRepublisering: Gauge = Gauge
             .build("sistRepublisering", "Sist tidspunkt en melding ble republisert")
             .register()
