@@ -44,6 +44,21 @@ internal object Meldinger {
             }
     }
 
+    @JvmStatic
+    internal val fjernBehov : Set<FjernBehov> = when (filnavn) {
+        null -> emptySet()
+        else -> JSONArray("fjernBehov".resourcePath().fraResources())
+                .map { it as JSONObject }
+                .map { FjernBehov(
+                        id = it.getString("@id")!!,
+                        sistEndret = ZonedDateTime.parse(it.getString("@sistEndret")),
+                        behov = it.getString("behov")!!
+                )}
+                .toSet().also {
+                    logger.info("Fjerner behov på ${it.size} meldinger")
+                }
+    }
+
     private fun String.resourcePath() = "meldinger/$this/$filnavn"
 
     private fun String.fraResources() = requireNotNull(currentThread().contextClassLoader.getResource(this)) {
@@ -59,4 +74,9 @@ internal object Meldinger {
         override val id: String,
         override val sistEndret: ZonedDateTime,
         internal val løsning: String) : MeldingId
+
+    internal data class FjernBehov(
+            override val id: String,
+            override val sistEndret: ZonedDateTime,
+            internal val behov: String) : MeldingId
 }
