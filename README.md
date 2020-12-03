@@ -2,7 +2,7 @@ k9-vaktmester
 ================
 Denne tjenesten har to formål:
 * Lagrer grunnlaget for behandling på norsk jord
-* Republisere meldinger som som ikke har fått en løsning i løpet av siste halvtime
+* Republisere meldinger som ikke har fått en løsning i løpet av siste halvtime
 
 # Henvendelser
 
