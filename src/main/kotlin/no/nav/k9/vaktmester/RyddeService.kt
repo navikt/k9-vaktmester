@@ -46,9 +46,10 @@ internal class RyddeService(
                     arkivRepository.hentArkivMedId(inFlight.behovssekvensId).isEmpty() -> {
                         val meldingsinformasjon = inFlight.somMeldingsinformasjon()
                         val uløstBehov = meldingsinformasjon.uløstBehov()
-                        uløsteBehovGauge.labels(uløstBehov).safeInc()
+                        val påVent = behovPåVent.contains(uløstBehov)
+                        uløsteBehovGauge.labels(uløstBehov, "$påVent").safeInc()
 
-                        when (behovPåVent.contains(uløstBehov)) {
+                        when (påVent) {
                             true -> logger.info("Behovet $uløstBehov er satt på vent")
                             false -> if (skalRepublisereNå) {
                                 logger.info("Republiserer behovssekvens. Uløst behov $uløstBehov sist endret ${meldingsinformasjon.sistEndret}")
@@ -118,7 +119,7 @@ internal class RyddeService(
 
         private val uløsteBehovGauge: Gauge = Gauge
             .build("uloesteBehov", "Hvilke behov er uløst akkurat nå?")
-            .labelNames("uloesteBehov")
+            .labelNames("uloesteBehov", "paaVent")
             .register()
 
         private const val RYDD_MELDINGER_ELDRE_ENN_MINUTTER = 30L
