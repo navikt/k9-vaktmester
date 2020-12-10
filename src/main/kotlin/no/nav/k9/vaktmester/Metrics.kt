@@ -16,4 +16,5 @@ private fun safeMetric(block: () -> Unit) = try {
 }
 
 internal fun Counter.safeInc() = safeMetric { inc() }
+internal fun Counter.Child.safeInc() = safeMetric { inc() }
 internal fun Gauge.Child.safeInc() = safeMetric { inc() }

@@ -40,7 +40,12 @@ internal class ArkivRiver(
                 behovssekvens = packet.toJson(),
                 correlationId = meldingsinformasjon.correlationId
             )
-            logger.info("Behovssekvens arkivert").also { arkivertCounter.safeInc() }
+            logger.info("Behovssekvens arkivert").also {
+                arkiverteBehovssekvenserCounter.safeInc()
+                meldingsinformasjon.behovsrekkefølge.forEach {behov ->
+                    arkiverteBehovCounter.labels(behov).safeInc()
+                }
+            }
         }
 
         håndter(
@@ -54,8 +59,13 @@ internal class ArkivRiver(
     }
 
     private companion object {
-        val arkivertCounter: Counter = Counter
-            .build("arkivert_behovssekvens", "Arkiverte behovssekvens")
+        private val arkiverteBehovssekvenserCounter = Counter
+            .build("arkiverteBehovssekvenser", "Antall arkiverte behovssekvenser")
+            .register()
+
+        private val arkiverteBehovCounter = Counter
+            .build("arkiverteBehov", "Antall arkiverte behov")
+            .labelNames("behov")
             .register()
     }
 }
