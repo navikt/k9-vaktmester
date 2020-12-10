@@ -14,6 +14,7 @@ import org.junit.jupiter.api.extension.ParameterResolver
 import java.io.File
 import java.time.LocalDateTime
 import java.util.concurrent.CompletableFuture
+import java.nio.file.Files.createTempDirectory
 
 internal class ApplicationContextExtension : ParameterResolver {
 
@@ -24,7 +25,7 @@ internal class ApplicationContextExtension : ParameterResolver {
             .setDataDirectory(tempDir.resolve("datadir"))
             .start()
 
-        private val embeddedPostgres = embeddedPostgress(createTempDir("tmp_postgres"))
+        private val embeddedPostgres = embeddedPostgress(createTempDirectory("tmp_postgres").toFile())
         private val applicationContext = ApplicationContext.Builder(
             dataSource = testDataSource(embeddedPostgres),
             env = System.getenv()
