@@ -26,11 +26,11 @@ internal class RyddeScheduler(
 
     private companion object {
         private val logger = LoggerFactory.getLogger(RyddeScheduler::class.java)
-        private val ryddejobbSistStartet: Gauge = Gauge
+        private val ryddejobbSistStartet = LateInitGauge(Gauge
             .build("ryddejobbSistStartet", "Sist tidspunkt ryddejobben startet")
-            .register()
-        private val ryddejobbSistFerdig: Gauge = Gauge
+        )
+        private val ryddejobbSistFerdig = LateInitGauge(Gauge
             .build("ryddejobbSistFerdig", "Sist tidspunkt ryddejobben var ferdig")
-            .register()
+        )
     }
 }

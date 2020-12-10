@@ -7,7 +7,6 @@ import no.nav.helse.rapids_rivers.River
 import no.nav.k9.vaktmester.db.ArkivRepository
 import no.nav.k9.vaktmester.db.InFlightRepository
 import no.nav.k9.vaktmester.håndter
-import no.nav.k9.vaktmester.safeInc
 import org.slf4j.LoggerFactory
 
 internal class ArkivRiver(
@@ -41,9 +40,9 @@ internal class ArkivRiver(
                 correlationId = meldingsinformasjon.correlationId
             )
             logger.info("Behovssekvens arkivert").also {
-                arkiverteBehovssekvenserCounter.safeInc()
-                meldingsinformasjon.behovsrekkefølge.forEach {behov ->
-                    arkiverteBehovCounter.labels(behov).safeInc()
+                arkiverteBehovssekvenserCounter.inc()
+                meldingsinformasjon.behovsrekkefølge.forEach { behov ->
+                    arkiverteBehovCounter.labels(behov).inc()
                 }
             }
         }
