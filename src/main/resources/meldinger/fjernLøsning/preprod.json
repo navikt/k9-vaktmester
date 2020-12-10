@@ -3,5 +3,10 @@
     "@id": "01ES49KW7DDWQW60FE3K6YRGBM",
     "@sistEndret": "2020-12-09T17:46:35.911Z",
     "løsning": "HentPersonopplysninger"
+  },
+  {
+    "@id": "01ES73G8S8KX5ZQ84ZFR871F1S",
+    "@sistEndret": "2020-12-10T19:57:06.649Z",
+    "løsning": "HentOmsorgspengerSaksnummer"
   }
 ]
