@@ -5,6 +5,7 @@ import io.ktor.application.install
 import io.ktor.features.ContentNegotiation
 import io.ktor.jackson.jackson
 import io.ktor.routing.routing
+import no.nav.helse.dusseldorf.ktor.health.HealthReporter
 import no.nav.helse.dusseldorf.ktor.health.HealthRoute
 import no.nav.helse.dusseldorf.ktor.health.HealthService
 import no.nav.helse.rapids_rivers.RapidApplication
@@ -56,6 +57,11 @@ internal fun Application.k9Vaktmester(applicationContext: ApplicationContext) {
     install(ContentNegotiation) {
         jackson()
     }
+
+    HealthReporter(
+        app = "k9-vaktmester",
+        healthService = applicationContext.healthService
+    )
 
     routing {
         HealthRoute(healthService = applicationContext.healthService)
