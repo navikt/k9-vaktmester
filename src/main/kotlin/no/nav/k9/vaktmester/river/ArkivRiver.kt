@@ -1,9 +1,11 @@
 package no.nav.k9.vaktmester.river
 
 import io.prometheus.client.Counter
+import io.prometheus.client.Gauge
 import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.helse.rapids_rivers.River
+import no.nav.k9.vaktmester.LateInitGauge
 import no.nav.k9.vaktmester.db.ArkivRepository
 import no.nav.k9.vaktmester.db.InFlightRepository
 import no.nav.k9.vaktmester.håndter
@@ -41,6 +43,7 @@ internal class ArkivRiver(
             )
             logger.info("Behovssekvens arkivert").also {
                 arkiverteBehovssekvenserCounter.inc()
+                sistArkivering.setToCurrentTime()
                 meldingsinformasjon.behovsrekkefølge.forEach { behov ->
                     arkiverteBehovCounter.labels(behov).inc()
                 }
@@ -66,5 +69,9 @@ internal class ArkivRiver(
             .build("arkiverteBehov", "Antall arkiverte behov")
             .labelNames("behov")
             .register()
+
+        private val sistArkivering = LateInitGauge(Gauge
+            .build("sistArkivering", "Siste tidspunkt en melding ble arkivert")
+        )
     }
 }
