@@ -1,13 +1,14 @@
 package no.nav.k9.vaktmester.river
 
 import io.prometheus.client.Counter
+import io.prometheus.client.Gauge
 import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.helse.rapids_rivers.River
+import no.nav.k9.vaktmester.LateInitGauge
 import no.nav.k9.vaktmester.db.ArkivRepository
 import no.nav.k9.vaktmester.db.InFlightRepository
 import no.nav.k9.vaktmester.håndter
-import no.nav.k9.vaktmester.safeInc
 import org.slf4j.LoggerFactory
 
 internal class ArkivRiver(
@@ -41,9 +42,10 @@ internal class ArkivRiver(
                 correlationId = meldingsinformasjon.correlationId
             )
             logger.info("Behovssekvens arkivert").also {
-                arkiverteBehovssekvenserCounter.safeInc()
-                meldingsinformasjon.behovsrekkefølge.forEach {behov ->
-                    arkiverteBehovCounter.labels(behov).safeInc()
+                arkiverteBehovssekvenserCounter.inc()
+                sistArkivering.setToCurrentTime()
+                meldingsinformasjon.behovsrekkefølge.forEach { behov ->
+                    arkiverteBehovCounter.labels(behov).inc()
                 }
             }
         }
@@ -67,5 +69,9 @@ internal class ArkivRiver(
             .build("arkiverteBehov", "Antall arkiverte behov")
             .labelNames("behov")
             .register()
+
+        private val sistArkivering = LateInitGauge(Gauge
+            .build("sistArkivering", "Siste tidspunkt en melding ble arkivert")
+        )
     }
 }

@@ -47,7 +47,7 @@ internal class RyddeService(
                         val meldingsinformasjon = inFlight.somMeldingsinformasjon()
                         val uløstBehov = meldingsinformasjon.uløstBehov()
                         val påVent = behovPåVent.contains(uløstBehov)
-                        uløsteBehovGauge.labels(uløstBehov, "$påVent").safeInc()
+                        uløsteBehovGauge.inc(uløstBehov, "$påVent")
 
                         when (påVent) {
                             true -> logger.info("Behovet $uløstBehov er satt på vent")
@@ -113,14 +113,14 @@ internal class RyddeService(
     private companion object {
         private val secureLogger = LoggerFactory.getLogger("tjenestekall")
 
-        private val sistRepublisering: Gauge = Gauge
+        private val sistRepublisering = LateInitGauge(Gauge
             .build("sistRepublisering", "Sist tidspunkt en melding ble republisert")
-            .register()
+        )
 
-        private val uløsteBehovGauge: Gauge = Gauge
-            .build("uloesteBehov", "Hvilke behov er uløst akkurat nå?")
-            .labelNames("uloesteBehov", "paaVent")
-            .register()
+        private val uløsteBehovGauge = LateInitGauge(Gauge
+                .build("uloesteBehov", "Hvilke behov er uløst akkurat nå?")
+                .labelNames("uloesteBehov", "paaVent")
+        )
 
         private const val RYDD_MELDINGER_ELDRE_ENN_MINUTTER = 30L
         private const val MAX_ANTALL_Å_HENTE = 50
