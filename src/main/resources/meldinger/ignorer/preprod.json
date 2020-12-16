@@ -22,5 +22,10 @@
   "01EQT1QW4BGYSM3RFZPEFW80SH": "Identitetsnummer som ikke finnes i PDL",
   "01EQSZDJ9P60XWKFANSY2MTMQT": "Identitetsnummer som ikke finnes i PDL",
   "01ER2SW8AXBE00ZCCX1MQ2AMKC": "Bug fikset i omsorgspenger-rammemeldinger@44470e7",
-  "01ES73G8S8KX5ZQ84ZFR871F1S": "Identitetsnummer som ikke finnes i PDL"
+  "01ES73G8S8KX5ZQ84ZFR871F1S": "Identitetsnummer som ikke finnes i PDL",
+  "01ES68T8J9T2ZTGZV3C7NY9ZBW": "Identitetsnummer som ikke finnes i PDL",
+  "01ESGKQSCFCZK0MVR03S9AVJ9V": "Finnes i PDL men mangler all data på personen",
+  "01ESGGVDPVSBVA8T77D023FXDT": "Identitetsnummer som ikke finnes i PDL",
+  "01ESM8EE8GS1KW0SS1Y5Y0D627": "Finnes i PDL men mangler all data på personen",
+  "01ESNCPDYPFC95AWACXHT8A98H": "Finnes i PDL men mangler all data på personen"
 }
