@@ -2,17 +2,17 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 val junitJupiterVersion = "5.7.0"
 val k9rapidVersion = "1.0e6a99e"
-val flywayVersion = "7.4.0"
+val flywayVersion = "7.5.1"
 val hikariVersion = "3.4.5"
 val kotliqueryVersion = "1.3.1"
 val postgresVersion = "42.2.18"
 val embeddedPostgres = "0.13.3"
 val ktorVersion = "1.5.0"
-val dusseldorfVersion = "1.5.0.3315e68"
+val dusseldorfVersion = "1.5.0.ae98b7c"
 val jsonassertVersion = "1.5.0"
 val vaultJdbcVersion = "1.3.7"
 val assertjVersion = "3.18.1"
-val mockkVersion = "1.10.4"
+val mockkVersion = "1.10.5"
 val orgJsonVersion = "20201115"
 
 val mainClass = "no.nav.k9.AppKt"
@@ -92,7 +92,7 @@ tasks {
     }
 
     withType<Wrapper> {
-        gradleVersion = "6.7.1"
+        gradleVersion = "6.8.1"
     }
 
 }
