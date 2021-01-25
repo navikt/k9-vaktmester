@@ -1,8 +1,8 @@
 package no.nav.k9.testutils
 
-import com.opentable.db.postgres.embedded.EmbeddedPostgres
 import io.mockk.every
 import io.mockk.mockk
+import io.zonky.test.db.postgres.embedded.EmbeddedPostgres
 import no.nav.k9.ApplicationContext
 import no.nav.k9.vaktmester.Arbeidstider
 import org.apache.kafka.clients.producer.KafkaProducer

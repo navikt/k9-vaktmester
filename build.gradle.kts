@@ -6,7 +6,7 @@ val flywayVersion = "7.5.1"
 val hikariVersion = "3.4.5"
 val kotliqueryVersion = "1.3.1"
 val postgresVersion = "42.2.18"
-val embeddedPostgres = "0.13.3"
+val embeddedPostgres = "1.2.10"
 val ktorVersion = "1.5.0"
 val dusseldorfVersion = "1.5.0.ae98b7c"
 val jsonassertVersion = "1.5.0"
@@ -44,7 +44,7 @@ dependencies {
     runtimeOnly("org.postgresql:postgresql:$postgresVersion")
 
     // Test
-    testImplementation("com.opentable.components:otj-pg-embedded:$embeddedPostgres")
+    testImplementation("io.zonky.test:embedded-postgres:$embeddedPostgres")
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion") {
         exclude(group = "org.eclipse.jetty")
