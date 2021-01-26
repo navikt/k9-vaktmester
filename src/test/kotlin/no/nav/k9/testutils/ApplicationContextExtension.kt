@@ -45,7 +45,6 @@ internal class ApplicationContextExtension : ParameterResolver {
         init {
             Runtime.getRuntime().addShutdownHook(
                 Thread {
-                    embeddedPostgres.postgresDatabase.connection.close()
                     embeddedPostgres.close()
                 }
             )

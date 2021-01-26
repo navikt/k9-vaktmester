@@ -52,7 +52,7 @@ internal class RyddeService(
                         when (påVent) {
                             true -> {
                                 logger.info("Behovet $uløstBehov er satt på vent")
-                                secureLogger.info("PacketPåVent=${inFlight.behovssekvens}")
+                                //secureLogger.info("PacketPåVent=${inFlight.behovssekvens}")
                             }
                             false -> if (skalRepublisereNå) {
                                 logger.info("Republiserer behovssekvens. Uløst behov $uløstBehov sist endret ${meldingsinformasjon.sistEndret}")
