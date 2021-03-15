@@ -8,6 +8,8 @@ import java.time.ZonedDateTime
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import no.nav.k9.vaktmester.fjernBehov
+import no.nav.k9.vaktmester.leggTilLøsning
+import kotlin.test.assertFailsWith
 
 internal class MeldingsverktøyTest {
 
@@ -86,5 +88,53 @@ internal class MeldingsverktøyTest {
         assertTrue(meldingsinformasjon.behovssekvensId == "1" && meldingsinformasjon.sistEndret == ZonedDateTime.parse(sistEndret))
         assertFalse(meldingsinformasjon.behovssekvensId == "1" && meldingsinformasjon.sistEndret == ZonedDateTime.parse(sistEndret).plusSeconds(1))
         assertFalse(meldingsinformasjon.behovssekvensId == "2" && meldingsinformasjon.sistEndret == ZonedDateTime.parse(sistEndret))
+    }
+
+    @Test
+    fun `Legge til løsning`() {
+        val før = """
+            {
+                "@id": "1",
+                "@correlationId": "2",
+                "@behovsrekkefølge": ["Test", "Test2"],
+                "@behov": {
+                    "Test": {},
+                    "Test2": {}
+                },
+                "@løsninger": {
+                    "Test": {}
+                }
+            }
+        """.trimIndent()
+
+        assertFailsWith<IllegalArgumentException> {
+            før.leggTilLøsning("Test", "Allerede løst")
+        }
+
+        assertFailsWith<IllegalArgumentException> {
+            før.leggTilLøsning("404", "Inneholder ikke behovet")
+        }
+
+        val forventetEtter = """
+            {
+                "@id": "1",
+                "@correlationId": "2",
+                "@behovsrekkefølge": ["Test", "Test2"],
+                "@behov": {
+                    "Test": {},
+                    "Test2": {}
+                },
+                "@løsninger": {
+                    "Test": {},
+                    "Test2": {
+                        "løsningsbeskrivelse": "Løst i testen"
+                    }
+                }
+            }
+        """.trimIndent()
+
+        val etter = før.leggTilLøsning("Test2", "Løst i testen")
+
+        JSONAssert.assertEquals(forventetEtter, etter, true)
     }
 }

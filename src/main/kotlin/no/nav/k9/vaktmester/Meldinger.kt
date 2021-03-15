@@ -59,6 +59,22 @@ internal object Meldinger {
                 }
     }
 
+    @JvmStatic
+    internal val leggTilLøsning : Set<LeggTilLøsning> = when (filnavn) {
+        null -> emptySet()
+        else -> JSONArray("leggTilLøsning".resourcePath().fraResources())
+            .map { it as JSONObject }
+            .map { LeggTilLøsning(
+                id = it.getString("@id")!!,
+                sistEndret = ZonedDateTime.parse(it.getString("@sistEndret")),
+                løsningsbeskrivelse = it.getString("løsningsbeskrivelse")!!,
+                behov = it.getString("behov")!!
+            )}
+            .toSet().also {
+                logger.info("Legger til løsning for ${it.size} meldinger")
+            }
+    }
+
     private fun String.resourcePath() = "meldinger/$this/$filnavn"
 
     private fun String.fraResources() = requireNotNull(currentThread().contextClassLoader.getResource(this)) {
@@ -76,7 +92,13 @@ internal object Meldinger {
         internal val løsning: String) : MeldingId
 
     internal data class FjernBehov(
-            override val id: String,
-            override val sistEndret: ZonedDateTime,
-            internal val behov: String) : MeldingId
+        override val id: String,
+        override val sistEndret: ZonedDateTime,
+        internal val behov: String) : MeldingId
+
+    internal data class LeggTilLøsning(
+        override val id: String,
+        override val sistEndret: ZonedDateTime,
+        internal val behov: String,
+        internal val løsningsbeskrivelse: String) : MeldingId
 }

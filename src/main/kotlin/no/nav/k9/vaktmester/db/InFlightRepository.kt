@@ -55,8 +55,8 @@ internal class InFlightRepository(
             session.run(queryOf(HEALTH_QUERY).asExecute)
         }
     }.fold(
-        onSuccess = { Healthy(ArkivRepository::class.java.simpleName, "OK") },
-        onFailure = { UnHealthy(ArkivRepository::class.java.simpleName, "Feil: ${it.message}") }
+        onSuccess = { Healthy(InFlightRepository::class.java.simpleName, "OK") },
+        onFailure = { UnHealthy(InFlightRepository::class.java.simpleName, "Feil: ${it.message}") }
     )
 
     private companion object {

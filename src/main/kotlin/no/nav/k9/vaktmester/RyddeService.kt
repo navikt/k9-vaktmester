@@ -17,8 +17,7 @@ internal class RyddeService(
     private val arkivRepository: ArkivRepository,
     private val kafkaProducer: KafkaProducer<String, String>,
     private val arbeidstider: Arbeidstider,
-    env: Environment
-) {
+    env: Environment) {
 
     private val logger = LoggerFactory.getLogger(RyddeService::class.java)
     private val topic = env.hentRequiredEnv("KAFKA_RAPID_TOPIC")
@@ -27,6 +26,7 @@ internal class RyddeService(
     private val behovPåVent = Meldinger.behovPåVent
     private val fjernLøsning = Meldinger.fjernLøsning
     private val fjernBehov = Meldinger.fjernBehov
+    private val leggTilLøsning = Meldinger.leggTilLøsning
 
     internal fun rydd() {
         val skalRepublisereNå = arbeidstider.skalRepublisereNå()
@@ -100,6 +100,10 @@ internal class RyddeService(
             it.id == behovssekvensId && it.sistEndret.isEqual(sistEndret)
         }
 
+        val skalLeggeTilLøsning = leggTilLøsning.firstOrNull {
+            it.id == behovssekvensId && it.sistEndret.isEqual(sistEndret)
+        }
+
         return when {
             skalFjerneLøsning != null -> behovssekvens.fjernLøsningPå(skalFjerneLøsning.løsning).also {
                 logger.warn("Fjerner løsningen på ${skalFjerneLøsning.løsning}")
@@ -108,6 +112,10 @@ internal class RyddeService(
             skalFjerneBehov != null -> behovssekvens.fjernBehov(skalFjerneBehov.behov).also {
                 logger.warn("Fjerner behov på ${skalFjerneBehov.behov}")
                 secureLogger.warn("FjernetBehovPacket=${it}")
+            }
+            skalLeggeTilLøsning != null -> behovssekvens.leggTilLøsning(skalLeggeTilLøsning.behov, skalLeggeTilLøsning.løsningsbeskrivelse).also {
+                logger.warn("Legger til løsning på ${skalLeggeTilLøsning.behov} med løsningsbeskrivelse ${skalLeggeTilLøsning.løsningsbeskrivelse}")
+                secureLogger.warn("LagtTilLøsningPacket=${it}")
             }
             else -> behovssekvens
         }
