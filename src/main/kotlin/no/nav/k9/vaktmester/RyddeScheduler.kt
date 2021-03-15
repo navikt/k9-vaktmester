@@ -18,6 +18,7 @@ internal class RyddeScheduler(
         ryddejobbSistStartet.setToCurrentTime()
         ryddeService.rydd()
         ryddejobbSistFerdig.setToCurrentTime()
+        logger.info("Ryddejobb ferdig")
     }
 
     internal fun stop() {
