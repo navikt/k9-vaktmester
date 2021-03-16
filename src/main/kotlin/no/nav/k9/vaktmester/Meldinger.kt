@@ -75,6 +75,21 @@ internal object Meldinger {
             }
     }
 
+    @JvmStatic
+    internal val nyeMeldinger : Set<NyMelding> = when (filnavn) {
+        null -> emptySet()
+        else -> JSONArray("nyeMeldinger".resourcePath().fraResources())
+            .map { it as JSONObject }
+            .map { NyMelding(
+                id = it.getString("@id")!!,
+                correlationId = it.getString("@correlationId")!!,
+                behovssekvens = it.toString()
+            )}
+            .toSet().also {
+                logger.info("Publiserer ${it.size} nye meldinger")
+            }
+    }
+
     private fun String.resourcePath() = "meldinger/$this/$filnavn"
 
     private fun String.fraResources() = requireNotNull(currentThread().contextClassLoader.getResource(this)) {
@@ -101,4 +116,10 @@ internal object Meldinger {
         override val sistEndret: ZonedDateTime,
         internal val behov: String,
         internal val løsningsbeskrivelse: String) : MeldingId
+
+    internal data class NyMelding(
+        internal val id: String,
+        internal val correlationId: String,
+        internal val behovssekvens: String
+    )
 }
