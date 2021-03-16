@@ -82,10 +82,10 @@ internal class RyddeService(
                 when (arkivRepository.hentArkivMedId(nyMelding.id).isEmpty()) {
                     true -> {
                         logger.info("Ny melding ikke arkivert, publiseres på rapid.")
-                        kafkaProducer.send(ProducerRecord(topic, nyMelding.behovssekvens, nyMelding.behovssekvens))
+                        kafkaProducer.send(ProducerRecord(topic, nyMelding.id, nyMelding.behovssekvens))
                     }
                     false -> {
-                        logger.info("Ny melding blitt arkivert.")
+                        logger.info("Ny melding allerede blitt arkivert.")
                     }
                 }
             }
