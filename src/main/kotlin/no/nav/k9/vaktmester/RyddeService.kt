@@ -79,13 +79,17 @@ internal class RyddeService(
                 behovssekvensId = nyMelding.id,
                 correlationId = nyMelding.correlationId,
                 behovssekvens = nyMelding.behovssekvens) {
-                when (arkivRepository.hentArkivMedId(nyMelding.id).isEmpty()) {
-                    true -> {
-                        logger.info("Ny melding ikke arkivert, publiseres på rapid.")
-                        kafkaProducer.send(ProducerRecord(topic, nyMelding.id, nyMelding.behovssekvens))
-                    }
-                    false -> {
-                        logger.info("Ny melding allerede blitt arkivert.")
+                val erArkivert = arkivRepository.hentArkivMedId(nyMelding.id).isNotEmpty()
+                val erInFlight = inFlightRepository.erInFlight(nyMelding.id)
+                when {
+                    !erArkivert && !erInFlight -> {
+                        logger.info("Melding hverken arkivert eller in flight. Legges til i in flight.")
+                        inFlightRepository.lagreInFlightBehov(
+                            behovsid = nyMelding.id,
+                            behovssekvens = nyMelding.behovssekvens,
+                            correlationId = nyMelding.correlationId,
+                            sistEndret = nyMelding.sistEndret
+                        )
                     }
                 }
             }

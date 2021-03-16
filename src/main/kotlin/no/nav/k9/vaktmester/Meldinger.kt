@@ -82,6 +82,7 @@ internal object Meldinger {
             .map { it as JSONObject }
             .map { NyMelding(
                 id = it.getString("@id")!!,
+                sistEndret = ZonedDateTime.parse(it.getString("@sistEndret")),
                 correlationId = it.getString("@correlationId")!!,
                 behovssekvens = it.toString()
             )}
@@ -118,8 +119,8 @@ internal object Meldinger {
         internal val løsningsbeskrivelse: String) : MeldingId
 
     internal data class NyMelding(
-        internal val id: String,
+        override val id: String,
+        override val sistEndret: ZonedDateTime,
         internal val correlationId: String,
-        internal val behovssekvens: String
-    )
+        internal val behovssekvens: String) : MeldingId
 }
