@@ -42,6 +42,13 @@ internal class InFlightRepository(
         }
     }
 
+    internal fun erInFlight(behovssekvensId: String) : Boolean {
+        val query = queryOf(ER_IN_FLIGHT_QUERY, mapOf("behovssekvensId" to behovssekvensId))
+        return using(sessionOf(dataSource)) { session ->
+            session.run(query.map { it.zonedDateTime("SIST_ENDRET") }.asSingle)
+        } != null
+    }
+
     internal fun slett(id: String): Boolean {
         val query = queryOf(SLETT_QUERY, id)
         val antall = using(sessionOf(dataSource)) { session ->
@@ -80,6 +87,11 @@ internal class InFlightRepository(
             DELETE FROM IN_FLIGHT WHERE BEHOVSSEKVENSID = ?
         """
         private const val HEALTH_QUERY = "SELECT 1"
+
+        @Language("PostgreSQL")
+        private const val ER_IN_FLIGHT_QUERY = """
+            SELECT SIST_ENDRET FROM IN_FLIGHT WHERE BEHOVSSEKVENSID = :behovssekvensId
+        """
     }
 }
 

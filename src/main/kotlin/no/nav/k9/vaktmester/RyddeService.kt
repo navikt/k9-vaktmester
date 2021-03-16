@@ -27,17 +27,18 @@ internal class RyddeService(
     private val fjernLøsning = Meldinger.fjernLøsning
     private val fjernBehov = Meldinger.fjernBehov
     private val leggTilLøsning = Meldinger.leggTilLøsning
+    private val nyeMeldinger = Meldinger.nyeMeldinger
 
     internal fun rydd() {
         val skalRepublisereNå = arbeidstider.skalRepublisereNå()
         uløsteBehovGauge.clear()
 
+        logger.info("Håndterer in flights")
         inFlightRepository.hentAlleInFlights(Duration.ofMinutes(RYDD_MELDINGER_ELDRE_ENN_MINUTTER), MAX_ANTALL_Å_HENTE).forEach { inFlight ->
             håndter(
                 behovssekvensId = inFlight.behovssekvensId,
                 correlationId = inFlight.correlationId,
-                behovssekvens = inFlight.behovssekvens
-            ) {
+                behovssekvens = inFlight.behovssekvens) {
                 when {
                     ignorerteMeldinger.containsKey(inFlight.behovssekvensId) -> {
                         logger.warn("Sletter behovssekvens: ${ignorerteMeldinger[inFlight.behovssekvensId]}")
@@ -67,6 +68,28 @@ internal class RyddeService(
                     else -> {
                         logger.warn("Sletter behovssekvens som allerede er arkivert")
                         inFlightRepository.slett(inFlight.behovssekvensId)
+                    }
+                }
+            }
+        }
+
+        logger.info("Håndterer nye meldinger")
+        nyeMeldinger.forEach { nyMelding ->
+            håndter(
+                behovssekvensId = nyMelding.id,
+                correlationId = nyMelding.correlationId,
+                behovssekvens = nyMelding.behovssekvens) {
+                val erArkivert = arkivRepository.hentArkivMedId(nyMelding.id).isNotEmpty()
+                val erInFlight = inFlightRepository.erInFlight(nyMelding.id)
+                when {
+                    !erArkivert && !erInFlight -> {
+                        logger.info("Melding hverken arkivert eller in flight. Legges til i in flight.")
+                        inFlightRepository.lagreInFlightBehov(
+                            behovsid = nyMelding.id,
+                            behovssekvens = nyMelding.behovssekvens,
+                            correlationId = nyMelding.correlationId,
+                            sistEndret = nyMelding.sistEndret
+                        )
                     }
                 }
             }
