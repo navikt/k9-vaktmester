@@ -76,9 +76,9 @@ internal class RyddeService(
         logger.info("Håndterer nye meldinger")
         nyeMeldinger.forEach { nyMelding ->
             håndter(
-                behovssekvens = nyMelding.id,
+                behovssekvensId = nyMelding.id,
                 correlationId = nyMelding.correlationId,
-                behovssekvensId = nyMelding.behovssekvens) {
+                behovssekvens = nyMelding.behovssekvens) {
                 when (arkivRepository.hentArkivMedId(nyMelding.id).isEmpty()) {
                     true -> {
                         logger.info("Ny melding ikke arkivert, publiseres på rapid.")
