@@ -33,6 +33,8 @@ internal class RyddeService(
         val skalRepublisereNå = arbeidstider.skalRepublisereNå()
         uløsteBehovGauge.clear()
 
+        håndterNyeMeldinger()
+
         logger.info("Håndterer in flights")
         inFlightRepository.hentAlleInFlights(Duration.ofMinutes(RYDD_MELDINGER_ELDRE_ENN_MINUTTER), MAX_ANTALL_Å_HENTE).forEach { inFlight ->
             håndter(
@@ -72,7 +74,9 @@ internal class RyddeService(
                 }
             }
         }
+    }
 
+    private fun håndterNyeMeldinger() {
         logger.info("Håndterer nye meldinger")
         nyeMeldinger.forEach { nyMelding ->
             håndter(
