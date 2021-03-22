@@ -1,1 +1,3 @@
-[]
+[
+  {"@id":"01F1D00PJVE60082PQY76ANJ0Q","@type":"Behovssekvens","@versjon":"1","@opprettet":"2021-03-22T12:00:00.000Z","@sistEndret":"2021-03-22T12:00:00.000Z","@correlationId":"0fb6a865-6a48-49b8-99d9-7f4a6e308819","@behovsrekkefølge":["OpphøreKoronaOverføringer"],"@behov":{"OpphøreKoronaOverføringer":{"versjon":"1.0.0","fraOgMed":"2021-03-22","fra":{"saksnummer":"OP5yuss"},"til":{"saksnummer":"OP5yuu6"}}}}
+]
