@@ -1,30 +1,31 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val junitJupiterVersion = "5.7.1"
-val k9rapidVersion = "1.db39724"
+val k9rapidVersion = "1.afab3a1"
 val flywayVersion = "7.7.0"
 val hikariVersion = "4.0.3"
 val kotliqueryVersion = "1.3.1"
 val postgresVersion = "42.2.19"
 val embeddedPostgres = "1.2.10"
 val ktorVersion = "1.5.2"
-val dusseldorfVersion = "1.5.2.80a27ba"
+val dusseldorfVersion = "1.5.2.1303b90"
 val jsonassertVersion = "1.5.0"
 val vaultJdbcVersion = "1.3.7"
 val assertjVersion = "3.19.0"
-val mockkVersion = "1.10.6"
+val mockkVersion = "1.11.0"
 val orgJsonVersion = "20210307"
 
 val mainClass = "no.nav.k9.AppKt"
 
 plugins {
-    kotlin("jvm") version "1.4.31"
+    kotlin("jvm") version "1.4.32"
     id("com.github.johnrengelman.shadow") version "6.1.0"
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_12
-    targetCompatibility = JavaVersion.VERSION_12
+    sourceCompatibility = JavaVersion.VERSION_15
+    targetCompatibility = JavaVersion.VERSION_15
 }
 
 dependencies {
@@ -71,6 +72,14 @@ repositories {
 }
 
 tasks {
+
+    withType<KotlinCompile> {
+        kotlinOptions.jvmTarget = "15"
+    }
+
+    named<KotlinCompile>("compileTestKotlin") {
+        kotlinOptions.jvmTarget = "15"
+    }
 
     withType<Test> {
         useJUnitPlatform()
