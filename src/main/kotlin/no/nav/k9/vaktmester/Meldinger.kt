@@ -86,7 +86,8 @@ internal object Meldinger {
                 correlationId = it.getString("@correlationId")!!,
                 behovssekvens = it.toString()
             )}
-            .toSet().also {
+            .toSet()
+            .also {
                 logger.info("Publiserer ${it.size} nye meldinger")
             }
     }
@@ -122,5 +123,7 @@ internal object Meldinger {
         override val id: String,
         override val sistEndret: ZonedDateTime,
         internal val correlationId: String,
-        internal val behovssekvens: String) : MeldingId
+        internal val behovssekvens: String) : MeldingId {
+            internal fun erAktuell() = ZonedDateTime.now().minusHours(6).isBefore(sistEndret)
+        }
 }
