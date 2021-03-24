@@ -78,7 +78,7 @@ internal class RyddeService(
 
     private fun håndterNyeMeldinger() {
         logger.info("Håndterer nye meldinger")
-        nyeMeldinger.forEach { nyMelding ->
+        nyeMeldinger.filter { it.erAktuell() }.forEach { nyMelding ->
             håndter(
                 behovssekvensId = nyMelding.id,
                 correlationId = nyMelding.correlationId,

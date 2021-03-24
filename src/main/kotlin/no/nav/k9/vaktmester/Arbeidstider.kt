@@ -30,7 +30,7 @@ internal class Arbeidstider(private val nå: () -> LocalDateTime = {
     }
 
     private val hverdag =
-        LocalTime.parse("08:00:00") to LocalTime.parse("19:00:00")
+        LocalTime.parse("08:00:00") to LocalTime.parse("18:00:00")
 
     private val helg =
         LocalTime.parse("12:00:00") to LocalTime.parse("13:00:00")
