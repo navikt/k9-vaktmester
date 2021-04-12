@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 env:
-  BASE_IMAGE: docker.pkg.github.com/${{ github.repository }}/k9-vaktmester
+  BASE_IMAGE: ghcr.io/${{ github.repository }}
   GITHUB_USERNAME: x-access-token
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -18,9 +18,10 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2.3.4
-      - uses: actions/setup-java@v1.4.3
+      - uses: actions/setup-java@v2
         with:
-          java-version: 15
+          java-version: '15'
+          distribution: 'adopt'
       - uses: actions/cache@v2.1.4
         with:
           path: |
@@ -38,10 +39,10 @@ jobs:
 
       - name: Bygg & last opp Docker image
         run: |
-          docker build --tag ${IMAGE} --tag ${BASE_IMAGE}:latest .
-          echo "$GITHUB_TOKEN" | docker login --username "$GITHUB_USERNAME" --password-stdin https://docker.pkg.github.com
-          docker push $BASE_IMAGE:latest
-          docker push $IMAGE
+          docker build --pull --tag ${BASE_IMAGE}:${TAG} --tag ${BASE_IMAGE}:latest .
+          echo ${GITHUB_TOKEN} | docker login ghcr.io --username ${GITHUB_REPOSITORY} --password-stdin
+          docker push ${BASE_IMAGE}:${TAG}
+          docker push ${BASE_IMAGE}:latest
 
       - name: Deploy til dev-fss
         uses: nais/deploy/actions/deploy@v1
@@ -52,7 +53,7 @@ jobs:
           VARS: nais/dev-fss.json
 
       - name: Deploy til prod-fss
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main' && !contains(github.event.head_commit.message, 'ci skip')
         uses: nais/deploy/actions/deploy@v1
         env:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
