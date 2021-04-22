@@ -20,8 +20,9 @@ internal object LeaderElection {
             false -> {
                 val leader = JSONObject(URL("http://$electorPath").readText()).getString("name")
                 val hostname = InetAddress.getLocalHost().hostName
-                logger.info("Leader=[$leader], Hostname=[$hostname]")
-                return hostname == leader
+                val isLeader = hostname == leader
+                logger.info("Leader=[$leader], Hostname=[$hostname], IsLeader=[$isLeader]")
+                return isLeader
             }
         }
     }
