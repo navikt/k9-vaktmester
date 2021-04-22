@@ -13,6 +13,7 @@ import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.k9.rapid.river.Environment
 import no.nav.k9.rapid.river.KafkaBuilder.kafkaProducer
 import no.nav.k9.vaktmester.Arbeidstider
+import no.nav.k9.vaktmester.LeaderElection.isLeader
 import no.nav.k9.vaktmester.RyddeService
 import no.nav.k9.vaktmester.RyddeScheduler
 import no.nav.k9.vaktmester.db.ArkivRepository
@@ -76,8 +77,7 @@ internal class ApplicationContext(
     val healthService: HealthService,
     val ryddeService: RyddeService,
     val ryddeScheduler: RyddeScheduler,
-    val kafkaProducer: KafkaProducer<String, String>
-) {
+    val kafkaProducer: KafkaProducer<String, String>) {
 
     internal fun start() {
         DataSourceBuilder(env).migrateAsAdmin()
@@ -94,10 +94,12 @@ internal class ApplicationContext(
         var ryddeService: RyddeService? = null,
         var ryddeScheduler: RyddeScheduler? = null,
         var kafkaProducer: KafkaProducer<String, String>? = null,
-        var arbeidstider: Arbeidstider? = null
-    ) {
+        var arbeidstider: Arbeidstider? = null) {
+
         internal fun build(): ApplicationContext {
-            val benyttetEnv = env ?: System.getenv()
+            val benyttetEnv = (env ?: System.getenv()).toMutableMap().also { if (isLeader()) {
+                it["KAFKA_PREFER_ON_PREM"] = "true"
+            }}
 
             val benyttetDataSource = dataSource ?: DataSourceBuilder(benyttetEnv).getDataSource()
             val benyttetArkivRepository = arkivRepository ?: ArkivRepository(benyttetDataSource)

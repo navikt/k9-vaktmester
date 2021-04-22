@@ -1,7 +1,5 @@
 {
   "cluster": "prod-fss",
-  "minReplicas": "1",
-  "maxReplicas": "1",
   "ingresses": [
     "https://k9-vaktmester.intern.nav.no"
   ],

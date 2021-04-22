@@ -32,8 +32,8 @@ spec:
      - {{url}}
   {{/each}}
   replicas:
-    min: {{minReplicas}}
-    max: {{maxReplicas}}
+    min: 2
+    max: 2
     cpuThresholdPercentage: 90
   secureLogs:
     enabled: true
@@ -45,6 +45,7 @@ spec:
   filesFrom:
     - secret: k9-vaktmester-srvusercredentials
       mountPath: /var/run/secrets/nais.io/service_user # Behov fra rapids-and-rivers.
+  leaderElection: true
   env:
   {{#each env}}
     - name: {{@key}}
