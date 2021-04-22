@@ -97,8 +97,10 @@ internal class ApplicationContext(
         var arbeidstider: Arbeidstider? = null) {
 
         internal fun build(): ApplicationContext {
-            val benyttetEnv = (env ?: System.getenv()).toMutableMap().also { if (isLeader()) {
+            val benyttetEnv = (env ?: System.getenv()).toMutableMap().also { if (isLeader) {
                 it["KAFKA_PREFER_ON_PREM"] = "true"
+            } else {
+                it["KAFKA_RAPID_TOPIC"] = "omsorgspenger.k9-rapid-v2"
             }}
 
             val benyttetDataSource = dataSource ?: DataSourceBuilder(benyttetEnv).getDataSource()
