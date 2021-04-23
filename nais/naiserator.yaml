@@ -49,7 +49,7 @@ spec:
 {{/if}}
 {{#if erVaktmester}}
   kafka:
-    pool: {{KAFKA_POOL}}
+    pool: {{kafkaPool}}
 {{/if}}
   env:
   {{#each env}}
