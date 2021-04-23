@@ -42,15 +42,15 @@ spec:
   prometheus:
     enabled: true
     path: /metrics
-  {{#if erAssistent}}
+{{#if erAssistent}}
   filesFrom:
     - secret: k9-vaktmester-srvusercredentials
       mountPath: /var/run/secrets/nais.io/service_user
-  {{/if}}
-  {{#if erVaktmester}}
+{{/if}}
+{{#if erVaktmester}}
   kafka:
     pool: {{KAFKA_POOL}}
-  {{/if}}
+{{/if}}
   env:
   {{#each env}}
     - name: {{@key}}
