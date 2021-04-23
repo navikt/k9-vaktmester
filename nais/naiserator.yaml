@@ -1,13 +1,15 @@
 apiVersion: "nais.io/v1alpha1"
 kind: "Application"
 metadata:
-  name: k9-vaktmester
+  name: {{appNavn}}
   namespace: omsorgspenger
   labels:
     team: omsorgspenger
 spec:
-  image: {{ image }}
+  image: {{image}}
   port: 8080
+  strategy:
+    type: Recreate
   liveness:
     path: isalive
     initialDelay: 20
@@ -30,8 +32,8 @@ spec:
      - {{url}}
   {{/each}}
   replicas:
-    min: 2
-    max: 2
+    min: 1
+    max: 1
     cpuThresholdPercentage: 90
   secureLogs:
     enabled: true
@@ -40,19 +42,19 @@ spec:
   prometheus:
     enabled: true
     path: /metrics
+  {{#if erAssistent}}
   filesFrom:
     - secret: k9-vaktmester-srvusercredentials
-      mountPath: /var/run/secrets/nais.io/service_user # Behov fra rapids-and-rivers.
+      mountPath: /var/run/secrets/nais.io/service_user
+  {{/if}}
+  {{#if erVaktmester}}
   kafka:
-    pool: {{kafkapool}}
+    pool: {{KAFKA_POOL}}
+  {{/if}}
   env:
   {{#each env}}
     - name: {{@key}}
-      value: {{this}}
+      value: "{{this}}"
   {{/each}}
-    - name: KAFKA_PROPERTIES_SECURITY_PROTOCOL
-      value: SASL_SSL
-    - name: KAFKA_RAPID_TOPIC
-      value: k9-rapid-v2
     - name: KAFKA_CONSUMER_GROUP_ID
       value: k9-vaktmester

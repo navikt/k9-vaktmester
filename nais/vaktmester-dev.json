@@ -1,13 +1,15 @@
 {
+  "appNavn": "k9-vaktmester",
+  "erVaktmester": "true",
   "cluster": "dev-fss",
   "ingresses": [
     "https://k9-vaktmester.dev.intern.nav.no"
   ],
-  "kafkapool": "nav-dev",
   "env": {
-    "KAFKA_BOOTSTRAP_SERVERS": "b27apvl00045.preprod.local:8443,b27apvl00046.preprod.local:8443,b27apvl00047.preprod.local:8443",
+    "KAFKA_RAPID_TOPIC": "omsorgspenger.k9-rapid-v2",
+    "KAFKA_POOL": "nav-dev",
     "DATABASE_HOST": "b27dbvl023.preprod.local",
-    "DATABASE_PORT": "_5432",
+    "DATABASE_PORT": "5432",
     "DATABASE_NAME": "k9-vaktmester-preprod",
     "DATABASE_VAULT_MOUNT_PATH": "postgresql/preprod-fss",
     "MELDINGER_FILNAVN": "preprod.json"
