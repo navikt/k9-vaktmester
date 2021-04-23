@@ -12,8 +12,8 @@ import no.nav.helse.rapids_rivers.RapidApplication
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.k9.rapid.river.Environment
 import no.nav.k9.rapid.river.KafkaBuilder.kafkaProducer
+import no.nav.k9.rapid.river.hentRequiredEnv
 import no.nav.k9.vaktmester.Arbeidstider
-import no.nav.k9.vaktmester.LeaderElection.isLeader
 import no.nav.k9.vaktmester.RyddeService
 import no.nav.k9.vaktmester.RyddeScheduler
 import no.nav.k9.vaktmester.db.ArkivRepository
@@ -60,7 +60,7 @@ internal fun Application.k9Vaktmester(applicationContext: ApplicationContext) {
     }
 
     HealthReporter(
-        app = "k9-vaktmester",
+        app = applicationContext.env.hentRequiredEnv("NAIS_APP_NAME"),
         healthService = applicationContext.healthService
     )
 
@@ -97,12 +97,7 @@ internal class ApplicationContext(
         var arbeidstider: Arbeidstider? = null) {
 
         internal fun build(): ApplicationContext {
-            val benyttetEnv = (env ?: System.getenv()).toMutableMap().also { if (isLeader) {
-                it["KAFKA_PREFER_ON_PREM"] = "true"
-            } else {
-                it["KAFKA_RAPID_TOPIC"] = "omsorgspenger.k9-rapid-v2"
-            }}
-
+            val benyttetEnv = env ?: System.getenv()
             val benyttetDataSource = dataSource ?: DataSourceBuilder(benyttetEnv).getDataSource()
             val benyttetArkivRepository = arkivRepository ?: ArkivRepository(benyttetDataSource)
             val benyttetInFlightRepository = inFlightRepository ?: InFlightRepository(benyttetDataSource)

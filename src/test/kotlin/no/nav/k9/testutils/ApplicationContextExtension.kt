@@ -31,7 +31,8 @@ internal class ApplicationContextExtension : ParameterResolver {
             env = System.getenv()
                 .plus(
                     mapOf(
-                        "KAFKA_RAPID_TOPIC" to "TEST"
+                        "KAFKA_RAPID_TOPIC" to "TEST",
+                        "NAIS_APP_NAME" to "k9-vaktmester"
                     )
                 ),
             kafkaProducer = mockk<KafkaProducer<String, String>>().also {

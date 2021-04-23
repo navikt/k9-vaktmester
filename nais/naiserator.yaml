@@ -43,7 +43,6 @@ spec:
   filesFrom:
     - secret: k9-vaktmester-srvusercredentials
       mountPath: /var/run/secrets/nais.io/service_user # Behov fra rapids-and-rivers.
-  leaderElection: true
   kafka:
     pool: {{kafkapool}}
   env:
