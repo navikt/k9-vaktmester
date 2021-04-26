@@ -101,7 +101,7 @@ internal class ApplicationContext(
             val benyttetDataSource = dataSource ?: DataSourceBuilder(benyttetEnv).getDataSource()
             val benyttetArkivRepository = arkivRepository ?: ArkivRepository(benyttetDataSource)
             val benyttetInFlightRepository = inFlightRepository ?: InFlightRepository(benyttetDataSource)
-            val benyttetKafkaProducer = kafkaProducer ?: benyttetEnv.kafkaProducer()
+            val benyttetKafkaProducer = kafkaProducer ?: benyttetEnv.kafkaProducer("ryddejobb")
             val benyttetRepubliseringService = ryddeService ?: RyddeService(
                 inFlightRepository = benyttetInFlightRepository,
                 arkivRepository = benyttetArkivRepository,
