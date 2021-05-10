@@ -160,7 +160,7 @@ internal class RyddeService(
                 .labelNames("uloesteBehov", "paaVent")
         )
 
-        private const val RYDD_MELDINGER_ELDRE_ENN_MINUTTER = 30L
+        private const val RYDD_MELDINGER_ELDRE_ENN_MINUTTER = 4L
         private const val MAX_ANTALL_Å_HENTE = 50
     }
 }
