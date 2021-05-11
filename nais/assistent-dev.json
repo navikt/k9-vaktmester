@@ -1,14 +1,16 @@
 {
+  "appNavn": "k9-vaktmesterassistent",
+  "erAssistent": "true",
   "cluster": "dev-fss",
-  "minReplicas": "1",
-  "maxReplicas": "1",
   "ingresses": [
-    "https://k9-vaktmester.dev.intern.nav.no"
+    "https://k9-vaktmesterassistent.dev.intern.nav.no"
   ],
   "env": {
     "KAFKA_BOOTSTRAP_SERVERS": "b27apvl00045.preprod.local:8443,b27apvl00046.preprod.local:8443,b27apvl00047.preprod.local:8443",
+    "KAFKA_RAPID_TOPIC": "k9-rapid-v2",
+    "KAFKA_PREFER_ON_PREM": "true",
     "DATABASE_HOST": "b27dbvl023.preprod.local",
-    "DATABASE_PORT": "_5432",
+    "DATABASE_PORT": "5432",
     "DATABASE_NAME": "k9-vaktmester-preprod",
     "DATABASE_VAULT_MOUNT_PATH": "postgresql/preprod-fss",
     "MELDINGER_FILNAVN": "preprod.json"

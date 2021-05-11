@@ -12,6 +12,7 @@ import no.nav.helse.rapids_rivers.RapidApplication
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.k9.rapid.river.Environment
 import no.nav.k9.rapid.river.KafkaBuilder.kafkaProducer
+import no.nav.k9.rapid.river.hentRequiredEnv
 import no.nav.k9.vaktmester.Arbeidstider
 import no.nav.k9.vaktmester.RyddeService
 import no.nav.k9.vaktmester.RyddeScheduler
@@ -59,7 +60,7 @@ internal fun Application.k9Vaktmester(applicationContext: ApplicationContext) {
     }
 
     HealthReporter(
-        app = "k9-vaktmester",
+        app = applicationContext.env.hentRequiredEnv("NAIS_APP_NAME"),
         healthService = applicationContext.healthService
     )
 
@@ -76,8 +77,7 @@ internal class ApplicationContext(
     val healthService: HealthService,
     val ryddeService: RyddeService,
     val ryddeScheduler: RyddeScheduler,
-    val kafkaProducer: KafkaProducer<String, String>
-) {
+    val kafkaProducer: KafkaProducer<String, String>) {
 
     internal fun start() {
         DataSourceBuilder(env).migrateAsAdmin()
@@ -94,15 +94,14 @@ internal class ApplicationContext(
         var ryddeService: RyddeService? = null,
         var ryddeScheduler: RyddeScheduler? = null,
         var kafkaProducer: KafkaProducer<String, String>? = null,
-        var arbeidstider: Arbeidstider? = null
-    ) {
+        var arbeidstider: Arbeidstider? = null) {
+
         internal fun build(): ApplicationContext {
             val benyttetEnv = env ?: System.getenv()
-
             val benyttetDataSource = dataSource ?: DataSourceBuilder(benyttetEnv).getDataSource()
             val benyttetArkivRepository = arkivRepository ?: ArkivRepository(benyttetDataSource)
             val benyttetInFlightRepository = inFlightRepository ?: InFlightRepository(benyttetDataSource)
-            val benyttetKafkaProducer = kafkaProducer ?: benyttetEnv.kafkaProducer()
+            val benyttetKafkaProducer = kafkaProducer ?: benyttetEnv.kafkaProducer("ryddejobb")
             val benyttetRepubliseringService = ryddeService ?: RyddeService(
                 inFlightRepository = benyttetInFlightRepository,
                 arkivRepository = benyttetArkivRepository,

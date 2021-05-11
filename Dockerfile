@@ -1,2 +1,2 @@
 FROM navikt/java:15
-COPY build/libs/*.jar app.jar
+COPY build/libs/app.jar app.jar

@@ -22,7 +22,7 @@ jobs:
         with:
           java-version: '15'
           distribution: 'adopt'
-      - uses: actions/cache@v2.1.4
+      - uses: actions/cache@v2.1.5
         with:
           path: |
             ~/.gradle/caches
@@ -44,19 +44,36 @@ jobs:
           docker push ${BASE_IMAGE}:${TAG}
           docker push ${BASE_IMAGE}:latest
 
-      - name: Deploy til dev-fss
+      - name: Deploy assistent til dev
         uses: nais/deploy/actions/deploy@v1
         env:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: dev-fss
           RESOURCE: nais/naiserator.yaml
-          VARS: nais/dev-fss.json
+          VARS: nais/assistent-dev.json
 
-      - name: Deploy til prod-fss
+      - name: Deploy vaktmester til dev
+        uses: nais/deploy/actions/deploy@v1
+        env:
+          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
+          CLUSTER: dev-fss
+          RESOURCE: nais/naiserator.yaml
+          VARS: nais/vaktmester-dev.json
+
+      - name: Deploy assistent til prod
         if: github.ref == 'refs/heads/main' && !contains(github.event.head_commit.message, 'ci skip')
         uses: nais/deploy/actions/deploy@v1
         env:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
           CLUSTER: prod-fss
           RESOURCE: nais/naiserator.yaml
-          VARS: nais/prod-fss.json
+          VARS: nais/assistent-prod.json
+
+      - name: Deploy vaktmaster til prod
+        if: github.ref == 'refs/heads/main' && !contains(github.event.head_commit.message, 'ci skip')
+        uses: nais/deploy/actions/deploy@v1
+        env:
+          APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
+          CLUSTER: prod-fss
+          RESOURCE: nais/naiserator.yaml
+          VARS: nais/vaktmester-prod.json
