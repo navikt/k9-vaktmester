@@ -12,7 +12,7 @@ internal class RyddeScheduler(
     private val timer = fixedRateTimer(
         name = "ryddejobb",
         initialDelay = Duration.ofMinutes(2).toMillis(),
-        period = Duration.ofMinutes(2).toMillis(),
+        period = Duration.ofMinutes(15).toMillis(),
     ) {
         logger.info("Starter ryddejobb")
         ryddejobbSistStartet.setToCurrentTime()

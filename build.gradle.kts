@@ -2,7 +2,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val junitJupiterVersion = "5.7.1"
-val k9rapidVersion = "1.9f7f619"
+val k9rapidVersion = "1.39a97e9"
 val flywayVersion = "7.8.2"
 val hikariVersion = "4.0.3"
 val kotliqueryVersion = "1.3.1"
@@ -103,7 +103,7 @@ tasks {
     }
 
     withType<Wrapper> {
-        gradleVersion = "7.0"
+        gradleVersion = "7.0.1"
     }
 
 }

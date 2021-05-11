@@ -85,9 +85,9 @@ internal class RyddeServiceTest(
     }
 
     @Test
-    fun `rører ikke inflights yngre enn 4 min`() {
+    fun `rører ikke inflights yngre enn 30 min`() {
         val id = "01BX5ZZKBKACTAV9WEVGEMMVS0"
-        lagOgSendBehov(id, ZonedDateTime.now().minusMinutes(2))
+        lagOgSendBehov(id, ZonedDateTime.now().minusMinutes(10))
 
         val ds = applicationContext.dataSource
         val inFlights = ds.hentInFlightMedId(id)
