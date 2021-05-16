@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val junitJupiterVersion = "5.7.1"
 val k9rapidVersion = "1.39a97e9"
-val flywayVersion = "7.8.2"
+val flywayVersion = "7.9.0"
 val hikariVersion = "4.0.3"
 val kotliqueryVersion = "1.3.1"
 val postgresVersion = "42.2.20"
@@ -103,7 +103,7 @@ tasks {
     }
 
     withType<Wrapper> {
-        gradleVersion = "7.0.1"
+        gradleVersion = "7.0.2"
     }
 
 }
