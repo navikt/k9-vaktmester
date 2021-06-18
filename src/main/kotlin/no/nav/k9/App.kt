@@ -93,9 +93,13 @@ internal class ApplicationContext(
         }
     }
     val erAssistent = appNavn == "k9-vaktmesterassistent"
+    private val erVaktmester = !erAssistent
 
     internal fun start() {
         DataSourceBuilder(env).migrateAsAdmin()
+        if (erVaktmester) {
+            ryddeScheduler.start()
+        }
     }
     internal fun stop() {
         ryddeScheduler.stop()
