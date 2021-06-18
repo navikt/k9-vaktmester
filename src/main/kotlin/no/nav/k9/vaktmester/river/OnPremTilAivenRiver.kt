@@ -4,6 +4,7 @@ import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.MessageContext
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.helse.rapids_rivers.River
+import no.nav.k9.vaktmester.håndter
 import org.apache.kafka.clients.producer.KafkaProducer
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.slf4j.LoggerFactory
@@ -25,10 +26,14 @@ internal class OnPremTilAivenRiver(
         val meldingsinformasjon = packet.meldingsinformasjon()
         if (meldingsinformasjon.skalArkivers) return
 
-        val record = ProducerRecord(AivenTopic, meldingsinformasjon.behovssekvensId, packet.toJson())
-
-        kafkaProducer.send(record).get().also {
-            logger.info("Uløst behov=[${meldingsinformasjon.uløstBehov()}] publisert OnPrem er sendt til Aiven. Topic=${it.topic()}, Offset=[${it.offset()}], Partition=[${it.partition()}]")
+        håndter(
+            behovssekvensId = meldingsinformasjon.behovssekvensId,
+            correlationId = meldingsinformasjon.correlationId,
+            behovssekvens = packet.toJson()) {
+            val record = ProducerRecord(AivenTopic, meldingsinformasjon.behovssekvensId, packet.toJson())
+            kafkaProducer.send(record).get().also {
+                logger.info("Uløst behov=[${meldingsinformasjon.uløstBehov()}] publisert OnPrem er sendt til Aiven. Topic=${it.topic()}, Offset=[${it.offset()}], Partition=[${it.partition()}]")
+            }
         }
     }
 
