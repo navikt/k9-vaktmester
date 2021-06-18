@@ -1,5 +1,6 @@
 {
   "appNavn": "k9-vaktmesterassistent",
+  "kafkaPool": "nav-prod",
   "erAssistent": "true",
   "cluster": "prod-fss",
   "ingresses": [

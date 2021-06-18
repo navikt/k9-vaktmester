@@ -66,9 +66,9 @@ internal fun String.behovssekvensSomMeldingsinformasjon() =
         .vaktmesterOppgave()
         .meldingsinformasjon()
 
-internal fun Meldingsinformasjon.uløstBehov() = {
+internal fun Meldingsinformasjon.uløstBehov(): String {
     val løsteBehov = løsninger.fieldNamesList()
-    behovsrekkefølge.firstOrNull {
+    return behovsrekkefølge.firstOrNull {
         it !in løsteBehov
-    }?:"n/a"
-}()
+    } ?: "n/a"
+}

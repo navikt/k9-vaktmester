@@ -3,26 +3,32 @@ package no.nav.k9.vaktmester
 import io.prometheus.client.Gauge
 import org.slf4j.LoggerFactory
 import java.time.Duration
+import java.util.*
 import kotlin.concurrent.fixedRateTimer
 
 internal class RyddeScheduler(
-    private val ryddeService: RyddeService,
-) {
+    private val ryddeService: RyddeService) {
 
-    private val timer = fixedRateTimer(
-        name = "ryddejobb",
-        initialDelay = Duration.ofMinutes(2).toMillis(),
-        period = Duration.ofMinutes(15).toMillis(),
-    ) {
-        logger.info("Starter ryddejobb")
-        ryddejobbSistStartet.setToCurrentTime()
-        ryddeService.rydd()
-        ryddejobbSistFerdig.setToCurrentTime()
-        logger.info("Ryddejobb ferdig")
+    private var timer : Timer? = null
+
+    internal fun start() {
+        logger.info("Starter RyddeScheduler")
+        timer = fixedRateTimer(
+            name = "ryddejobb",
+            initialDelay = Duration.ofMinutes(2).toMillis(),
+            period = Duration.ofMinutes(15).toMillis()) {
+            logger.info("Starter ryddejobb")
+            ryddejobbSistStartet.setToCurrentTime()
+            ryddeService.rydd()
+            ryddejobbSistFerdig.setToCurrentTime()
+            logger.info("Ryddejobb ferdig")
+        }
     }
 
     internal fun stop() {
-        timer.cancel()
+        timer?.cancel()?.also {
+            logger.info("Stopper RyddeScheduler")
+        }
     }
 
     private companion object {

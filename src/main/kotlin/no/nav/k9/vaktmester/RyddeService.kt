@@ -57,7 +57,7 @@ internal class RyddeService(
                                 logger.info("Behovet $uløstBehov er satt på vent")
                                 //secureLogger.info("PacketPåVent=${inFlight.behovssekvens}")
                             }
-                            false -> if (skalRepublisereNå || BehovPublisertOnPrem.contains(uløstBehov)) {
+                            false -> if (skalRepublisereNå) {
                                 logger.info("Republiserer behovssekvens. Uløst behov $uløstBehov sist endret ${meldingsinformasjon.sistEndret}")
                                 republiser(
                                     behovssekvensId = inFlight.behovssekvensId,
@@ -162,26 +162,5 @@ internal class RyddeService(
 
         private const val RYDD_MELDINGER_ELDRE_ENN_MINUTTER = 30L
         private const val MAX_ANTALL_Å_HENTE = 50
-
-        /**
-         * Publiseres OnPrem, avhengig av å bli repblisert til Aiven for å
-         * bli løst. For å unngå alarmer på disse behovene republiseres de også
-         * utenom vaktmesterns arbeidstider.
-         * Når behovene blir publisert rett på Aiven kan man fjerne behovet fra denne listen,
-         * og når alle behovene publiseres rett på Aiven kan listen fjernes i sin helhet.
-         */
-        private val BehovPublisertOnPrem = listOf(
-            // Fra k9-sak
-            // https://github.com/navikt/k9-sak/blob/3.1.31/ytelse-omsorgspenger/src/main/java/no/nav/k9/sak/ytelse/omsorgspenger/utvidetrett/klient/UtvidetRettBehovKlient.java#L18-L26
-            "InnvilgetKroniskSyktBarn",
-            "AvslåttKroniskSyktBarn",
-            "InnvilgetMidlertidigAlene",
-            "AvslåttMidlertidigAlene",
-            // Fra diverse brukerdialog-tjenester
-            "AleneOmOmsorgen",
-            "OverføreOmsorgsdager",
-            "OverføreKoronaOmsorgsdager",
-            "FordeleOmsorgsdager"
-        )
     }
 }
