@@ -1,6 +1,5 @@
 {
   "appNavn": "k9-vaktmester",
-  "erVaktmester": "true",
   "kafkaPool": "nav-prod",
   "cluster": "prod-fss",
   "ingresses": [

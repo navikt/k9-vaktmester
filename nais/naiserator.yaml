@@ -47,10 +47,8 @@ spec:
     - secret: k9-vaktmester-srvusercredentials
       mountPath: /var/run/secrets/nais.io/service_user
 {{/if}}
-{{#if erVaktmester}}
   kafka:
     pool: {{kafkaPool}}
-{{/if}}
   env:
   {{#each env}}
     - name: {{@key}}
