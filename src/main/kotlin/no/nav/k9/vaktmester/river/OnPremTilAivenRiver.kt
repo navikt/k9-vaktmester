@@ -32,7 +32,7 @@ internal class OnPremTilAivenRiver(
             behovssekvens = packet.toJson()) {
             val record = ProducerRecord(AivenTopic, meldingsinformasjon.behovssekvensId, packet.toJson())
             kafkaProducer.send(record).get().also {
-                logger.info("Uløst behov=[${meldingsinformasjon.uløstBehov()}] publisert OnPrem er sendt til Aiven. Topic=${it.topic()}, Offset=[${it.offset()}], Partition=[${it.partition()}]")
+                logger.info("Uløst behov=[${meldingsinformasjon.uløstBehov()}] publisert OnPrem er sendt til Aiven. Topic=[${it.topic()}], Offset=[${it.offset()}], Partition=[${it.partition()}]")
             }
         }
     }
