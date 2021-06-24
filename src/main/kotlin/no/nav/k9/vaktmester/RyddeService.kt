@@ -57,7 +57,7 @@ internal class RyddeService(
                                 logger.info("Behovet $uløstBehov er satt på vent")
                                 //secureLogger.info("PacketPåVent=${inFlight.behovssekvens}")
                             }
-                            false -> if (skalRepublisereNå) {
+                            false -> if (skalRepublisereNå && uløstBehov.erRepubliserbartBehov()) {
                                 logger.info("Republiserer behovssekvens. Uløst behov $uløstBehov sist endret ${meldingsinformasjon.sistEndret}")
                                 republiser(
                                     behovssekvensId = inFlight.behovssekvensId,
@@ -162,5 +162,10 @@ internal class RyddeService(
 
         private const val RYDD_MELDINGER_ELDRE_ENN_MINUTTER = 30L
         private const val MAX_ANTALL_Å_HENTE = 50
+
+        private val ikkeRepubliserbareBehov = setOf(
+            "SendMeldingerManuelt"
+        )
+        private fun String.erRepubliserbartBehov() = !ikkeRepubliserbareBehov.contains(this)
     }
 }
