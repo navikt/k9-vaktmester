@@ -5,11 +5,11 @@ import no.nav.k9.vaktmester.river.behovssekvensSomMeldingsinformasjon
 import org.junit.jupiter.api.Test
 import org.skyscreamer.jsonassert.JSONAssert
 import java.time.ZonedDateTime
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 import no.nav.k9.vaktmester.fjernBehov
 import no.nav.k9.vaktmester.leggTilLøsning
-import kotlin.test.assertFailsWith
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
+import org.junit.jupiter.api.assertThrows
 
 internal class MeldingsverktøyTest {
 
@@ -107,11 +107,11 @@ internal class MeldingsverktøyTest {
             }
         """.trimIndent()
 
-        assertFailsWith<IllegalArgumentException> {
+        assertThrows<IllegalArgumentException> {
             før.leggTilLøsning("Test", "Allerede løst")
         }
 
-        assertFailsWith<IllegalArgumentException> {
+        assertThrows<IllegalArgumentException> {
             før.leggTilLøsning("404", "Inneholder ikke behovet")
         }
 

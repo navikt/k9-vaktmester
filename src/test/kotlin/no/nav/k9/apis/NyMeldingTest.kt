@@ -1,10 +1,10 @@
 package no.nav.k9.apis
 
 import no.nav.k9.vaktmester.Meldinger
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import java.time.ZonedDateTime
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 
 internal class NyMeldingTest {
 
