@@ -2,24 +2,24 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val junitJupiterVersion = "5.7.2"
-val k9rapidVersion = "1.4be9936"
+val k9rapidVersion = "1.20210625095239-653e3a9"
 val flywayVersion = "7.10.0"
 val hikariVersion = "4.0.3"
 val kotliqueryVersion = "1.3.1"
-val postgresVersion = "42.2.22"
-val embeddedPostgres = "1.2.10"
-val ktorVersion = "1.6.0"
-val dusseldorfVersion = "2.1.6.0-ef0acb6"
+val postgresVersion = "42.2.23"
+val embeddedPostgres = "1.3.0"
+val ktorVersion = "1.6.1"
+val dusseldorfVersion = "2.1.6.0-1516d10"
 val jsonassertVersion = "1.5.0"
 val vaultJdbcVersion = "1.3.7"
-val assertjVersion = "3.20.1"
-val mockkVersion = "1.11.0"
+val assertjVersion = "3.20.2"
+val mockkVersion = "1.12.0"
 val orgJsonVersion = "20210307"
 
 val mainClass = "no.nav.k9.AppKt"
 
 plugins {
-    kotlin("jvm") version "1.5.10"
+    kotlin("jvm") version "1.5.21"
     id("com.github.johnrengelman.shadow") version "7.0.0"
 }
 
@@ -68,19 +68,17 @@ repositories {
         }
     }
     mavenCentral()
-    maven {
-        url = uri("https://jitpack.io")
-    }
+    maven("https://jitpack.io")
 }
 
 tasks {
 
     withType<KotlinCompile> {
-        kotlinOptions.jvmTarget = "15"
+        kotlinOptions.jvmTarget = "16"
     }
 
     named<KotlinCompile>("compileTestKotlin") {
-        kotlinOptions.jvmTarget = "15"
+        kotlinOptions.jvmTarget = "16"
     }
 
     withType<Test> {
@@ -103,7 +101,7 @@ tasks {
     }
 
     withType<Wrapper> {
-        gradleVersion = "7.1"
+        gradleVersion = "7.1.1"
     }
 
 }
