@@ -49,12 +49,15 @@ internal class RyddeService(
                     arkivRepository.hentArkivMedId(inFlight.behovssekvensId).isEmpty() -> {
                         val meldingsinformasjon = inFlight.somMeldingsinformasjon()
                         val uløstBehov = meldingsinformasjon.uløstBehov()
-                        val påVent = behovPåVent.contains(uløstBehov)
+                        val behovetPåVent = behovPåVent.contains(uløstBehov)
+                        val behovssekvensPåVent = behovPåVent.contains(inFlight.behovssekvensId)
+                        val påVent = behovetPåVent || behovssekvensPåVent
                         uløsteBehovGauge.inc(uløstBehov, "$påVent")
 
                         when (påVent) {
                             true -> {
-                                logger.info("Behovet $uløstBehov er satt på vent")
+                                if (behovssekvensPåVent) logger.info("Behovssekvens ${inFlight.behovssekvensId} er satt på vent")
+                                if (behovetPåVent) logger.info("Behovet $uløstBehov er satt på vent")
                                 //secureLogger.info("PacketPåVent=${inFlight.behovssekvens}")
                             }
                             false -> if (skalRepublisereNå) {
