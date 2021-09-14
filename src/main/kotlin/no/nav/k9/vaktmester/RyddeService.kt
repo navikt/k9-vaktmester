@@ -49,15 +49,14 @@ internal class RyddeService(
                     arkivRepository.hentArkivMedId(inFlight.behovssekvensId).isEmpty() -> {
                         val meldingsinformasjon = inFlight.somMeldingsinformasjon()
                         val uløstBehov = meldingsinformasjon.uløstBehov()
-                        val behovetPåVent = behovPåVent.contains(uløstBehov)
-                        val behovssekvensPåVent = behovPåVent.contains(inFlight.behovssekvensId)
-                        val påVent = behovetPåVent || behovssekvensPåVent
-                        uløsteBehovGauge.inc(uløstBehov, "$påVent")
+
+                        val påVent = håndterPåVent(
+                            behovssekvensId = inFlight.behovssekvensId,
+                            uløstBehov = uløstBehov
+                        )
 
                         when (påVent) {
                             true -> {
-                                if (behovssekvensPåVent) logger.info("Behovssekvens ${inFlight.behovssekvensId} er satt på vent")
-                                if (behovetPåVent) logger.info("Behovet $uløstBehov er satt på vent")
                                 //secureLogger.info("PacketPåVent=${inFlight.behovssekvens}")
                             }
                             false -> if (skalRepublisereNå) {
@@ -76,6 +75,22 @@ internal class RyddeService(
                     }
                 }
             }
+        }
+    }
+
+    private fun håndterPåVent(
+        behovssekvensId: String,
+        uløstBehov: String) : Boolean {
+        var gaugeLabel = uløstBehov
+        val behovetErPåVent = behovPåVent.contains(uløstBehov).also { if (it) {
+            logger.info("Behovet $gaugeLabel er satt på vent.")
+        }}
+        val behovssekvensenErPåVent = behovPåVent.contains(behovssekvensId).also { if (it) {
+            gaugeLabel = "${behovssekvensId}@${uløstBehov}"
+            logger.info("Behovssekvens $gaugeLabel er satt på vent.")
+        }}
+        return (behovetErPåVent || behovssekvensenErPåVent).also { påVent ->
+            uløsteBehovGauge.inc(gaugeLabel, "$påVent")
         }
     }
 
