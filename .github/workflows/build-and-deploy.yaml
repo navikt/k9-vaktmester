@@ -14,8 +14,6 @@ on:
 
 env:
   BASE_IMAGE: ghcr.io/${{ github.repository }}
-  GITHUB_USERNAME: x-access-token
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
   build-and-deploy:
@@ -41,6 +39,16 @@ jobs:
       - name: Kjør tester & bygg JAR
         run: |
           ./gradlew test shadowjar
+        env:
+          GITHUB_USERNAME: x-access-token
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
 
       - name: Sett tag for docker
         run: |
@@ -49,9 +57,7 @@ jobs:
       - name: Bygg & last opp Docker image
         run: |
           docker build --pull --tag ${BASE_IMAGE}:${TAG} --tag ${BASE_IMAGE}:latest .
-          echo ${GITHUB_TOKEN} | docker login ghcr.io --username ${GITHUB_REPOSITORY} --password-stdin
-          docker push ${BASE_IMAGE}:${TAG}
-          docker push ${BASE_IMAGE}:latest
+          docker push ${BASE_IMAGE} --all-tags
 
       - name: Sett image for nais deploy
         run: echo "IMAGE=${BASE_IMAGE}:${TAG}" >> $GITHUB_ENV
