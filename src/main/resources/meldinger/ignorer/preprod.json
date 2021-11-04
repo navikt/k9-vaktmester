@@ -63,5 +63,6 @@
   "01FCX6JKYH52FSGT0R35VG82QF": "Overføring til person som ikke finnes i PDL",
   "01FKFT3SRVCMY35TW2GTBERJWR": "Feil vid implementering av korrigering IM", 
   "01FKFV1NJBXWJTWZ5P6E1AJS08": "Feil vid implementering av korrigering IM",
-  "01FKFQP1YJ364PYWTH83XPEBSA": "Feil vid implementering av korrigering IM"
+  "01FKFQP1YJ364PYWTH83XPEBSA": "Feil vid implementering av korrigering IM",
+  "01FKK6BYZ0YBDJC4YMZJJNS2C5": "Mottatt dato i korrigering IM fra punsj satt till null"
 }
