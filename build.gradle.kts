@@ -13,7 +13,7 @@ val dusseldorfVersion = "3.1.6.3-bf04e18"
 val jsonassertVersion = "1.5.0"
 val vaultJdbcVersion = "1.3.9"
 val assertjVersion = "3.21.0"
-val mockkVersion = "1.12.0"
+val mockkVersion = "1.12.1"
 val orgJsonVersion = "20210307"
 
 val mainClass = "no.nav.k9.AppKt"
