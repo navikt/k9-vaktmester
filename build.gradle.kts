@@ -14,7 +14,7 @@ val jsonassertVersion = "1.5.0"
 val vaultJdbcVersion = "1.3.9"
 val assertjVersion = "3.21.0"
 val mockkVersion = "1.12.0"
-val orgJsonVersion = "20210307"
+val orgJsonVersion = "20211205"
 
 val mainClass = "no.nav.k9.AppKt"
 
