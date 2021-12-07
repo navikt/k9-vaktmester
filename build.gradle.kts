@@ -3,7 +3,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val junitJupiterVersion = "5.8.1"
 val k9rapidVersion = "1.20210920084849-2ac86f1"
-val flywayVersion = "7.15.0"
+val flywayVersion = "8.2.1"
 val hikariVersion = "5.0.0"
 val kotliqueryVersion = "1.6.1"
 val postgresVersion = "42.2.24"
