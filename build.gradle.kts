@@ -20,7 +20,7 @@ val mainClass = "no.nav.k9.AppKt"
 
 plugins {
     kotlin("jvm") version "1.5.31"
-    id("com.github.johnrengelman.shadow") version "7.0.0"
+    id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
 java {
