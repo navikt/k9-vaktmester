@@ -65,5 +65,6 @@
   "01FKFV1NJBXWJTWZ5P6E1AJS08": "Feil vid implementering av korrigering IM",
   "01FKFQP1YJ364PYWTH83XPEBSA": "Feil vid implementering av korrigering IM",
   "01FKK6BYZ0YBDJC4YMZJJNS2C5": "Mottatt dato i korrigering IM fra punsj satt till null",
-  "01FM2QTKHAZAPBT5B60G61MS65": "Kan ikke ferdigstille: Journalpost mangler arkivvariant. Blocker i punsj."
+  "01FM2QTKHAZAPBT5B60G61MS65": "Kan ikke ferdigstille: Journalpost mangler arkivvariant. Blocker i punsj.",
+  "01FS1WKCJ782DJQRP3ZKDDBAXM": "Punsjbolle-feil: pleietrengende må være null."
 }
