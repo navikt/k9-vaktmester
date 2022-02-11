@@ -1,20 +1,23 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val junitJupiterVersion = "5.8.2"
 val k9rapidVersion = "1.20220113090933-70694df"
 val flywayVersion = "8.4.4"
 val hikariVersion = "5.0.1"
 val kotliqueryVersion = "1.6.1"
 val postgresVersion = "42.3.2"
-val embeddedPostgres = "1.3.1"
 val ktorVersion = "1.6.7"
 val dusseldorfVersion = "3.1.6.7-1288df6"
-val jsonassertVersion = "1.5.0"
 val vaultJdbcVersion = "1.3.9"
-val assertjVersion = "3.22.0"
-val mockkVersion = "1.12.2"
 val orgJsonVersion = "20211205"
+
+// Test avhengigheter
+val junitJupiterVersion = "5.8.2"
+val embeddedPostgres = "1.3.1"
+val embeddedPostgresBinaries = "12.9.0"
+val mockkVersion = "1.12.2"
+val assertjVersion = "3.22.0"
+val jsonassertVersion = "1.5.0"
 
 val mainClass = "no.nav.k9.AppKt"
 
@@ -46,6 +49,7 @@ dependencies {
 
     // Test
     testImplementation("io.zonky.test:embedded-postgres:$embeddedPostgres")
+    testImplementation(platform("io.zonky.test.postgres:embedded-postgres-binaries-bom:$embeddedPostgresBinaries"))
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")
     testImplementation("io.ktor:ktor-server-test-host:$ktorVersion") {
         exclude(group = "org.eclipse.jetty")
@@ -101,7 +105,7 @@ tasks {
     }
 
     withType<Wrapper> {
-        gradleVersion = "7.3.3"
+        gradleVersion = "7.4"
     }
 
 }

@@ -42,11 +42,6 @@ spec:
   prometheus:
     enabled: true
     path: /metrics
-{{#if erAssistent}}
-  filesFrom:
-    - secret: k9-vaktmester-srvusercredentials
-      mountPath: /var/run/secrets/nais.io/service_user
-{{/if}}
   kafka:
     pool: {{kafkaPool}}
   env:

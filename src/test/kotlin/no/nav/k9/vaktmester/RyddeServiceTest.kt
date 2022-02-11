@@ -98,7 +98,8 @@ internal class RyddeServiceTest(
 
         val inFlightEtterRydding = ds.hentInFlightMedId(id)
 
-        assertThat(inFlights[0]).isEqualToComparingFieldByFieldRecursively(inFlightEtterRydding[0])
+        assertThat(inFlights[0]).usingRecursiveComparison()
+            .isEqualTo(inFlightEtterRydding[0])
         verify {
             listOf(applicationContext.kafkaProducer) wasNot Called
         }

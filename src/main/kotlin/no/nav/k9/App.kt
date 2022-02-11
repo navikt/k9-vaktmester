@@ -12,7 +12,6 @@ import no.nav.helse.rapids_rivers.RapidApplication
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.k9.rapid.river.Environment
 import no.nav.k9.rapid.river.KafkaBuilder.kafkaProducer
-import no.nav.k9.rapid.river.KafkaBuilder.kafkaProducerAiven
 import no.nav.k9.rapid.river.hentRequiredEnv
 import no.nav.k9.vaktmester.Arbeidstider
 import no.nav.k9.vaktmester.RyddeService
@@ -22,7 +21,6 @@ import no.nav.k9.vaktmester.db.DataSourceBuilder
 import no.nav.k9.vaktmester.db.InFlightRepository
 import no.nav.k9.vaktmester.river.ArkivRiver
 import no.nav.k9.vaktmester.river.InFlightRiver
-import no.nav.k9.vaktmester.river.OnPremTilAivenRiver
 import org.apache.kafka.clients.producer.KafkaProducer
 import javax.sql.DataSource
 
@@ -47,12 +45,6 @@ internal fun RapidsConnection.registerApplicationContext(applicationContext: App
         arkivRepository = applicationContext.arkivRepository
     )
 
-    if (applicationContext.erAssistent) {
-        OnPremTilAivenRiver(
-            rapidsConnection = this,
-            kafkaProducer = applicationContext.env.kafkaProducerAiven("on-prem-til-aiven")
-        )
-    }
     register(object : RapidsConnection.StatusListener {
         override fun onStartup(rapidsConnection: RapidsConnection) {
             applicationContext.start()
@@ -92,14 +84,10 @@ internal class ApplicationContext(
             "Ugyldig appNavn $it"
         }
     }
-    val erAssistent = appNavn == "k9-vaktmesterassistent"
-    private val erVaktmester = !erAssistent
 
     internal fun start() {
         DataSourceBuilder(env).migrateAsAdmin()
-        if (erVaktmester) {
-            ryddeScheduler.start()
-        }
+        ryddeScheduler.start()
     }
     internal fun stop() {
         ryddeScheduler.stop()
