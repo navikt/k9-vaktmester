@@ -49,6 +49,7 @@ internal fun RapidsConnection.registerApplicationContext(applicationContext: App
         override fun onStartup(rapidsConnection: RapidsConnection) {
             applicationContext.start()
         }
+
         override fun onShutdown(rapidsConnection: RapidsConnection) {
             applicationContext.stop()
         }
@@ -78,17 +79,16 @@ internal class ApplicationContext(
     val healthService: HealthService,
     val ryddeService: RyddeService,
     val ryddeScheduler: RyddeScheduler,
-    val kafkaProducer: KafkaProducer<String, String>) {
-    val appNavn = env.hentRequiredEnv("NAIS_APP_NAME").also {
-        require(it == "k9-vaktmesterassistent" || it  == "k9-vaktmester") {
-            "Ugyldig appNavn $it"
-        }
-    }
+    val kafkaProducer: KafkaProducer<String, String>
+) {
+
+    val appNavn = env.hentRequiredEnv("NAIS_APP_NAME")
 
     internal fun start() {
         DataSourceBuilder(env).migrateAsAdmin()
         ryddeScheduler.start()
     }
+
     internal fun stop() {
         ryddeScheduler.stop()
     }
@@ -101,7 +101,8 @@ internal class ApplicationContext(
         var ryddeService: RyddeService? = null,
         var ryddeScheduler: RyddeScheduler? = null,
         var kafkaProducer: KafkaProducer<String, String>? = null,
-        var arbeidstider: Arbeidstider? = null) {
+        var arbeidstider: Arbeidstider? = null
+    ) {
 
         internal fun build(): ApplicationContext {
             val benyttetEnv = env ?: System.getenv()
