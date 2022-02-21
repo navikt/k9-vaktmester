@@ -45,6 +45,6 @@ internal class DataSourceBuilder(private val env: Environment) {
     enum class Role {
         Admin, User, ReadOnly;
 
-        fun asRole(databaseName: String) = "$databaseName-${name.toLowerCase()}"
+        fun asRole(databaseName: String) = "$databaseName-${name.lowercase()}"
     }
 }

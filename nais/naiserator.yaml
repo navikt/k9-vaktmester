@@ -1,7 +1,7 @@
 apiVersion: "nais.io/v1alpha1"
 kind: "Application"
 metadata:
-  name: {{appNavn}}
+  name: k9-vaktmester
   namespace: omsorgspenger
   labels:
     team: omsorgspenger
@@ -42,11 +42,6 @@ spec:
   prometheus:
     enabled: true
     path: /metrics
-{{#if erAssistent}}
-  filesFrom:
-    - secret: k9-vaktmester-srvusercredentials
-      mountPath: /var/run/secrets/nais.io/service_user
-{{/if}}
   kafka:
     pool: {{kafkaPool}}
   env:
