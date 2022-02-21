@@ -14,7 +14,7 @@ val orgJsonVersion = "20211205"
 // Test avhengigheter
 val junitJupiterVersion = "5.8.2"
 val embeddedPostgres = "1.3.1"
-val embeddedPostgresBinaries = "12.9.0"
+val embeddedPostgresBinaries = "14.2.0"
 val mockkVersion = "1.12.2"
 val assertjVersion = "3.22.0"
 val jsonassertVersion = "1.5.0"
