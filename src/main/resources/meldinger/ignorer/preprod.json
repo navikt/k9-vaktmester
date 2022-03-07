@@ -24,5 +24,6 @@
   "01FKK6BYZ0YBDJC4YMZJJNS2C5": "Mottatt dato i korrigering IM fra punsj satt till null",
   "01FM2QTKHAZAPBT5B60G61MS65": "Kan ikke ferdigstille: Journalpost mangler arkivvariant. Blocker i punsj.",
   "01FS1WKCJ782DJQRP3ZKDDBAXM": "Punsjbolle-feil: pleietrengende må være null.",
-  "01FS1RCKJAWYDJG10WZNGGW0R0": "Punsjbolle-feil: pleietrengende må være null."
+  "01FS1RCKJAWYDJG10WZNGGW0R0": "Punsjbolle-feil: pleietrengende må være null.",
+  "01FXAK3T09KC2Q9E1XKPV9DVS5": "Testet punsjsøknad med ugyldig dato i framtiden"
 }
