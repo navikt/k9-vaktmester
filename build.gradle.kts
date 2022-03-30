@@ -4,7 +4,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 val k9rapidVersion = "1.20220215091703-a5f112c"
 val flywayVersion = "8.5.0"
 val hikariVersion = "5.0.1"
-val kotliqueryVersion = "1.6.1"
+val kotliqueryVersion = "1.7.0"
 val postgresVersion = "42.3.3"
 val ktorVersion = "1.6.7"
 val dusseldorfVersion = "3.1.6.7-3fd207a"
