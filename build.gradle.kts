@@ -2,7 +2,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val k9rapidVersion = "1.20220406090141-f40e84a"
-val flywayVersion = "8.5.5"
+val flywayVersion = "8.5.7"
 val hikariVersion = "5.0.1"
 val kotliqueryVersion = "1.7.0"
 val postgresVersion = "42.3.3"
