@@ -19,5 +19,10 @@
   "01G1JMR4FCHN3HZFRNM4A903D4": "Punsjet søknad korrigering IM med dato i framtiden",
   "01G01HEAED7D551XTF2N1DRZZ0": "Journalpost som har blitt feilregistrert",
   "01FYXD5DTHCFAJASQEESEDCTDN": "Journalpost som har blitt feilregistrert",
-  "01G01WT48KWA7RSDGXQE31VJ06": "Journalpost som har blitt feilregistrert"
+  "01G01WT48KWA7RSDGXQE31VJ06": "Journalpost som har blitt feilregistrert",
+  "01G0BK3X40Z27NEWNVCWYFJREF": "Ugyldig søknad, mottatt dato ikke satt.",
+  "01FS9Q9A3MG31HTHAK93A0JASJ": "Ugyldig TOM, etter 2100",
+  "01FZA9MVE52YFCSZPEW28NGCNT": "Ikke støttet av K9sak, feil sakskobling",
+  "01G1MV3P9CWJG748102K46J142": "Ikke støttet journalpost, ferdigstilt mot generell sak",
+  "01FRMGY3WX5ZJF3CPAWKPPWJ3P": "Ikke støttet journalpost, type U med status E"
 }
