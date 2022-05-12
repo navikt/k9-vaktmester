@@ -25,5 +25,10 @@
   "01FZA9MVE52YFCSZPEW28NGCNT": "Ikke støttet av K9sak, feil sakskobling",
   "01G1MV3P9CWJG748102K46J142": "Ikke støttet journalpost, ferdigstilt mot generell sak",
   "01FRMGY3WX5ZJF3CPAWKPPWJ3P": "Ikke støttet journalpost, type U med status E",
-  "01G2A6YC3Q99N6VP9HMY87RW4F": "OMS_KS mangler fnr på barn, fikset i ny journalpost 562430712"
+  "01G2A6YC3Q99N6VP9HMY87RW4F": "OMS_KS mangler fnr på barn, fikset i ny journalpost 562430712",  
+  "01G1N93MC4K50Z4AG4SR48SPMG": "Punsjetsøknad, valt sak på feil år, fikset i journalpost 560869509",
+  "01FZJCB6XWFE3N2VYQHV592YGW": "Punsjetsøknad med journalpost knyttet mot feil sak i gosys, fikset i 560871619",
+  "01FZDFJ16YSAQDP4FSF2M24D0V": "Punsjetsøknad valt feil ytelsetype",
+  "01FXM703YGPMH9EP538VCPVDC6": "Journalpost som har blitt feilregistrert",
+  "01G2MB13Q2S3JEMRQ89PWC4GVJ": "Journalpost som har blitt feilregistrert"
 }
