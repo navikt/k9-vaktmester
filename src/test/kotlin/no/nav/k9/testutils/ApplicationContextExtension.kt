@@ -61,9 +61,8 @@ internal class ApplicationContextExtension : ParameterResolver {
                     RecordMetadata(
                         TopicPartition("foo", 1),
                         1L,
-                        1L,
+                        1,
                         System.currentTimeMillis(),
-                        1L,
                         1,
                         1
                     )
