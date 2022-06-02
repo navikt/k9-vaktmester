@@ -1,5 +1,6 @@
 package no.nav.k9
 
+import de.huxhorn.sulky.ulid.ULID
 import no.nav.k9.vaktmester.fjernLøsningPå
 import no.nav.k9.vaktmester.river.behovssekvensSomMeldingsinformasjon
 import org.junit.jupiter.api.Test
@@ -68,12 +69,13 @@ internal class MeldingsverktøyTest {
     }
 
     @Test
-    fun `Matching på meldinger basert på @id og @sistEndret`() {
+    fun `Matching på meldinger basert på @behovssekvensId og @sistEndret`() {
         val sistEndret = "2020-11-21T18:00:15.293Z"
+        val id = ULID().nextULID()
 
         val behovssekvens = """
             {
-                "@id": "1",
+                "@behovssekvensId": "$id",
                 "@correlationId": "2",
                 "@sistEndret": "$sistEndret",
                 "@behovsrekkefølge": ["Test"],
@@ -85,8 +87,32 @@ internal class MeldingsverktøyTest {
 
         val meldingsinformasjon = behovssekvens.behovssekvensSomMeldingsinformasjon()
 
-        assertTrue(meldingsinformasjon.behovssekvensId == "1" && meldingsinformasjon.sistEndret == ZonedDateTime.parse(sistEndret))
-        assertFalse(meldingsinformasjon.behovssekvensId == "1" && meldingsinformasjon.sistEndret == ZonedDateTime.parse(sistEndret).plusSeconds(1))
+        assertTrue(meldingsinformasjon.behovssekvensId == id && meldingsinformasjon.sistEndret == ZonedDateTime.parse(sistEndret))
+        assertFalse(meldingsinformasjon.behovssekvensId == id && meldingsinformasjon.sistEndret == ZonedDateTime.parse(sistEndret).plusSeconds(1))
+        assertFalse(meldingsinformasjon.behovssekvensId == "2" && meldingsinformasjon.sistEndret == ZonedDateTime.parse(sistEndret))
+    }
+
+    @Test
+    fun `Matching på meldinger basert på @id og @sistEndret`() {
+        val sistEndret = "2020-11-21T18:00:15.293Z"
+        val id = ULID().nextULID()
+
+        val behovssekvens = """
+            {
+                "@id": "$id",
+                "@correlationId": "2",
+                "@sistEndret": "$sistEndret",
+                "@behovsrekkefølge": ["Test"],
+                "@behov": {
+                    "Test": {}
+                }
+            }
+        """.trimIndent()
+
+        val meldingsinformasjon = behovssekvens.behovssekvensSomMeldingsinformasjon()
+
+        assertTrue(meldingsinformasjon.behovssekvensId == id && meldingsinformasjon.sistEndret == ZonedDateTime.parse(sistEndret))
+        assertFalse(meldingsinformasjon.behovssekvensId == id && meldingsinformasjon.sistEndret == ZonedDateTime.parse(sistEndret).plusSeconds(1))
         assertFalse(meldingsinformasjon.behovssekvensId == "2" && meldingsinformasjon.sistEndret == ZonedDateTime.parse(sistEndret))
     }
 
