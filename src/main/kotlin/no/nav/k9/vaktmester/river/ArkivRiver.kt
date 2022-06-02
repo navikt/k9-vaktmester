@@ -6,6 +6,8 @@ import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.MessageContext
 import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.helse.rapids_rivers.River
+import no.nav.helse.rapids_rivers.isMissingOrNull
+import no.nav.k9.rapid.behov.Behovsformat
 import no.nav.k9.vaktmester.LateInitGauge
 import no.nav.k9.vaktmester.db.ArkivRepository
 import no.nav.k9.vaktmester.db.InFlightRepository
@@ -29,6 +31,10 @@ internal class ArkivRiver(
     }
 
     override fun onPacket(packet: JsonMessage, context: MessageContext) {
+        if (packet[Behovsformat.BehovssekvensId].isMissingOrNull()) {
+            logger.info("Mangler @behovssekvensId i behovsformat")
+        }
+
         val meldingsinformasjon = packet.meldingsinformasjon()
         if (meldingsinformasjon.inFlight) return
 
@@ -71,8 +77,9 @@ internal class ArkivRiver(
             .labelNames("behov")
             .register()
 
-        private val sistArkivering = LateInitGauge(Gauge
-            .build("sistArkivering", "Siste tidspunkt en melding ble arkivert")
+        private val sistArkivering = LateInitGauge(
+            Gauge
+                .build("sistArkivering", "Siste tidspunkt en melding ble arkivert")
         )
     }
 }

@@ -12,6 +12,7 @@ import no.nav.k9.vaktmester.db.Arkiv
 import java.time.ZonedDateTime
 import no.nav.helse.rapids_rivers.MessageProblems
 import no.nav.helse.rapids_rivers.isMissingOrNull
+import no.nav.k9.rapid.river.behovssekvensId
 import no.nav.k9.vaktmester.db.InFlight
 
 internal const val Løsninger = "@løsninger"
@@ -30,7 +31,8 @@ internal data class Meldingsinformasjon(
 }
 
 internal fun JsonMessage.vaktmesterOppgave(): JsonMessage {
-    require(Behovsformat.Id) { it.requireText() }
+    interestedIn(Behovsformat.Id, Behovsformat.BehovssekvensId)
+    behovssekvensId() // Kaster exception om behovssekvensId eller id ikke finnes eller ikke er ULID
     require(Behovsformat.CorrelationId) { it.requireText() }
     require(Behovsformat.SistEndret) { ZonedDateTime.parse(it.asText()) }
     require(Behovsformat.Behov) { it.requireObject() }
@@ -46,7 +48,7 @@ internal fun JsonMessage.meldingsinformasjon() = Meldingsinformasjon(
         true -> objectMapper.createObjectNode()
         false -> get(Løsninger) as ObjectNode
     },
-    behovssekvensId = get(Behovsformat.Id).asText(),
+    behovssekvensId = behovssekvensId(),
     correlationId = get(Behovsformat.CorrelationId).asText(),
     behovsrekkefølge = (get(Behovsformat.Behovsrekkefølge) as ArrayNode).map { it.asText()!! }
 )

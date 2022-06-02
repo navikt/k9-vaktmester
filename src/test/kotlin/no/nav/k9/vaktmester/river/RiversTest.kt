@@ -230,4 +230,30 @@ internal class RiversTest(
         val arkiv = applicationContext.arkivRepository.hentArkivMedId(id)
         assertThat(arkiv).hasSize(1)
     }
+
+    @Test
+    fun `sender behovssekvens med deprecated @id`() {
+        val behov1 = "behov1"
+        val behov = mapOf(
+            behov1 to "{}",
+        )
+        val id = "01EKW89QKK5YZ0XW2QQYS0TB8D"
+        val behovssekvens = nyBehovssekvens(
+            id = id,
+            behov = behov,
+            løsninger = behov
+        ).toJson()
+            .replace("@behovssekvensId", "@id")
+
+        rapid.sendTestMessage(behovssekvens)
+
+        val arkiv = applicationContext.arkivRepository.hentArkivMedId(id)[0]
+
+        assertBehovssekvenserLike(behovssekvens, arkiv.behovssekvens)
+        assertThat(arkiv.arkiveringstidspunkt).isNotNull()
+        assertThat(arkiv.correlationId).isNotNull()
+
+        val inFlight = applicationContext.dataSource.hentInFlightMedId(id)
+        assertThat(inFlight).isEmpty()
+    }
 }
