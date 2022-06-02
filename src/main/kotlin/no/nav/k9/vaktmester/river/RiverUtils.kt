@@ -32,7 +32,6 @@ internal data class Meldingsinformasjon(
 
 internal fun JsonMessage.vaktmesterOppgave(): JsonMessage {
     interestedIn(Behovsformat.Id, Behovsformat.BehovssekvensId)
-    behovssekvensId() // Kaster exception om behovssekvensId eller id ikke finnes eller ikke er ULID
     require(Behovsformat.CorrelationId) { it.requireText() }
     require(Behovsformat.SistEndret) { ZonedDateTime.parse(it.asText()) }
     require(Behovsformat.Behov) { it.requireObject() }
