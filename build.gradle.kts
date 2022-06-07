@@ -2,7 +2,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val k9rapidVersion = "1.20220602105039-77944ce"
-val flywayVersion = "8.5.11"
+val flywayVersion = "8.5.12"
 val hikariVersion = "5.0.1"
 val kotliqueryVersion = "1.7.0"
 val postgresVersion = "42.3.6"
@@ -16,7 +16,7 @@ val junitJupiterVersion = "5.8.2"
 val embeddedPostgres = "2.0.0"
 val embeddedPostgresBinaries = "12.9.0"
 val mockkVersion = "1.12.4"
-val assertjVersion = "3.22.0"
+val assertjVersion = "3.23.1"
 val jsonassertVersion = "1.5.0"
 
 val mainClass = "no.nav.k9.AppKt"
