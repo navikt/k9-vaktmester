@@ -1,7 +1,6 @@
 package no.nav.k9.vaktmester
 
 import no.nav.k9.rapid.behov.Behovsformat
-import no.nav.k9.rapid.behov.Behovssekvens
 import org.json.JSONArray
 import org.json.JSONObject
 import org.slf4j.LoggerFactory

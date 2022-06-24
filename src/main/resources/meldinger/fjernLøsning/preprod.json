@@ -1,25 +1,5 @@
 [
   {
-    "@id": "01ES49KW7DDWQW60FE3K6YRGBM",
-    "@sistEndret": "2020-12-09T17:46:35.911Z",
-    "løsning": "HentPersonopplysninger"
-  },
-  {
-    "@id": "01ES73G8S8KX5ZQ84ZFR871F1S",
-    "@sistEndret": "2020-12-10T19:57:06.649Z",
-    "løsning": "HentOmsorgspengerSaksnummer"
-  },
-  {
-    "@id": "01EWDCJJYR9MKD0GSPZRXFBY1P",
-    "@sistEndret": "2021-01-19T13:17:46.823Z",
-    "løsning": "HentPersonopplysninger"
-  },
-  {
-    "@id": "01EWD478G5VJ2K791SSPQQC1BD",
-    "@sistEndret": "2021-01-19T12:58:16.316Z",
-    "løsning": "HentOmsorgspengerSaksnummer"
-  },
-  {
     "@id": "01EWK7ATDB656RDWKKVS3P1YCF",
     "@sistEndret": "2021-01-22T07:08:12.567Z",
     "løsning": "HentOmsorgspengerSaksnummer"
