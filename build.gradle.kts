@@ -2,10 +2,10 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 val k9rapidVersion = "1.20220602105039-77944ce"
-val flywayVersion = "8.5.12"
+val flywayVersion = "8.5.13"
 val hikariVersion = "5.0.1"
-val kotliqueryVersion = "1.7.0"
-val postgresVersion = "42.3.6"
+val kotliqueryVersion = "1.8.0"
+val postgresVersion = "42.4.0"
 val ktorVersion = "1.6.8"
 val dusseldorfVersion = "3.1.6.8-248832c"
 val vaultJdbcVersion = "1.3.9"
@@ -22,7 +22,7 @@ val jsonassertVersion = "1.5.0"
 val mainClass = "no.nav.k9.AppKt"
 
 plugins {
-    kotlin("jvm") version "1.6.21"
+    kotlin("jvm") version "1.7.0"
     id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
