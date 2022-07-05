@@ -17,7 +17,7 @@ val embeddedPostgres = "2.0.0"
 val embeddedPostgresBinaries = "12.9.0"
 val mockkVersion = "1.12.4"
 val assertjVersion = "3.23.1"
-val jsonassertVersion = "1.5.0"
+val jsonassertVersion = "1.5.1"
 
 val mainClass = "no.nav.k9.AppKt"
 
