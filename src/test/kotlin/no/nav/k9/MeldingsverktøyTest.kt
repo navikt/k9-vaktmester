@@ -42,7 +42,7 @@ internal class MeldingsverktøyTest {
     fun `Fjern behov`() {
         val før = """
             {
-                "@id": "1",
+                "@behovssekvensId": "1",
                 "@correlationId": "2",
                 "@behovsrekkefølge": ["Test", "Test2"],
                 "@behov": {
@@ -54,7 +54,7 @@ internal class MeldingsverktøyTest {
 
         val forventetEtter = """
             {
-                "@id": "1",
+                "@behovssekvensId": "1",
                 "@correlationId": "2",
                 "@behovsrekkefølge": ["Test2"],
                 "@behov": {
@@ -99,7 +99,7 @@ internal class MeldingsverktøyTest {
 
         val behovssekvens = """
             {
-                "@id": "$id",
+                "@behovssekvensId": "$id",
                 "@correlationId": "2",
                 "@sistEndret": "$sistEndret",
                 "@behovsrekkefølge": ["Test"],
@@ -120,7 +120,7 @@ internal class MeldingsverktøyTest {
     fun `Legge til løsning`() {
         val før = """
             {
-                "@id": "1",
+                "@behovssekvensId": "1",
                 "@correlationId": "2",
                 "@behovsrekkefølge": ["Test", "Test2"],
                 "@behov": {
@@ -143,7 +143,7 @@ internal class MeldingsverktøyTest {
 
         val forventetEtter = """
             {
-                "@id": "1",
+                "@behovssekvensId": "1",
                 "@correlationId": "2",
                 "@behovsrekkefølge": ["Test", "Test2"],
                 "@behov": {

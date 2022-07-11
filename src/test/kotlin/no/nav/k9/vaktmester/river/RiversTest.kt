@@ -7,6 +7,7 @@ import no.nav.k9.testutils.ApplicationContextExtension
 import no.nav.k9.testutils.cleanAndMigrate
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 
@@ -232,6 +233,7 @@ internal class RiversTest(
     }
 
     @Test
+    @Disabled("Ikke aktuell lengre")
     fun `sender behovssekvens med deprecated @id`() {
         val behov1 = "behov1"
         val behov = mapOf(

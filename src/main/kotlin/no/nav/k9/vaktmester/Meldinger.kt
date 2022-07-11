@@ -36,7 +36,7 @@ internal object Meldinger {
         else -> JSONArray("fjernLøsning".resourcePath().fraResources())
             .map { it as JSONObject }
             .map { FjernLøsning(
-                id = it.behovssekvensId(),
+                id = it.getString(Behovsformat.BehovssekvensId),
                 sistEndret = ZonedDateTime.parse(it.getString("@sistEndret")),
                 løsning = it.getString("løsning")!!
             )}
@@ -51,7 +51,7 @@ internal object Meldinger {
         else -> JSONArray("fjernBehov".resourcePath().fraResources())
                 .map { it as JSONObject }
                 .map { FjernBehov(
-                        id = it.behovssekvensId(),
+                        id = it.getString(Behovsformat.BehovssekvensId),
                         sistEndret = ZonedDateTime.parse(it.getString("@sistEndret")),
                         behov = it.getString("behov")!!
                 )}
@@ -66,7 +66,7 @@ internal object Meldinger {
         else -> JSONArray("leggTilLøsning".resourcePath().fraResources())
             .map { it as JSONObject }
             .map { LeggTilLøsning(
-                id = it.behovssekvensId(),
+                id = it.getString(Behovsformat.BehovssekvensId),
                 sistEndret = ZonedDateTime.parse(it.getString("@sistEndret")),
                 løsningsbeskrivelse = it.getString("løsningsbeskrivelse")!!,
                 behov = it.getString("behov")!!
@@ -82,7 +82,7 @@ internal object Meldinger {
         else -> JSONArray("nyeMeldinger".resourcePath().fraResources())
             .map { it as JSONObject }
             .map { NyMelding(
-                id = it.behovssekvensId(),
+                id = it.getString(Behovsformat.BehovssekvensId),
                 sistEndret = ZonedDateTime.parse(it.getString("@sistEndret")),
                 correlationId = it.getString("@correlationId")!!,
                 behovssekvens = it.toString()
@@ -98,11 +98,6 @@ internal object Meldinger {
     private fun String.fraResources() = requireNotNull(currentThread().contextClassLoader.getResource(this)) {
         "Finner ikke JSON-fil på resource path '$this'"
     }.readText(charset = Charsets.UTF_8)
-
-    private fun JSONObject.behovssekvensId() = when(has(Behovsformat.BehovssekvensId)) {
-        true -> getString(Behovsformat.BehovssekvensId)!!
-        false -> getString(Behovsformat.Id)!!
-    }
 
     internal interface MeldingId {
         val id: String
