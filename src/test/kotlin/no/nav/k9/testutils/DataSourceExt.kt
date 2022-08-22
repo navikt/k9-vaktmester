@@ -21,6 +21,7 @@ fun testDataSource(embeddedPostgres: EmbeddedPostgres): HikariDataSource {
 internal fun DataSource.cleanAndMigrate() {
     Flyway
         .configure()
+        .cleanDisabled(false)
         .dataSource(this)
         .load()
         .also {

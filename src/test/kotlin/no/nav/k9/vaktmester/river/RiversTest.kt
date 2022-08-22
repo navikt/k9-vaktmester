@@ -1,5 +1,6 @@
 package no.nav.k9.vaktmester.river
 
+import de.huxhorn.sulky.ulid.ULID
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import no.nav.k9.ApplicationContext
 import no.nav.k9.registerApplicationContext
