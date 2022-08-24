@@ -1,28 +1,15 @@
 package no.nav.k9
 
-import io.ktor.application.Application
-import io.ktor.application.install
-import io.ktor.features.ContentNegotiation
-import io.ktor.jackson.jackson
-import io.ktor.routing.routing
+import io.ktor.server.application.*
+import io.ktor.serialization.jackson.*
+import io.ktor.server.plugins.contentnegotiation.*
+import io.ktor.server.routing.*
 import no.nav.helse.dusseldorf.ktor.health.HealthReporter
 import no.nav.helse.dusseldorf.ktor.health.HealthRoute
-import no.nav.helse.dusseldorf.ktor.health.HealthService
 import no.nav.helse.rapids_rivers.RapidApplication
 import no.nav.helse.rapids_rivers.RapidsConnection
-import no.nav.k9.rapid.river.Environment
-import no.nav.k9.rapid.river.KafkaBuilder.kafkaProducer
-import no.nav.k9.rapid.river.hentRequiredEnv
-import no.nav.k9.vaktmester.Arbeidstider
-import no.nav.k9.vaktmester.RyddeService
-import no.nav.k9.vaktmester.RyddeScheduler
-import no.nav.k9.vaktmester.db.ArkivRepository
-import no.nav.k9.vaktmester.db.DataSourceBuilder
-import no.nav.k9.vaktmester.db.InFlightRepository
 import no.nav.k9.vaktmester.river.ArkivRiver
 import no.nav.k9.vaktmester.river.InFlightRiver
-import org.apache.kafka.clients.producer.KafkaProducer
-import javax.sql.DataSource
 
 fun main() {
     val applicationContext = ApplicationContext.Builder().build()
@@ -71,71 +58,3 @@ internal fun Application.k9Vaktmester(applicationContext: ApplicationContext) {
     }
 }
 
-internal class ApplicationContext(
-    val env: Environment,
-    val dataSource: DataSource,
-    val arkivRepository: ArkivRepository,
-    val inFlightRepository: InFlightRepository,
-    val healthService: HealthService,
-    val ryddeService: RyddeService,
-    val ryddeScheduler: RyddeScheduler,
-    val kafkaProducer: KafkaProducer<String, String>
-) {
-
-    val appNavn = env.hentRequiredEnv("NAIS_APP_NAME")
-
-    internal fun start() {
-        DataSourceBuilder(env).migrateAsAdmin()
-        ryddeScheduler.start()
-    }
-
-    internal fun stop() {
-        ryddeScheduler.stop()
-    }
-
-    internal class Builder(
-        var env: Environment? = null,
-        var dataSource: DataSource? = null,
-        var arkivRepository: ArkivRepository? = null,
-        var inFlightRepository: InFlightRepository? = null,
-        var ryddeService: RyddeService? = null,
-        var ryddeScheduler: RyddeScheduler? = null,
-        var kafkaProducer: KafkaProducer<String, String>? = null,
-        var arbeidstider: Arbeidstider? = null
-    ) {
-
-        internal fun build(): ApplicationContext {
-            val benyttetEnv = env ?: System.getenv()
-            val benyttetDataSource = dataSource ?: DataSourceBuilder(benyttetEnv).getDataSource()
-            val benyttetArkivRepository = arkivRepository ?: ArkivRepository(benyttetDataSource)
-            val benyttetInFlightRepository = inFlightRepository ?: InFlightRepository(benyttetDataSource)
-            val benyttetKafkaProducer = kafkaProducer ?: benyttetEnv.kafkaProducer("ryddejobb")
-            val benyttetRepubliseringService = ryddeService ?: RyddeService(
-                inFlightRepository = benyttetInFlightRepository,
-                arkivRepository = benyttetArkivRepository,
-                kafkaProducer = benyttetKafkaProducer,
-                env = benyttetEnv,
-                arbeidstider = arbeidstider ?: Arbeidstider()
-            )
-            val benyttetInFlightScheduler = ryddeScheduler ?: RyddeScheduler(
-                ryddeService = benyttetRepubliseringService
-            )
-
-            return ApplicationContext(
-                env = benyttetEnv,
-                dataSource = benyttetDataSource,
-                arkivRepository = benyttetArkivRepository,
-                inFlightRepository = benyttetInFlightRepository,
-                ryddeService = benyttetRepubliseringService,
-                ryddeScheduler = benyttetInFlightScheduler,
-                kafkaProducer = benyttetKafkaProducer,
-                healthService = HealthService(
-                    healthChecks = setOf(
-                        benyttetArkivRepository,
-                        benyttetInFlightRepository
-                    )
-                )
-            )
-        }
-    }
-}

@@ -63,6 +63,7 @@ internal fun assertBehovssekvenserLike(b1: String, b2: String) {
 internal fun settJsonFeltTomt(json: String, feltnavn: String): String {
     val jsonMessage = JsonMessage(json, MessageProblems(""))
     jsonMessage[feltnavn] = ""
+    jsonMessage["system_participating_services"] = "[]"
     return jsonMessage.toJson()
 }
 
