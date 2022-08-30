@@ -9,5 +9,20 @@
   "01G4M8A4PX7KRGFX2DEEQVEZ0H": "Testident som ikke finnes i PDL",
   "01G6TERCKCRBSVXZDTJXA32N3P": "Test som feiler som forventet.",
   "01G6WQXWTFT0GMWA06AHY35M0K": "Mer testing av feilregistrerte journalposter",
-  "01G6WRY1R82KD0GSW18GAAD0VP": "Mer testing av feilregistrerte journalposter"
+  "01G6WRY1R82KD0GSW18GAAD0VP": "Mer testing av feilregistrerte journalposter",
+  "01GA6E6ZJYQBTTVA42GMDXRFS0": "Ikke støttet brevkode",
+  "01GA8TTZJJNYEFK871CQNFR7C8": "Ikke støttet brevkode",
+  "01GA6BRA0R9DMCPK5ST7MAPYWT": "Ikke støttet brevkode",
+  "01G9YAPMCV5Q3NAQPACYVD8WA6": "Ikke støttet brevkode",
+  "01G9MBQ4NA8SSVBX99SKN74P4W": "Ikke støttet brevkode",
+  "01G9YVA4ZCBGYPA9PVVMDQRABW": "Ikke støttet brevkode",
+  "01GA8RYBMYA0ECWZ8J64NF81BF": "Ikke støttet brevkode",
+  "01GA8XGKVY05CDW9J98CZPE1TS": "Ikke støttet brevkode",
+  "01GA8F40Z2CR4G08JBPSDTXBA2": "Ikke støttet brevkode",
+  "01GA8W5XNT7FVWMM2TVXJ8H2PW": "Ikke støttet brevkode",
+  "01GA3VH72CPR08RR07DCP23B3B": "Feil fra Dokarkivproxy. UNAUTHORIZED",
+  "01GA6J38TSYJX94N5MJRHDB777": "Feil fra Dokarkivproxy. UNAUTHORIZED",
+  "01GA3VJG7E9JFG642N7E823TZ6": "Feil fra Dokarkivproxy. UNAUTHORIZED",
+  "01GAVCJV3J8R0QRV93MF2D5X8S": "Feil fra Dokarkivproxy. UNAUTHORIZED",
+  "01GA6AYPEAHX898M3YT9JM435K": "Feil fra Dokarkivproxy. UNAUTHORIZED"
 }
