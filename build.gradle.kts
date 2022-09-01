@@ -8,7 +8,7 @@ val kotliqueryVersion = "1.9.0"
 val postgresVersion = "42.4.2"
 val ktorVersion = "2.0.3"
 val dusseldorfVersion = "3.2.0.3-d4fdef9"
-val vaultJdbcVersion = "1.3.9"
+val vaultJdbcVersion = "1.3.10"
 val orgJsonVersion = "20220320"
 
 // Test avhengigheter
