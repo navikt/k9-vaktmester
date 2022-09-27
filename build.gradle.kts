@@ -9,7 +9,7 @@ val postgresVersion = "42.4.2"
 val ktorVersion = "2.0.3"
 val dusseldorfVersion = "3.2.0.3-d4fdef9"
 val vaultJdbcVersion = "1.3.9"
-val orgJsonVersion = "20220320"
+val orgJsonVersion = "20220924"
 
 // Test avhengigheter
 val junitJupiterVersion = "5.9.0"
