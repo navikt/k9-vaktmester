@@ -1,21 +1,21 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val k9rapidVersion = "1.20220711113850-0593e9e"
-val flywayVersion = "9.1.6"
+val k9rapidVersion = "1.20220923124637-e21a27c"
+val flywayVersion = "9.3.1"
 val hikariVersion = "5.0.1"
 val kotliqueryVersion = "1.9.0"
-val postgresVersion = "42.4.2"
-val ktorVersion = "2.0.3"
-val dusseldorfVersion = "3.2.0.3-d4fdef9"
-val vaultJdbcVersion = "1.3.9"
-val orgJsonVersion = "20220320"
+val postgresVersion = "42.5.0"
+val ktorVersion = "2.1.1"
+val dusseldorfVersion = "3.2.1.1-2d23a3e"
+val vaultJdbcVersion = "1.3.10"
+val orgJsonVersion = "20220924"
 
 // Test avhengigheter
-val junitJupiterVersion = "5.9.0"
-val embeddedPostgres = "2.0.0"
+val junitJupiterVersion = "5.9.1"
+val embeddedPostgres = "2.0.1"
 val embeddedPostgresBinaries = "12.9.0"
-val mockkVersion = "1.12.5"
+val mockkVersion = "1.13.1"
 val assertjVersion = "3.23.1"
 val jsonassertVersion = "1.5.1"
 
@@ -105,7 +105,7 @@ tasks {
     }
 
     withType<Wrapper> {
-        gradleVersion = "7.4.2"
+        gradleVersion = "7.5.1"
     }
 
 }
