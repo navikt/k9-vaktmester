@@ -1,13 +1,13 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val k9rapidVersion = "1.20220923124637-e21a27c"
-val flywayVersion = "9.3.1"
+val k9rapidVersion = "1.20221007103720-75312fe"
+val flywayVersion = "9.5.1"
 val hikariVersion = "5.0.1"
 val kotliqueryVersion = "1.9.0"
 val postgresVersion = "42.5.0"
-val ktorVersion = "2.1.1"
-val dusseldorfVersion = "3.2.1.1-2d23a3e"
+val ktorVersion = "2.1.2"
+val dusseldorfVersion = "3.2.1.2-93aa998"
 val vaultJdbcVersion = "1.3.10"
 val orgJsonVersion = "20220924"
 
@@ -15,14 +15,14 @@ val orgJsonVersion = "20220924"
 val junitJupiterVersion = "5.9.1"
 val embeddedPostgres = "2.0.1"
 val embeddedPostgresBinaries = "12.9.0"
-val mockkVersion = "1.13.1"
+val mockkVersion = "1.13.2"
 val assertjVersion = "3.23.1"
 val jsonassertVersion = "1.5.1"
 
 val mainClass = "no.nav.k9.AppKt"
 
 plugins {
-    kotlin("jvm") version "1.7.10"
+    kotlin("jvm") version "1.7.20"
     id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
@@ -37,6 +37,7 @@ dependencies {
     implementation("no.nav.helse:dusseldorf-ktor-auth:$dusseldorfVersion")
     implementation("no.nav.helse:dusseldorf-ktor-core:$dusseldorfVersion")
     implementation("no.nav.helse:dusseldorf-ktor-jackson:$dusseldorfVersion")
+    implementation("io.ktor:ktor-client-cio-jvm:$ktorVersion")
     implementation("org.json:json:$orgJsonVersion")
 
     // Database
@@ -44,7 +45,6 @@ dependencies {
     implementation("org.flywaydb:flyway-core:$flywayVersion")
     implementation("com.github.seratch:kotliquery:$kotliqueryVersion")
     implementation("no.nav:vault-jdbc:$vaultJdbcVersion")
-    implementation("io.ktor:ktor-client-cio-jvm:$ktorVersion")
     runtimeOnly("org.postgresql:postgresql:$postgresVersion")
 
     // Test
