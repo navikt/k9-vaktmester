@@ -1,13 +1,13 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val k9rapidVersion = "1.20221104110518-60ba9e0"
-val flywayVersion = "9.6.0"
+val k9rapidVersion = "1.20221124140732-e07f6f7"
+val flywayVersion = "9.10.0"
 val hikariVersion = "5.0.1"
 val kotliqueryVersion = "1.9.0"
-val postgresVersion = "42.5.0"
-val ktorVersion = "2.1.3"
-val dusseldorfVersion = "3.2.1.3-2e5bea9"
+val postgresVersion = "42.5.1"
+val ktorVersion = "2.2.1"
+val dusseldorfVersion = "3.2.2.1-4942135"
 val vaultJdbcVersion = "1.3.10"
 val orgJsonVersion = "20220924"
 
@@ -15,14 +15,14 @@ val orgJsonVersion = "20220924"
 val junitJupiterVersion = "5.9.1"
 val embeddedPostgres = "2.0.1"
 val embeddedPostgresBinaries = "12.9.0"
-val mockkVersion = "1.13.2"
+val mockkVersion = "1.13.3"
 val assertjVersion = "3.23.1"
 val jsonassertVersion = "1.5.1"
 
 val mainClass = "no.nav.k9.AppKt"
 
 plugins {
-    kotlin("jvm") version "1.7.20"
+    kotlin("jvm") version "1.7.22"
     id("com.github.johnrengelman.shadow") version "7.1.2"
 }
 
@@ -105,7 +105,7 @@ tasks {
     }
 
     withType<Wrapper> {
-        gradleVersion = "7.5.1"
+        gradleVersion = "7.6"
     }
 
 }
