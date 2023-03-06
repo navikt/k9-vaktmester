@@ -1,9 +1,6 @@
 {
   "kafkaPool": "nav-prod",
   "cluster": "prod-fss",
-  "ingresses": [
-    "https://k9-vaktmester.intern.nav.no"
-  ],
   "env": {
     "KAFKA_RAPID_TOPIC": "omsorgspenger.k9-rapid-v2",
     "DATABASE_HOST": "A01DBVL024.adeo.no",
