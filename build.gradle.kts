@@ -1,29 +1,31 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-val k9rapidVersion = "1.20221124140732-e07f6f7"
-val flywayVersion = "9.10.1"
+val k9rapidVersion = "1.20230223071927-10b4a1f"
+val flywayVersion = "9.15.1"
 val hikariVersion = "5.0.1"
 val kotliqueryVersion = "1.9.0"
-val postgresVersion = "42.5.1"
-val ktorVersion = "2.2.1"
-val dusseldorfVersion = "3.2.2.1-4942135"
+val postgresVersion = "42.5.4"
+val ktorVersion = "2.2.4"
+val dusseldorfVersion = "3.2.2.4-98ccf55"
 val vaultJdbcVersion = "1.3.10"
-val orgJsonVersion = "20220924"
+val orgJsonVersion = "20230227"
 
 // Test avhengigheter
-val junitJupiterVersion = "5.9.1"
-val embeddedPostgres = "2.0.1"
+val junitJupiterVersion = "5.9.2"
+val embeddedPostgres = "2.0.3"
 val embeddedPostgresBinaries = "12.9.0"
-val mockkVersion = "1.13.3"
-val assertjVersion = "3.23.1"
+val mockkVersion = "1.13.4"
+val assertjVersion = "3.24.2"
 val jsonassertVersion = "1.5.1"
 
 val mainClass = "no.nav.k9.AppKt"
 
 plugins {
-    kotlin("jvm") version "1.7.22"
-    id("com.github.johnrengelman.shadow") version "7.1.2"
+    kotlin("jvm") version "1.8.10"
+    id("com.github.johnrengelman.shadow") version "8.1.0"
+    id("org.sonarqube") version "4.0.0.2929"
+    jacoco
 }
 
 java {
@@ -105,7 +107,29 @@ tasks {
     }
 
     withType<Wrapper> {
-        gradleVersion = "7.6"
+        gradleVersion = "8.0.2"
     }
 
+}
+
+tasks.jacocoTestReport {
+    dependsOn(tasks.test) // tests are required to run before generating the report
+    reports {
+        xml.required.set(true)
+        csv.required.set(false)
+    }
+}
+
+tasks.test {
+    finalizedBy(tasks.jacocoTestReport) // report is always generated after tests run
+}
+
+sonarqube {
+    properties {
+        property("sonar.projectKey", "navikt_k9-vaktmester")
+        property("sonar.organization", "navikt")
+        property("sonar.host.url", "https://sonarcloud.io")
+        property("sonar.login", System.getenv("SONAR_TOKEN"))
+        property("sonar.sourceEncoding", "UTF-8")
+    }
 }
