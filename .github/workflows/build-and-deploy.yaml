@@ -40,11 +40,39 @@ jobs:
         run: echo "IMAGE=ghcr.io/${GITHUB_REPOSITORY}:$(date "+%Y.%m.%d")-$(git rev-parse --short HEAD)" >> $GITHUB_ENV
 
       - uses: docker/build-push-action@v4
+        id: docker-build
         with:
           context: .
           push: true
           pull: true
           tags: ${{ env.IMAGE }}
+
+      - name: Run Trivy vulnerability scanner on docker image
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: ${{ env.IMAGE }}
+          ignore-unfixed: true
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v1
+        with:
+          credentials_json: ${{ secrets.SALSA_CREDENTIALS }}
+
+      - name: Provenance, upload and sign attestation
+        uses: nais/salsa@v0.8
+        with:
+          key: ${{ secrets.SALSA_KMS_KEY }}
+          registry: ${{ secrets.GITHUB_TOKEN }}
+          image_digest: ${{ steps.docker-build.outputs.digest }}
+          image: ${{ env.IMAGE }}
 
       - name: Deploy vaktmester til dev
         uses: nais/deploy/actions/deploy@v1
