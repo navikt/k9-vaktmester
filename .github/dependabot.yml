@@ -24,7 +24,7 @@ updates:
         patterns: 
           - "*"
         exclude-patterns:
-          - "dusseldorf*"
+          - "*dusseldorf*"
     registries:
       - k9-rapid
 
