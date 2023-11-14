@@ -29,8 +29,9 @@ plugins {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
 }
 
 dependencies {
@@ -45,6 +46,7 @@ dependencies {
     // Database
     implementation("com.zaxxer:HikariCP:$hikariVersion")
     implementation("org.flywaydb:flyway-core:$flywayVersion")
+    implementation("org.flywaydb:flyway-database-postgresql:$flywayVersion")
     implementation("com.github.seratch:kotliquery:$kotliqueryVersion")
     implementation("no.nav:vault-jdbc:$vaultJdbcVersion")
     runtimeOnly("org.postgresql:postgresql:$postgresVersion")
@@ -77,14 +79,6 @@ repositories {
 }
 
 tasks {
-
-    withType<KotlinCompile> {
-        kotlinOptions.jvmTarget = "17"
-    }
-
-    named<KotlinCompile>("compileTestKotlin") {
-        kotlinOptions.jvmTarget = "17"
-    }
 
     withType<Test> {
         useJUnitPlatform()
