@@ -6,7 +6,7 @@ val hikariVersion = "5.1.0"
 val kotliqueryVersion = "1.9.0"
 val postgresVersion = "42.7.1"
 val ktorVersion = "2.3.7"
-val dusseldorfVersion = "4.1.3"
+val dusseldorfVersion = "4.1.4"
 val vaultJdbcVersion = "1.3.10"
 val orgJsonVersion = "20231013"
 
