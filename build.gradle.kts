@@ -1,12 +1,12 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
-val k9rapidVersion = "1.20231002100147-90c2022"
-val flywayVersion = "10.5.0"
+val k9rapidVersion = "1.20240115061003-339d641"
+val flywayVersion = "10.7.1"
 val hikariVersion = "5.1.0"
 val kotliqueryVersion = "1.9.0"
 val postgresVersion = "42.7.1"
-val ktorVersion = "2.3.7"
-val dusseldorfVersion = "4.1.5"
+val ktorVersion = "2.3.8"
+val dusseldorfVersion = "4.2.0"
 val vaultJdbcVersion = "1.3.10"
 val orgJsonVersion = "20231013"
 
@@ -15,7 +15,7 @@ val junitJupiterVersion = "5.10.1"
 val embeddedPostgres = "2.0.6"
 val embeddedPostgresBinaries = "12.9.0"
 val mockkVersion = "1.13.9"
-val assertjVersion = "3.25.1"
+val assertjVersion = "3.25.2"
 val jsonassertVersion = "1.5.1"
 
 val mainClass = "no.nav.k9.AppKt"
