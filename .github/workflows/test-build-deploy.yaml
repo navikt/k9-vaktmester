@@ -30,7 +30,7 @@ jobs:
       security-events: write
     secrets: inherit
     with:
-      readertoken: false
+      javaversion: 21
       package-command: './gradlew clean build -x test'
       branch: main
 
@@ -74,6 +74,6 @@ jobs:
     secrets: inherit
     with:
       image: ${{ needs.build.outputs.image }}
-      environment: fss
-      deploy-prod: ${{ startsWith(github.ref, 'refs/heads/main') }}
+      environment: gcp
+      deploy-prod: ${{ startsWith(github.ref, 'refs/heads/main') }}
       

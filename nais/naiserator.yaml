@@ -10,6 +10,15 @@ spec:
   port: 8080
   strategy:
     type: Recreate
+  gcp:
+    sqlInstances:
+      - type: POSTGRES_15
+        diskAutoresize: true
+        tier: {{ database.tier }}
+        highAvailability: {{ database.highAvailability }}
+        databases:
+          - name: k9-vaktmester
+            envVarPrefix: DATABASE
   liveness:
     path: isalive
     initialDelay: 20
@@ -33,8 +42,6 @@ spec:
     cpuThresholdPercentage: 90
   secureLogs:
     enabled: true
-  vault:
-    enabled: true
   prometheus:
     enabled: true
     path: /metrics
@@ -47,3 +54,5 @@ spec:
   {{/each}}
     - name: KAFKA_CONSUMER_GROUP_ID
       value: k9-vaktmester
+    - name: KAFKA_RAPID_TOPIC
+      value: omsorgspenger.k9-rapid-v2

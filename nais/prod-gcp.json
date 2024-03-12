@@ -1,0 +1,10 @@
+{
+  "kafkaPool": "nav-prod",
+  "database": {
+    "tier": "db-custom-1-3840",
+    "highAvailability": "true"
+  },
+  "env": {
+    "MELDINGER_FILNAVN": "prod.json"
+  }
+}

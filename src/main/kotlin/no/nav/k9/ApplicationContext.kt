@@ -10,6 +10,7 @@ import no.nav.k9.vaktmester.RyddeService
 import no.nav.k9.vaktmester.db.ArkivRepository
 import no.nav.k9.vaktmester.db.DataSourceBuilder
 import no.nav.k9.vaktmester.db.InFlightRepository
+import no.nav.k9.vaktmester.db.migrate
 import org.apache.kafka.clients.producer.KafkaProducer
 import javax.sql.DataSource
 
@@ -27,7 +28,7 @@ internal class ApplicationContext(
     val appNavn = env.hentRequiredEnv("NAIS_APP_NAME")
 
     internal fun start() {
-        DataSourceBuilder(env).migrateAsAdmin()
+        dataSource.migrate()
         ryddeScheduler.start()
     }
 
@@ -48,7 +49,7 @@ internal class ApplicationContext(
 
         internal fun build(): ApplicationContext {
             val benyttetEnv = env ?: System.getenv()
-            val benyttetDataSource = dataSource ?: DataSourceBuilder(benyttetEnv).getDataSource()
+            val benyttetDataSource = dataSource ?: DataSourceBuilder(benyttetEnv).build()
             val benyttetArkivRepository = arkivRepository ?: ArkivRepository(benyttetDataSource)
             val benyttetInFlightRepository = inFlightRepository ?: InFlightRepository(benyttetDataSource)
             val benyttetKafkaProducer = kafkaProducer ?: benyttetEnv.kafkaProducer("ryddejobb")
