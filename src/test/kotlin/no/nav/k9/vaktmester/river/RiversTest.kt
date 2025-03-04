@@ -1,14 +1,12 @@
 package no.nav.k9.vaktmester.river
 
-import de.huxhorn.sulky.ulid.ULID
-import no.nav.helse.rapids_rivers.testsupport.TestRapid
+import com.github.navikt.tbd_libs.rapids_and_rivers.test_support.TestRapid
 import no.nav.k9.ApplicationContext
 import no.nav.k9.registerApplicationContext
 import no.nav.k9.testutils.ApplicationContextExtension
 import no.nav.k9.testutils.cleanAndMigrate
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.BeforeEach
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.extension.ExtendWith
 

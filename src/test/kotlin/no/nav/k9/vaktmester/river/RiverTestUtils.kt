@@ -4,11 +4,12 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.github.navikt.tbd_libs.rapids_and_rivers.JsonMessage
+import com.github.navikt.tbd_libs.rapids_and_rivers_api.MessageProblems
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import kotliquery.queryOf
 import kotliquery.sessionOf
 import kotliquery.using
-import no.nav.helse.rapids_rivers.JsonMessage
-import no.nav.helse.rapids_rivers.MessageProblems
 import no.nav.k9.rapid.behov.Behov
 import no.nav.k9.rapid.behov.Behovsformat
 import no.nav.k9.rapid.behov.Behovssekvens
@@ -42,7 +43,7 @@ internal fun nyBehovssekvens(
         }.toTypedArray()
     ).keyValue.second
 
-    val jsonMessage = JsonMessage(sekvens, MessageProblems(""))
+    val jsonMessage = JsonMessage(sekvens, MessageProblems(""), SimpleMeterRegistry())
 
     løsninger?.also { jsonMessage[Løsninger] = it }
 
@@ -61,7 +62,7 @@ internal fun assertBehovssekvenserLike(b1: String, b2: String) {
 }
 
 internal fun settJsonFeltTomt(json: String, feltnavn: String): String {
-    val jsonMessage = JsonMessage(json, MessageProblems(""))
+    val jsonMessage = JsonMessage(json, MessageProblems(""), SimpleMeterRegistry())
     jsonMessage[feltnavn] = ""
     jsonMessage["system_participating_services"] = "[]"
     return jsonMessage.toJson()

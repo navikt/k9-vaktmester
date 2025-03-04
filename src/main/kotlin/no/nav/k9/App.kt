@@ -1,5 +1,6 @@
 package no.nav.k9
 
+import com.github.navikt.tbd_libs.rapids_and_rivers_api.RapidsConnection
 import io.ktor.server.application.*
 import io.ktor.serialization.jackson.*
 import io.ktor.server.plugins.contentnegotiation.*
@@ -7,15 +8,15 @@ import io.ktor.server.routing.*
 import no.nav.helse.dusseldorf.ktor.health.HealthReporter
 import no.nav.helse.dusseldorf.ktor.health.HealthRoute
 import no.nav.helse.rapids_rivers.RapidApplication
-import no.nav.helse.rapids_rivers.RapidsConnection
 import no.nav.k9.vaktmester.river.ArkivRiver
 import no.nav.k9.vaktmester.river.InFlightRiver
 
 fun main() {
     val applicationContext = ApplicationContext.Builder().build()
-    RapidApplication.Builder(RapidApplication.RapidApplicationConfig.fromEnv(applicationContext.env))
-        .withKtorModule { k9Vaktmester(applicationContext) }
-        .build()
+    RapidApplication.create(
+        env = applicationContext.env,
+        builder = { withKtorModule { k9Vaktmester(applicationContext) } }
+    )
         .apply { registerApplicationContext(applicationContext) }
         .start()
 }
