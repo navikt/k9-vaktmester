@@ -1,10 +1,10 @@
 package no.nav.k9.vaktmester
 
+import com.github.navikt.tbd_libs.rapids_and_rivers.test_support.TestRapid
 import io.mockk.Called
 import io.mockk.clearMocks
 import io.mockk.confirmVerified
 import io.mockk.verify
-import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import no.nav.k9.ApplicationContext
 import no.nav.k9.registerApplicationContext
 import no.nav.k9.testutils.ApplicationContextExtension

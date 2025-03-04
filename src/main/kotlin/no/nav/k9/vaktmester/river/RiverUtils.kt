@@ -3,15 +3,16 @@ package no.nav.k9.vaktmester.river
 import com.fasterxml.jackson.databind.node.ArrayNode
 import com.fasterxml.jackson.databind.node.ObjectNode
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import no.nav.helse.rapids_rivers.JsonMessage
+import com.github.navikt.tbd_libs.rapids_and_rivers.JsonMessage
+import com.github.navikt.tbd_libs.rapids_and_rivers.isMissingOrNull
+import com.github.navikt.tbd_libs.rapids_and_rivers_api.MessageProblems
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import no.nav.k9.rapid.behov.Behovsformat
 import no.nav.k9.rapid.river.requireArray
 import no.nav.k9.rapid.river.requireObject
 import no.nav.k9.rapid.river.requireText
 import no.nav.k9.vaktmester.db.Arkiv
 import java.time.ZonedDateTime
-import no.nav.helse.rapids_rivers.MessageProblems
-import no.nav.helse.rapids_rivers.isMissingOrNull
 import no.nav.k9.rapid.river.behovssekvensId
 import no.nav.k9.vaktmester.db.InFlight
 
@@ -63,7 +64,7 @@ internal fun InFlight.somMeldingsinformasjon() =
     behovssekvens.behovssekvensSomMeldingsinformasjon()
 
 internal fun String.behovssekvensSomMeldingsinformasjon() =
-    JsonMessage(this, MessageProblems(this))
+    JsonMessage(this, MessageProblems(this), SimpleMeterRegistry())
         .vaktmesterOppgave()
         .meldingsinformasjon()
 
