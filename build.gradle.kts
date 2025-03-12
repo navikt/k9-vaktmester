@@ -1,7 +1,7 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 val k9rapidVersion = "1.20250225145424-cc27101"
-val flywayVersion = "11.3.4"
+val flywayVersion = "11.4.0"
 val hikariVersion = "6.2.1"
 val kotliqueryVersion = "1.9.1"
 val postgresVersion = "42.7.5"
@@ -11,7 +11,7 @@ val vaultJdbcVersion = "1.3.10"
 val orgJsonVersion = "20250107"
 
 // Test avhengigheter
-val junitJupiterVersion = "5.11.4"
+val junitJupiterVersion = "5.12.0"
 val embeddedPostgres = "2.1.0"
 val embeddedPostgresBinaries = "12.9.0"
 val mockkVersion = "1.13.17"
