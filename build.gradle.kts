@@ -12,6 +12,7 @@ val orgJsonVersion = "20250107"
 
 // Test avhengigheter
 val junitJupiterVersion = "5.12.1"
+val junitPlatformVersion = "1.12.1"
 val embeddedPostgres = "2.1.0"
 val embeddedPostgresBinaries = "12.9.0"
 val mockkVersion = "1.13.17"
@@ -54,6 +55,7 @@ dependencies {
     testImplementation(platform("io.zonky.test.postgres:embedded-postgres-binaries-bom:$embeddedPostgresBinaries"))
     testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion")
+    testImplementation("org.junit.platform:junit-platform-launcher:$junitPlatformVersion")
     testImplementation("no.nav.helse:dusseldorf-test-support:$dusseldorfVersion")
     testImplementation("no.nav.k9.rapid:river-test:$k9rapidVersion")
     testImplementation ("org.skyscreamer:jsonassert:$jsonassertVersion")
