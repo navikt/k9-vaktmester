@@ -15,7 +15,7 @@ val junitJupiterVersion = "5.12.2"
 val junitPlatformVersion = "1.12.2"
 val embeddedPostgres = "2.1.0"
 val embeddedPostgresBinaries = "12.9.0"
-val mockkVersion = "1.14.0"
+val mockkVersion = "1.14.2"
 val assertjVersion = "3.27.3"
 val jsonassertVersion = "1.5.3"
 
