@@ -8,7 +8,7 @@ val postgresVersion = "42.7.5"
 val ktorVersion = "3.1.0"
 val dusseldorfVersion = "6.1.4"
 val vaultJdbcVersion = "1.3.10"
-val orgJsonVersion = "20250107"
+val orgJsonVersion = "20250517"
 
 // Test avhengigheter
 val junitJupiterVersion = "5.12.2"
@@ -24,7 +24,7 @@ val mainClass = "no.nav.k9.AppKt"
 plugins {
     kotlin("jvm") version "2.1.0"
     id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("org.sonarqube") version "6.1.0.5360"
+    id("org.sonarqube") version "6.2.0.5505"
     jacoco
 }
 
