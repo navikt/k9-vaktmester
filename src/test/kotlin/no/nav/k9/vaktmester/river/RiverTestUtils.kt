@@ -6,7 +6,6 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.github.navikt.tbd_libs.rapids_and_rivers.JsonMessage
 import com.github.navikt.tbd_libs.rapids_and_rivers_api.MessageProblems
-import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import kotliquery.queryOf
 import kotliquery.sessionOf
 import kotliquery.using
@@ -43,7 +42,7 @@ internal fun nyBehovssekvens(
         }.toTypedArray()
     ).keyValue.second
 
-    val jsonMessage = JsonMessage(sekvens, MessageProblems(""), SimpleMeterRegistry())
+    val jsonMessage = JsonMessage(sekvens, MessageProblems(""), null)
 
     løsninger?.also { jsonMessage[Løsninger] = it }
 
@@ -62,7 +61,7 @@ internal fun assertBehovssekvenserLike(b1: String, b2: String) {
 }
 
 internal fun settJsonFeltTomt(json: String, feltnavn: String): String {
-    val jsonMessage = JsonMessage(json, MessageProblems(""), SimpleMeterRegistry())
+    val jsonMessage = JsonMessage(json, MessageProblems(""), null)
     jsonMessage[feltnavn] = ""
     jsonMessage["system_participating_services"] = "[]"
     return jsonMessage.toJson()

@@ -6,7 +6,6 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.github.navikt.tbd_libs.rapids_and_rivers.JsonMessage
 import com.github.navikt.tbd_libs.rapids_and_rivers.isMissingOrNull
 import com.github.navikt.tbd_libs.rapids_and_rivers_api.MessageProblems
-import io.micrometer.core.instrument.simple.SimpleMeterRegistry
 import no.nav.k9.rapid.behov.Behovsformat
 import no.nav.k9.rapid.river.requireArray
 import no.nav.k9.rapid.river.requireObject
@@ -64,7 +63,7 @@ internal fun InFlight.somMeldingsinformasjon() =
     behovssekvens.behovssekvensSomMeldingsinformasjon()
 
 internal fun String.behovssekvensSomMeldingsinformasjon() =
-    JsonMessage(this, MessageProblems(this), SimpleMeterRegistry())
+    JsonMessage(this, MessageProblems(this), null)
         .vaktmesterOppgave()
         .meldingsinformasjon()
 
