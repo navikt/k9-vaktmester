@@ -13,7 +13,7 @@ val orgJsonVersion = "20250517"
 // Test avhengigheter
 val junitJupiterVersion = "5.13.4"
 val junitPlatformVersion = "1.13.4"
-val embeddedPostgres = "2.1.0"
+val embeddedPostgres = "2.1.1"
 val embeddedPostgresBinaries = "12.9.0"
 val mockkVersion = "1.14.5"
 val assertjVersion = "3.27.4"
@@ -24,7 +24,7 @@ val mainClass = "no.nav.k9.AppKt"
 plugins {
     kotlin("jvm") version "2.2.10"
     id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("org.sonarqube") version "6.2.0.5505"
+    id("org.sonarqube") version "6.3.0.5676"
     jacoco
 }
 
