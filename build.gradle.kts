@@ -46,6 +46,7 @@ dependencies {
     // Database
     implementation("com.zaxxer:HikariCP:$hikariVersion")
     implementation("org.flywaydb:flyway-database-postgresql:$flywayVersion")
+    implementation("org.flywaydb:flyway-core:$flywayVersion")
     implementation("com.github.seratch:kotliquery:$kotliqueryVersion")
     implementation("no.nav:vault-jdbc:$vaultJdbcVersion")
     runtimeOnly("org.postgresql:postgresql:$postgresVersion")
