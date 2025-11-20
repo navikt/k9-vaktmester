@@ -1,7 +1,7 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 val k9rapidVersion = "1.20251106082401-75ffa49"
-val flywayVersion = "11.12.0"
+val flywayVersion = "11.17.0"
 val hikariVersion = "7.0.2"
 val kotliqueryVersion = "1.9.1"
 val postgresVersion = "42.7.8"
@@ -24,7 +24,7 @@ val mainClass = "no.nav.k9.AppKt"
 plugins {
     kotlin("jvm") version "2.2.21"
     id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("org.sonarqube") version "7.0.1.6134"
+    id("org.sonarqube") version "7.1.0.6387"
     jacoco
 }
 
