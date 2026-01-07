@@ -8,23 +8,23 @@ val postgresVersion = "42.7.8"
 val ktorVersion = "3.2.3"
 val dusseldorfVersion = "7.0.6"
 val vaultJdbcVersion = "1.3.10"
-val orgJsonVersion = "20250517"
+val orgJsonVersion = "20251224"
 
 // Test avhengigheter
 val junitJupiterVersion = "6.0.1"
 val junitPlatformVersion = "6.0.1"
 val embeddedPostgres = "2.2.0"
 val embeddedPostgresBinaries = "12.9.0"
-val mockkVersion = "1.14.6"
+val mockkVersion = "1.14.7"
 val assertjVersion = "3.27.6"
 val jsonassertVersion = "1.5.3"
 
 val mainClass = "no.nav.k9.AppKt"
 
 plugins {
-    kotlin("jvm") version "2.2.21"
+    kotlin("jvm") version "2.3.0"
     id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("org.sonarqube") version "7.0.1.6134"
+    id("org.sonarqube") version "7.2.2.6593"
     jacoco
 }
 
