@@ -1,4 +1,4 @@
-FROM ghcr.io/navikt/sif-baseimages/java-25:2026.01.29.1157z
+FROM gcr.io/distroless/java21-debian12:latest
 LABEL org.opencontainers.image.source=https://github.com/navikt/k9-vaktmester
 
 COPY build/libs/app.jar /app/app.jar
