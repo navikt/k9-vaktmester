@@ -11,9 +11,9 @@ val vaultJdbcVersion = "1.3.10"
 val orgJsonVersion = "20251224"
 
 // Test avhengigheter
-val junitJupiterVersion = "6.0.2"
-val junitPlatformVersion = "6.0.2"
-val embeddedPostgres = "2.2.0"
+val junitJupiterVersion = "6.0.3"
+val junitPlatformVersion = "6.0.3"
+val embeddedPostgres = "2.2.2"
 val embeddedPostgresBinaries = "12.9.0"
 val mockkVersion = "1.14.9"
 val assertjVersion = "3.27.7"
@@ -23,8 +23,8 @@ val appMainClass = "no.nav.k9.AppKt"
 
 plugins {
     kotlin("jvm") version "2.3.10"
-    id("com.gradleup.shadow") version "9.3.1"
-    id("org.sonarqube") version "7.2.2.6593"
+    id("com.gradleup.shadow") version "9.3.2"
+    id("org.sonarqube") version "7.2.3.7755"
     jacoco
 }
 
