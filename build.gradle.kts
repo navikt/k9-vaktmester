@@ -1,12 +1,12 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
-val k9rapidVersion = "1.20260414132801-16cec34"
-val flywayVersion = "11.12.0"
+val k9rapidVersion = "1.20260420114553-01e050f"
+val flywayVersion = "12.4.0"
 val hikariVersion = "7.0.2"
 val kotliqueryVersion = "1.9.1"
 val postgresVersion = "42.7.10"
 val ktorVersion = "3.4.0"
-val dusseldorfVersion = "7.0.7"
+val dusseldorfVersion = "7.0.8"
 val vaultJdbcVersion = "1.3.10"
 val orgJsonVersion = "20251224"
 
