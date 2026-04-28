@@ -1,6 +1,8 @@
 package no.nav.k9
 
 import com.github.navikt.tbd_libs.rapids_and_rivers_api.RapidsConnection
+import io.ktor.http.ContentType
+import io.ktor.http.withCharset
 import io.ktor.server.application.*
 import io.ktor.serialization.jackson.*
 import io.ktor.server.plugins.contentnegotiation.*
@@ -46,7 +48,7 @@ internal fun RapidsConnection.registerApplicationContext(applicationContext: App
 
 internal fun Application.k9Vaktmester(applicationContext: ApplicationContext) {
     install(ContentNegotiation) {
-        jackson()
+        jackson(contentType = ContentType.Application.Json.withCharset(Charsets.UTF_8))
     }
 
     HealthReporter(
