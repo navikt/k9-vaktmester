@@ -1,10 +1,10 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
-val k9rapidVersion = "1.20260420114553-01e050f"
-val flywayVersion = "11.12.0"
+val k9rapidVersion = "1.20260506105139-2e12923"
+val flywayVersion = "12.5.0"
 val hikariVersion = "7.0.2"
 val kotliqueryVersion = "1.9.1"
-val postgresVersion = "42.7.10"
+val postgresVersion = "42.7.11"
 val ktorVersion = "3.4.0"
 val dusseldorfVersion = "7.0.8"
 val vaultJdbcVersion = "1.3.10"
@@ -22,7 +22,7 @@ val jsonassertVersion = "1.5.3"
 val appMainClass = "no.nav.k9.AppKt"
 
 plugins {
-    kotlin("jvm") version "2.3.20"
+    kotlin("jvm") version "2.3.21"
     id("com.gradleup.shadow") version "9.4.1"
     id("org.sonarqube") version "7.2.3.7755"
     jacoco
