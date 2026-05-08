@@ -22,9 +22,9 @@ val jsonassertVersion = "1.5.3"
 val appMainClass = "no.nav.k9.AppKt"
 
 plugins {
-    kotlin("jvm") version "2.3.20"
+    kotlin("jvm") version "2.3.21"
     id("com.gradleup.shadow") version "9.4.1"
-    id("org.sonarqube") version "7.2.3.7755"
+    id("org.sonarqube") version "7.3.0.8198"
     jacoco
 }
 
