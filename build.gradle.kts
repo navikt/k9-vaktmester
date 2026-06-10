@@ -1,31 +1,31 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 val k9rapidVersion = "1.20260521084156-d8354aa"
-val flywayVersion = "11.12.0"
+val flywayVersion = "12.7.0"
 val hikariVersion = "7.0.2"
 val kotliqueryVersion = "1.9.1"
 val postgresVersion = "42.7.11"
-val ktorVersion = "3.4.2"
+val ktorVersion = "3.5.0"
 val dusseldorfVersion = "7.0.8"
 val vaultJdbcVersion = "1.3.10"
-val orgJsonVersion = "20251224"
-val nettyVersion = "4.2.14.Final"
+val orgJsonVersion = "20260522"
+val nettyVersion = "4.2.15.Final"
 
 // Test avhengigheter
 val junitJupiterVersion = "6.1.0"
 val junitPlatformVersion = "6.1.0"
 val embeddedPostgres = "2.2.2"
 val embeddedPostgresBinaries = "12.9.0"
-val mockkVersion = "1.14.9"
+val mockkVersion = "1.14.11"
 val assertjVersion = "3.27.7"
 val jsonassertVersion = "1.5.3"
 
 val appMainClass = "no.nav.k9.AppKt"
 
 plugins {
-    kotlin("jvm") version "2.3.21"
-    id("com.gradleup.shadow") version "9.4.1"
-    id("org.sonarqube") version "7.3.0.8198"
+    kotlin("jvm") version "2.4.0"
+    id("com.gradleup.shadow") version "9.4.2"
+    id("org.sonarqube") version "7.3.1.8318"
     jacoco
 }
 
