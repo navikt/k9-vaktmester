@@ -11,7 +11,6 @@ val vaultJdbcVersion = "1.3.10"
 val orgJsonVersion = "20260522"
 val nettyVersion = "4.2.15.Final"
 
-
 // Test avhengigheter
 val junitJupiterVersion = "6.1.1"
 val junitPlatformVersion = "6.1.1"
