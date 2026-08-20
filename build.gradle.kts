@@ -1,7 +1,7 @@
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 
 val k9rapidVersion = "1.20260630092344-01f2f22"
-val flywayVersion = "11.12.0"
+val flywayVersion = "13.3.0"
 val hikariVersion = "7.1.0"
 val kotliqueryVersion = "1.9.1"
 val postgresVersion = "42.7.13"
@@ -9,11 +9,11 @@ val ktorVersion = "3.5.2"
 val dusseldorfVersion = "8.0.5"
 val vaultJdbcVersion = "1.3.10"
 val orgJsonVersion = "20260719"
-val nettyVersion = "4.2.16.Final"
+val nettyVersion = "4.2.17.Final"
 
 // Test avhengigheter
-val junitJupiterVersion = "6.1.2"
-val junitPlatformVersion = "6.1.2"
+val junitJupiterVersion = "6.1.3"
+val junitPlatformVersion = "6.1.3"
 val embeddedPostgres = "2.2.2"
 val embeddedPostgresBinaries = "12.9.0"
 val mockkVersion = "1.14.11"
@@ -25,7 +25,7 @@ val appMainClass = "no.nav.k9.AppKt"
 plugins {
     kotlin("jvm") version "2.4.10"
     id("com.gradleup.shadow") version "9.6.1"
-    id("org.sonarqube") version "7.3.1.8318"
+    id("org.sonarqube") version "7.4.0.8496"
     jacoco
 }
 
