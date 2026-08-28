@@ -1,4 +1,4 @@
-FROM ghcr.io/navikt/sif-baseimages/java-25:2026.08.24.0750Z
+FROM ghcr.io/navikt/sif-baseimages/java-25:2026.08.27.1442Z
 LABEL org.opencontainers.image.source=https://github.com/navikt/k9-vaktmester
 
 COPY build/libs/app.jar /app/app.jar
